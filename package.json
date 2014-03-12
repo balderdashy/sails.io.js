@@ -1,0 +1,37 @@
+{
+  "name": "sails.io.js",
+  "version": "0.0.0",
+  "description": "Javascript SDK for communicating w/ a sails server via WebSockets/socket.io.",
+  "main": "sails.io.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "grunt": "~0.4.3",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-watch": "~0.6.0",
+    "grunt-contrib-copy": "~0.5.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "grunt concat && mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/balderdashy/sails.io.js.git"
+  },
+  "keywords": [
+    "sails",
+    "sdk",
+    "sails.io.js",
+    "socket.io",
+    "browser",
+    "javascript"
+  ],
+  "author": "balderdashy <mike@balderdash.co> (http://balderdash.co/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/balderdashy/sails.io.js/issues"
+  },
+  "homepage": "https://github.com/balderdashy/sails.io.js"
+}
