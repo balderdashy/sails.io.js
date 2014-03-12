@@ -18,6 +18,9 @@
 
 (function(io) {
 
+  // If the socket.io client is not available, an 
+  if (!io) throw new Error('`sails.io.js` requires a socket.io client, but `io` was not passed in.');
+
 
   // We'll be adding methods to `io.SocketNamespace.prototype`, the prototype for the 
   // Socket instance returned when the browser connects with `io.connect()`
@@ -308,11 +311,16 @@
   }
 
 
+  // Add CommonJS support to allow this client SDK to be used from Node.js.
+  if (typeof module === 'object' && typeof module.exports !== 'undefined') {
+    module.exports = io;
+  }
+
 
 })(
 
-  // In case you're wrapping socket.io to prevent pollution of the global namespace,
-  // you can replace `window.io` with your own `io` here:
-  window.io
+  // In case you're wrapping the socket.io client to prevent pollution of the
+  // global namespace, you can replace the global `io` with your own `io` here:
+  (typeof io !== 'undefined') ? io : null
 
 );
