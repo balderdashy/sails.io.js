@@ -12,6 +12,9 @@ module.exports = function(grunt) {
     },
 
     concat: {
+      options: {
+        separator: ';\n\n',
+      },
       dev: {
         src: ['<%= PATHS.socketioClient %>', '<%= PATHS.sailsio %>'],
         dest: '<%= PATHS.dist %>'

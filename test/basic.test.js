@@ -1,1 +1,3 @@
-require('../sails.io.js');
+
+
+var io = require('../dist/sails.io.js');
