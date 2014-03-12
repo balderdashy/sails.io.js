@@ -15,8 +15,13 @@
  * For more information, visit:
  * http://sailsjs.org/#documentation
  */
+
 (function () {
 
+  // In case you're wrapping the socket.io client to prevent pollution of the
+  // global namespace, you can pass in your own `io` to replace the global one.
+  // But we still grab access to the global one if it's available here:
+  var _io = (typeof io !== 'undefined') ? io : null;
 
   /**
    * Augment the `io` object passed in with methods for talking and listening
@@ -29,7 +34,10 @@
   
   function SailsIOClient (io) {
 
-    // If the socket.io client is not available, an 
+    // Prefer the passed-in `io` instance, but also use the global one if we've got it.
+    io = io || _io;
+
+    // If the socket.io client is not available, none of this will work.
     if (!io) throw new Error('`sails.io.js` requires a socket.io client, but `io` was not passed in.');
 
 
@@ -247,44 +255,61 @@
     var eagerSocketTimer;
 
 
+    // Set a `sails` object that may be used for configuration before the
+    // first socket connects (i.e. to prevent auto-connect)
+    io.sails = {
+      autoConnect: true
+    };
+
+
     // io.socket
     // 
     // The eager instance of Socket which will automatically try to connect
     // using the host that this js file was served from.
     // 
-    // This can be disabled or configured by setting `io.config` within the
+    // This can be disabled or configured by setting `io.socket.options` within the
     // first cycle of the event loop.
     // 
-    // Immediately start connecting:
-    io.socket = io.connect();
+    setTimeout(function () {
 
+      // If autoConnect is disabled, bail out.
+      if (!io.sails.autoConnect) return;
 
-    console.log('Connecting Socket.io to Sails.js...');
+      // Start connecting after the current cycle of the event loop
+      // has completed.
+      console.log('Auto-connecting a socket to Sails...');
 
+      // If explicit connection url is specified, use it
+      io.socket = io.sails.url ? io.connect(io.sails.url): io.connect();
+      
+      // Attach a listener which fires when a connection is established:
+      io.socket.on('connect', function socketConnected() {
+        console.log(
+          'Socket is now connected and globally accessible as `socket`.\n' +
+          'e.g. to send a GET request to Sails via Socket.io, try: \n' +
+          '`socket.get("/foo", function (response) { console.log(response); })`'
+        );
 
-    // Attach a listener which fires when a connection is established:
-    io.socket.on('connect', function socketConnected() {
-      console.log(
-        'Socket is now connected and globally accessible as `socket`.\n' +
-        'e.g. to send a GET request to Sails via Socket.io, try: \n' +
-        '`socket.get("/foo", function (response) { console.log(response); })`'
-      );
+        // Save reference to socket when it connects
+        sockets[io.socket.id] = io.socket;
 
-      // Save reference to socket when it connects
-      sockets[io.socket.id] = io.socket;
-
-      // Run the request queue for each socket.
-      for (var socketId in requestQueues) {
-        var pendingRequestsForSocket = requestQueues[socketId];
-        
-        for (var i in pendingRequestsForSocket) {
-          var pendingRequest = pendingRequestsForSocket[i];
+        // Run the request queue for each socket.
+        for (var socketId in requestQueues) {
+          var pendingRequestsForSocket = requestQueues[socketId];
           
-          // Emit the request.
-          _emitFrom(sockets[socketId], pendingRequest);
+          for (var i in pendingRequestsForSocket) {
+            var pendingRequest = pendingRequestsForSocket[i];
+            
+            // Emit the request.
+            _emitFrom(sockets[socketId], pendingRequest);
+          }
         }
-      }
-    });
+      });
+      
+    }, 0);
+
+
+
 
 
     // TODO:
@@ -320,6 +345,9 @@
     function _isConnected (socket) {
       return socket.socket && socket.socket.connected;
     }
+
+    // Return the `io` object.
+    return io;
   }
 
 
@@ -331,6 +359,6 @@
   // Otherwise, try to instantiate the client:
   // In case you're wrapping the socket.io client to prevent pollution of the
   // global namespace, you can replace the global `io` with your own `io` here:
-  return SailsIOClient((typeof io !== 'undefined') ? io : null);
+  return SailsIOClient();
 
 })();
