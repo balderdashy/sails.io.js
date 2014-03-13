@@ -102,8 +102,8 @@
 
       // Serialize request to JSON
       var json = io.JSON.stringify({
-        url: options.url,
-        data: options.data
+        url: request.url,
+        data: request.data
       });
 
       socket.emit(request.method, json, function serverResponded (result) {
@@ -163,7 +163,7 @@
      */
 
     Socket.prototype.get = function(url, data, cb) {
-      return this.request({
+      return this._request({
         method: 'get',
         data: data,
         url: url
@@ -184,7 +184,7 @@
      */
 
     Socket.prototype.post = function(url, data, cb) {
-      return this.request({
+      return this._request({
         method: 'post',
         data: data,
         url: url
@@ -205,7 +205,7 @@
      */
 
     Socket.prototype.put = function(url, data, cb) {
-      return this.request({
+      return this._request({
         method: 'put',
         data: data,
         url: url
@@ -226,7 +226,7 @@
      */
 
     Socket.prototype['delete'] = function(url, data, cb) {
-      return this.request({
+      return this._request({
         method: 'delete',
         data: data,
         url: url
@@ -244,35 +244,37 @@
      * @param  {[type]}   options [description]
      * @param  {Function} cb      [description]
      */
-    function _request(options, cb) {
+    Socket.prototype._request = function (options, cb) {
 
-      var self = this;
+      // Sanitize options (also data & headers)
       var usage = 'Usage:\n socket.' +
         (options.method || 'request') +
         '( destinationURL, [dataToSend], [fnToCallWhenComplete] )';
+
+      // `options` is optional
+      if (typeof options === 'function') {
+        cb = options;
+        options = {};
+      }
+
+      options = options || {};
+      options.data = options.data || {};
+      options.headers = options.headers || {};
 
       // Remove trailing slashes and spaces to make packets smaller.
       options.url = options.url.replace(/^(.+)\/*\s*$/, '$1');
       if (typeof options.url !== 'string') {
         throw new Error('Invalid or missing URL!\n' + usage);
       }
-
-      // `data` is optional
-      if (typeof options.data === 'function') {
-        cb = options.data;
-        options.data = {};
-      }
       
-      // Sanitize data and headers options.
-      options.headers = options.headers || {};
-      options.data = options.data || {};
+      var self = this;
 
       // Build a simulated request object.
       var request = {
-        method: method,
-        data: data,
-        url: url,
-        headers: headers
+        method: options.method,
+        data: options.data,
+        url: options.url,
+        headers: options.headers
       };
 
       // If this socket is not connected yet, queue up this request
@@ -290,7 +292,7 @@
       // Otherwise, our socket is ok!
       // Send the request.
       _emitFrom(self, request, cb);
-    }
+    };
 
 
 
@@ -337,7 +339,7 @@
       // If autoConnect is disabled, delete the TmpSocket and bail out.
       if (!io.sails.autoConnect) {
         delete io.socket;
-        return;
+        return io;
       }
 
       // Start connecting after the current cycle of the event loop
@@ -374,7 +376,22 @@
         }
       });
       
+      // TODO:
+      // manage disconnects in a more helpful way
+      io.socket.on('disconnect', function () {
+        // console.log('*** DISCONNECT YEAAAH');
+      });
+
+      // Listen for failed connects:
+      // (usually because of a missing or invalid cookie)
+      io.socket.on('error', failedToConnect);
+
+      function failedToConnect () {
+        console.log('Failed to connect socket (probably due to failed authorization on server)');
+      }
+      
     }, 0);
+
 
     // Return the `io` object.
     return io;
@@ -383,10 +400,6 @@
     // TODO:
     // handle failed connections due to failed authorization
     // in a smarter way (probably can listen for a different event)
-
-    // TODO:
-    // manage disconnects in a more helpful way
-
 
     // TODO:
     // After a configurable period of time, if the socket has still not connected,

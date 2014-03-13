@@ -14,6 +14,13 @@ describe('io.socket', function () {
     io.socket.on('connect', cb);
   });
 
+  it('should be able to send a GET request and receive the proper response', function (cb) {
+    io.socket.get('/user', function () {
+      console.log('done');
+      cb();
+    });
+  });
+
   after(lifecycle.teardown);
 
 });
