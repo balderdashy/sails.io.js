@@ -12,7 +12,9 @@
     "grunt-contrib-watch": "~0.6.0",
     "grunt-contrib-copy": "~0.5.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "sails": "~0.10.0-rc4"
+  },
   "scripts": {
     "test": "grunt concat && mocha"
   },

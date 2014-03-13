@@ -41,6 +41,110 @@
     if (!io) throw new Error('`sails.io.js` requires a socket.io client, but `io` was not passed in.');
 
 
+
+
+    //////////////////////////////////////////////////////////////
+    /////                              ///////////////////////////
+    ///// PRIVATE METHODS/CONSTRUCTORS ///////////////////////////
+    /////                              ///////////////////////////
+    //////////////////////////////////////////////////////////////
+
+    /**
+     * TmpSocket
+     * 
+     * A mock Socket used for binding events before the real thing
+     * has been instantiated (since we need to use io.connect() to
+     * instantiate the real thing, which would kick off the connection
+     * process w/ the server, and we don't necessarily have the valid
+     * configuration to know WHICH SERVER to talk to yet.)
+     *
+     * @api private
+     * @constructor
+     */
+    
+    function TmpSocket () {
+      var boundEvents = {};
+      this.on = function (evName, fn) {
+        boundEvents[evName] = fn;
+        return this;
+      };
+      this.become = function ( actualSocket ) {
+        for (var evName in boundEvents) {
+          actualSocket.on(evName, boundEvents[evName]);
+        }
+        return actualSocket;
+      };
+    }
+
+    
+    /**
+     * isConnected
+     * 
+     * @api private
+     * @param  {Socket}  socket
+     * @return {Boolean} whether the socket is connected and able to
+     *                           communicate w/ the server.
+     */
+    
+    function _isConnected (socket) {
+      return socket.socket && socket.socket.connected;
+    }
+
+
+    /**
+     * @api private
+     * @param  {Socket} socket  [description]
+     * @param  {Object} request [description]
+     * @param  {Function} cb [optional]
+     */
+    
+    function _emitFrom ( socket, request, cb ) {
+
+      // Serialize request to JSON
+      var json = io.JSON.stringify({
+        url: options.url,
+        data: options.data
+      });
+
+      socket.emit(request.method, json, function serverResponded (result) {
+        
+        var parsedResult = result;
+
+        if (result && typeof result === 'string') {
+          try {
+            parsedResult = io.JSON.parse(result);
+          } catch (e) {
+            if (typeof console !== 'undefined') {
+              console.warn('Could not parse:', result, e);
+            }
+            throw new Error('Server response could not be parsed!\n' + result);
+          }
+        }
+
+        // TODO: Handle errors more effectively
+        if (parsedResult === 404) throw new Error('404: Not found');
+        if (parsedResult === 403) throw new Error('403: Forbidden');
+        if (parsedResult === 500) throw new Error('500: Server error');
+
+        cb && cb(parsedResult);
+
+      });
+    }
+
+    //////////////////////////////////////////////////////////////
+    ///// </PRIVATE METHODS/CONSTRUCTORS> ////////////////////////
+    //////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
     // We'll be adding methods to `io.SocketNamespace.prototype`, the prototype for the 
     // Socket instance returned when the browser connects with `io.connect()`
     var Socket = io.SocketNamespace;
@@ -52,6 +156,7 @@
      * e.g.
      *    `socket.get('/user/3', Stats.populate)`
      *
+     * @api public
      * @param {String} url    ::    destination URL
      * @param {Object} params ::    parameters to send with the request [optional]
      * @param {Function} cb   ::    callback function to call when finished [optional]
@@ -72,6 +177,7 @@
      * e.g.
      *    `socket.post('/event', newMeeting, $spinner.hide)`
      *
+     * @api public
      * @param {String} url    ::    destination URL
      * @param {Object} params ::    parameters to send with the request [optional]
      * @param {Function} cb   ::    callback function to call when finished [optional]
@@ -92,6 +198,7 @@
      * e.g.
      *    `socket.post('/event/3', changedFields, $spinner.hide)`
      *
+     * @api public
      * @param {String} url    ::    destination URL
      * @param {Object} params ::    parameters to send with the request [optional]
      * @param {Function} cb   ::    callback function to call when finished [optional]
@@ -112,6 +219,7 @@
      * e.g.
      *    `socket.delete('/event', $spinner.hide)`
      *
+     * @api public
      * @param {String} url    ::    destination URL
      * @param {Object} params ::    parameters to send with the request [optional]
      * @param {Function} cb   ::    callback function to call when finished [optional]
@@ -124,17 +232,6 @@
         url: url
       }, cb);
     };
-
-
-
-    /**
-     * @api private
-     * 
-     * But exposed for backwards-compatibility.
-     */
-
-    Socket.prototype.request = _request;
-
 
 
 
@@ -196,46 +293,9 @@
     }
 
 
-    /**
-     * 
-     * @param  {Socket} socket  [description]
-     * @param  {Object} request [description]
-     * @param  {Function} cb [optional]
-     */
-    function _emitFrom ( socket, request, cb ) {
 
-      // Serialize request to JSON
-      var json = io.JSON.stringify({
-        url: options.url,
-        data: options.data
-      });
-
-      socket.emit(request.method, json, function serverResponded (result) {
-        
-        var parsedResult = result;
-
-        if (result && typeof result === 'string') {
-          try {
-            parsedResult = io.JSON.parse(result);
-          } catch (e) {
-            if (typeof console !== 'undefined') {
-              console.warn('Could not parse:', result, e);
-            }
-            throw new Error('Server response could not be parsed!\n' + result);
-          }
-        }
-
-        // TODO: Handle errors more effectively
-        if (parsedResult === 404) throw new Error('404: Not found');
-        if (parsedResult === 403) throw new Error('403: Forbidden');
-        if (parsedResult === 500) throw new Error('500: Server error');
-
-        cb && cb(parsedResult);
-
-      });
-    }
-
-
+    // `requestQueues` and `sockets`
+    // 
     // Used to simplify app-level connection logic-- i.e. so you don't
     // have to wait for the socket to be connected to start trying to 
     // synchronize data.
@@ -249,10 +309,6 @@
     // }
     var requestQueues = {};
     var sockets = {};
-
-    // // A `setTimeout` that, is used to check if `io.socket` is ready
-    // // yet (polls). Important to make the requestQueues work.
-    var eagerSocketTimer;
 
 
     // Set a `sails` object that may be used for configuration before the
@@ -270,17 +326,29 @@
     // This can be disabled or configured by setting `io.socket.options` within the
     // first cycle of the event loop.
     // 
+
+    // In the mean time, this eager socket will be defined as a TmpSocket
+    // so that events bound by the user before the first cycle of the event
+    // loop (using `.on()`) can be rebound on the true socket.
+    io.socket = new TmpSocket();
+    
     setTimeout(function () {
 
-      // If autoConnect is disabled, bail out.
-      if (!io.sails.autoConnect) return;
+      // If autoConnect is disabled, delete the TmpSocket and bail out.
+      if (!io.sails.autoConnect) {
+        delete io.socket;
+        return;
+      }
 
       // Start connecting after the current cycle of the event loop
       // has completed.
       console.log('Auto-connecting a socket to Sails...');
 
       // If explicit connection url is specified, use it
-      io.socket = io.sails.url ? io.connect(io.sails.url): io.connect();
+      var actualSocket = io.sails.url ? io.connect(io.sails.url): io.connect();
+
+      // Replay event bindings from the existing TmpSocket
+      io.socket = io.socket.become(actualSocket);
       
       // Attach a listener which fires when a connection is established:
       io.socket.on('connect', function socketConnected() {
@@ -308,13 +376,16 @@
       
     }, 0);
 
-
-
+    // Return the `io` object.
+    return io;
 
 
     // TODO:
-    // manage disconnects
+    // handle failed connections due to failed authorization
+    // in a smarter way (probably can listen for a different event)
 
+    // TODO:
+    // manage disconnects in a more helpful way
 
 
     // TODO:
@@ -331,23 +402,6 @@
     //  'before using sync methods on your Backbone models and collections.'
     // );
 
-
-    
-    /**
-     * isConnected
-     * 
-     * @api private
-     * @param  {Socket}  socket
-     * @return {Boolean} whether the socket is connected and able to
-     *                           communicate w/ the server.
-     */
-    
-    function _isConnected (socket) {
-      return socket.socket && socket.socket.connected;
-    }
-
-    // Return the `io` object.
-    return io;
   }
 
 

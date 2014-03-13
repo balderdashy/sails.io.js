@@ -2,13 +2,18 @@
  * Module dependencies
  */
 
-var io = require('socket.io-client');
-var sailsIO = require('../dist/sails.io.js');
-io = sailsIO(io);
+var lifecycle = require('./helpers/lifecycle');
 
-// Set some configuration options
-io.sails.url = 'localhost:1337';
 
-setTimeout(function () {
-  console.log(io.socket);
-}, 1000);
+
+describe('io.socket', function () {
+
+  before(lifecycle.setup);
+
+  it('should connect automatically', function (cb) {
+    io.socket.on('connect', cb);
+  });
+
+  after(lifecycle.teardown);
+
+});
