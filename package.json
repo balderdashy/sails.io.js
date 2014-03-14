@@ -16,7 +16,7 @@
     "sails": "~0.10.0-rc4"
   },
   "scripts": {
-    "test": "grunt concat && mocha"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",

@@ -109,7 +109,9 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
         data: request.data
       });
 
-      socket.emit(request.method, json, function serverResponded (result) {
+      // Name of message === the request method (e.g. 'get', 'post', 'put')
+      var messageName = request.method;
+      socket.emit(request.method, requestCtx, function serverResponded (result) {
         
         var parsedResult = result;
 

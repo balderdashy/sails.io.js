@@ -94,19 +94,21 @@
     /**
      * @api private
      * @param  {Socket} socket  [description]
-     * @param  {Object} request [description]
+     * @param  {Object} requestCtx [description]
      * @param  {Function} cb [optional]
      */
     
-    function _emitFrom ( socket, request, cb ) {
+    function _emitFrom ( socket, requestCtx, cb ) {
 
-      // Serialize request to JSON
+      // Serialize requestCtx to JSON
       var json = io.JSON.stringify({
-        url: request.url,
-        data: request.data
+        url: requestCtx.url,
+        data: requestCtx.data
       });
 
-      socket.emit(request.method, json, function serverResponded (result) {
+      // Name of message === the request method (e.g. 'get', 'post', 'put')
+      var messageName = requestCtx.method;
+      socket.emit(requestCtx.method, requestCtx, function serverResponded (result) {
         
         var parsedResult = result;
 

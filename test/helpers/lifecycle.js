@@ -3,7 +3,7 @@
  */
 
 var io = require('socket.io-client');
-var sailsIO = require('../../dist/sails.io.js');
+var sailsIO = require('../../sails.io.js');
 var Sails = require('sails/lib/app');
 
 
