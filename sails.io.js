@@ -18,6 +18,26 @@
 
 (function () {
 
+  // Constants
+  var CONNECTION_METADATA_PARAMS = {
+    version: '__sails_io_sdk_version',
+    platform: '__sails_io_sdk_platform',
+    language: '__sails_io_sdk_language'
+  };
+
+  // Current version of this SDK (sailsDK?!?!) and other metadata
+  // that will be sent along w/ the initial connection request.
+  var SDK_INFO = {
+    version: '0.10.0',  // TODO: pull this automatically from package.json during build.
+    platform: typeof module === 'undefined' ? 'browser' : 'node',
+    language: 'javascript'
+  };
+  SDK_INFO.versionString =
+  CONNECTION_METADATA_PARAMS.version + '=' + SDK_INFO.version + '&' +
+  CONNECTION_METADATA_PARAMS.platform + '=' + SDK_INFO.platform + '&' +
+  CONNECTION_METADATA_PARAMS.language + '=' + SDK_INFO.language;
+
+
   // In case you're wrapping the socket.io client to prevent pollution of the
   // global namespace, you can pass in your own `io` to replace the global one.
   // But we still grab access to the global one if it's available here:
@@ -107,10 +127,10 @@
       // Name of socket request listener on the server
       // ( === the request method, e.g. 'get', 'post', 'put', etc. )
       var sailsEndpoint = requestCtx.method;
-      socket.emit(sailsEndpoint, requestCtx, function serverResponded (result) {
+      socket.emit(sailsEndpoint, requestCtx, function serverResponded (err, result) {
         
-        console.log('Server said: ',result);
-        cb && cb(result);
+        console.log('Server said: ',err, result);
+        cb && cb(err, result);
         
         // var parsedResult = result;
         // if (result && typeof result === 'string') {
@@ -343,8 +363,39 @@
     // first socket connects (i.e. to prevent auto-connect)
     io.sails = {
       autoConnect: true,
+
+      // TODO:
+      // listen for a special private message from server with environment
+      // and other config.
       environment: 'production'
     };
+
+
+
+    /**
+     * Override `io.connect` to coerce it into using the io.sails
+     * connection URL config, as well as sending identifying information
+     * (most importantly, the current version of this SDK)
+     * 
+     * @param  {String} url  [optional]
+     * @param  {Object} opts [optional]
+     * @return {Socket}
+     */
+    io.sails._origConnectFn = io.connect;
+    io.connect = function (url, opts) {
+      opts = opts || {};
+
+      // If explicit connection url is specified, use it
+      url = url || io.sails.url || undefined;
+
+      // Mix the current SDK version into the query string in
+      // the connection request to the server:
+      if (typeof opts.query !== 'string') opts.query = SDK_INFO.versionString;
+      else opts.query += '&' + SDK_INFO.versionString;
+
+      return io.sails._origConnectFn(url, opts);
+    };
+
 
 
     // io.socket
@@ -373,9 +424,8 @@
       // has completed.
       // console.log('Auto-connecting a socket to Sails...');
       
-
-      // If explicit connection url is specified, use it
-      var actualSocket = io.sails.url ? io.connect(io.sails.url): io.connect();
+      // Initiate connection
+      var actualSocket = io.connect(io.sails.url);
 
       // Replay event bindings from the existing TmpSocket
       io.socket = io.socket.become(actualSocket);
@@ -417,7 +467,7 @@
       // (usually because of a missing or invalid cookie)
       io.socket.on('error', failedToConnect);
 
-      function failedToConnect (rr) {
+      function failedToConnect (err) {
         console && typeof console.log === 'function' && console.log(
           'Failed to connect socket (probably due to failed authorization on server)',
           'Error:', err
