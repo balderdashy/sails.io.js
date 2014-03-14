@@ -95,40 +95,41 @@
      * @api private
      * @param  {Socket} socket  [description]
      * @param  {Object} requestCtx [description]
-     * @param  {Function} cb [optional]
      */
     
-    function _emitFrom ( socket, requestCtx, cb ) {
+    function _emitFrom ( socket, requestCtx ) {
 
-      // Serialize requestCtx to JSON
-      var json = io.JSON.stringify({
-        url: requestCtx.url,
-        data: requestCtx.data
-      });
+      // Since callback is embedded in requestCtx,
+      // retrieve it and delete the key before continuing.
+      var cb = requestCtx.cb;
+      delete requestCtx.cb;
 
-      // Name of message === the request method (e.g. 'get', 'post', 'put')
-      var messageName = requestCtx.method;
-      socket.emit(requestCtx.method, requestCtx, function serverResponded (result) {
+      // Name of socket request listener on the server
+      // ( === the request method, e.g. 'get', 'post', 'put', etc. )
+      var sailsEndpoint = requestCtx.method;
+      socket.emit(sailsEndpoint, requestCtx, function serverResponded (result) {
         
-        var parsedResult = result;
+        console.log('Server said: ',result);
+        cb && cb(result);
+        
+        // var parsedResult = result;
+        // if (result && typeof result === 'string') {
+        //   try {
+        //     parsedResult = io.JSON.parse(result);
+        //   } catch (e) {
+        //     if (typeof console !== 'undefined') {
+        //       console.warn('Could not parse:', result, e);
+        //     }
+        //     throw new Error('Server response could not be parsed!\n' + result);
+        //   }
+        // }
 
-        if (result && typeof result === 'string') {
-          try {
-            parsedResult = io.JSON.parse(result);
-          } catch (e) {
-            if (typeof console !== 'undefined') {
-              console.warn('Could not parse:', result, e);
-            }
-            throw new Error('Server response could not be parsed!\n' + result);
-          }
-        }
+        // // TODO: Handle errors more effectively
+        // if (parsedResult === 404) throw new Error('404: Not found');
+        // if (parsedResult === 403) throw new Error('403: Forbidden');
+        // if (parsedResult === 500) throw new Error('500: Server error');
 
-        // TODO: Handle errors more effectively
-        if (parsedResult === 404) throw new Error('404: Not found');
-        if (parsedResult === 403) throw new Error('403: Forbidden');
-        if (parsedResult === 500) throw new Error('500: Server error');
-
-        cb && cb(parsedResult);
+        // cb && cb(parsedResult);
 
       });
     }
@@ -165,6 +166,13 @@
      */
 
     Socket.prototype.get = function(url, data, cb) {
+
+      // `data` is optional
+      if (typeof data === 'function') {
+        cb = data;
+        data = {};
+      }
+      
       return this._request({
         method: 'get',
         data: data,
@@ -186,6 +194,13 @@
      */
 
     Socket.prototype.post = function(url, data, cb) {
+
+      // `data` is optional
+      if (typeof data === 'function') {
+        cb = data;
+        data = {};
+      }
+      
       return this._request({
         method: 'post',
         data: data,
@@ -207,6 +222,13 @@
      */
 
     Socket.prototype.put = function(url, data, cb) {
+
+      // `data` is optional
+      if (typeof data === 'function') {
+        cb = data;
+        data = {};
+      }
+
       return this._request({
         method: 'put',
         data: data,
@@ -228,6 +250,13 @@
      */
 
     Socket.prototype['delete'] = function(url, data, cb) {
+      
+      // `data` is optional
+      if (typeof data === 'function') {
+        cb = data;
+        data = {};
+      }
+
       return this._request({
         method: 'delete',
         data: data,
@@ -253,12 +282,6 @@
         (options.method || 'request') +
         '( destinationURL, [dataToSend], [fnToCallWhenComplete] )';
 
-      // `options` is optional
-      if (typeof options === 'function') {
-        cb = options;
-        options = {};
-      }
-
       options = options || {};
       options.data = options.data || {};
       options.headers = options.headers || {};
@@ -276,7 +299,8 @@
         method: options.method,
         data: options.data,
         url: options.url,
-        headers: options.headers
+        headers: options.headers,
+        cb: cb
       };
 
       // If this socket is not connected yet, queue up this request
@@ -293,7 +317,7 @@
       
       // Otherwise, our socket is ok!
       // Send the request.
-      _emitFrom(self, request, cb);
+      _emitFrom(self, request);
     };
 
 
@@ -318,7 +342,8 @@
     // Set a `sails` object that may be used for configuration before the
     // first socket connects (i.e. to prevent auto-connect)
     io.sails = {
-      autoConnect: true
+      autoConnect: true,
+      environment: 'production'
     };
 
 
@@ -346,7 +371,8 @@
 
       // Start connecting after the current cycle of the event loop
       // has completed.
-      console.log('Auto-connecting a socket to Sails...');
+      // console.log('Auto-connecting a socket to Sails...');
+      
 
       // If explicit connection url is specified, use it
       var actualSocket = io.sails.url ? io.connect(io.sails.url): io.connect();
@@ -356,11 +382,14 @@
       
       // Attach a listener which fires when a connection is established:
       io.socket.on('connect', function socketConnected() {
-        console.log(
-          'Socket is now connected and globally accessible as `socket`.\n' +
-          'e.g. to send a GET request to Sails via Socket.io, try: \n' +
-          '`socket.get("/foo", function (response) { console.log(response); })`'
-        );
+
+        if ( io.sails.environment !== 'production' ) {
+          console && typeof console.log === 'function' && console.log(
+            'Socket is now connected and globally accessible as `socket`.\n' +
+            'e.g. to send a GET request to Sails via Socket.io, try: \n' +
+            '`socket.get("/foo", function (response) { console.log(response); })`'
+          );
+        }
 
         // Save reference to socket when it connects
         sockets[io.socket.id] = io.socket;
@@ -388,8 +417,11 @@
       // (usually because of a missing or invalid cookie)
       io.socket.on('error', failedToConnect);
 
-      function failedToConnect () {
-        console.log('Failed to connect socket (probably due to failed authorization on server)');
+      function failedToConnect (rr) {
+        console && typeof console.log === 'function' && console.log(
+          'Failed to connect socket (probably due to failed authorization on server)',
+          'Error:', err
+        );
       }
       
     }, 0);
