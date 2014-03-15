@@ -111,6 +111,42 @@
     }
 
 
+
+    /**
+     * The response received from a Sails server.
+     *
+     * @api private
+     * @param  {Object}  responseCtx
+     *         => :body
+     *         => :statusCode
+     *         => :headers
+     * @constructor
+     */
+    
+    function SailsResponse ( responseCtx ) {
+      this.body = responseCtx.body || {};
+      this.headers = responseCtx.headers || {};
+      this.statusCode = responseCtx.statusCode || 200;
+    }
+    SailsResponse.prototype.toString = function () {
+      return '[ResponseFromSails]' + '  -- '+
+             'Status: '+ this.statusCode + '  -- '+
+             'Headers: '+ this.headers + '  -- '+
+             'Body: '+ this.body;
+    };
+    SailsResponse.prototype.toPOJO = function () {
+      return {
+        body: this.body,
+        headers: this.headers,
+        statusCode: this.statusCode
+      };
+    };
+    SailsResponse.prototype.pipe = function () {
+      // TODO: look at substack's stuff
+      return new Error('Not implemented yet.');
+    };
+
+
     /**
      * @api private
      * @param  {Socket} socket  [description]
@@ -127,30 +163,9 @@
       // Name of socket request listener on the server
       // ( === the request method, e.g. 'get', 'post', 'put', etc. )
       var sailsEndpoint = requestCtx.method;
-      socket.emit(sailsEndpoint, requestCtx, function serverResponded (err, result) {
-        
-        console.log('Server said: ',err, result);
-        cb && cb(err, result);
-        
-        // var parsedResult = result;
-        // if (result && typeof result === 'string') {
-        //   try {
-        //     parsedResult = io.JSON.parse(result);
-        //   } catch (e) {
-        //     if (typeof console !== 'undefined') {
-        //       console.warn('Could not parse:', result, e);
-        //     }
-        //     throw new Error('Server response could not be parsed!\n' + result);
-        //   }
-        // }
-
-        // // TODO: Handle errors more effectively
-        // if (parsedResult === 404) throw new Error('404: Not found');
-        // if (parsedResult === 403) throw new Error('403: Forbidden');
-        // if (parsedResult === 500) throw new Error('500: Server error');
-
-        // cb && cb(parsedResult);
-
+      socket.emit(sailsEndpoint, requestCtx, function serverResponded ( responseCtx ) {
+        var serverResponse = new SailsResponse(responseCtx);
+        cb && cb(serverResponse);
       });
     }
 
