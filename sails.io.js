@@ -335,7 +335,14 @@
         data: options.data,
         url: options.url,
         headers: options.headers,
-        cb: cb
+        // Callback arguments are (body, response)
+        cb: function(data) {
+          if (data.body) {
+            cb(data.body, data);
+          } else {
+            cb(data);
+          }
+        }
       };
 
       // If this socket is not connected yet, queue up this request
