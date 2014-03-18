@@ -113,7 +113,7 @@
 
 
     /**
-     * The response received from a Sails server.
+     * The JWR (JSON WebSocket Response) received from a Sails server.
      *
      * @api private
      * @param  {Object}  responseCtx
@@ -123,25 +123,25 @@
      * @constructor
      */
     
-    function SailsResponse ( responseCtx ) {
+    function JWR ( responseCtx ) {
       this.body = responseCtx.body || {};
       this.headers = responseCtx.headers || {};
       this.statusCode = responseCtx.statusCode || 200;
     }
-    SailsResponse.prototype.toString = function () {
+    JWR.prototype.toString = function () {
       return '[ResponseFromSails]' + '  -- '+
              'Status: '+ this.statusCode + '  -- '+
              'Headers: '+ this.headers + '  -- '+
              'Body: '+ this.body;
     };
-    SailsResponse.prototype.toPOJO = function () {
+    JWR.prototype.toPOJO = function () {
       return {
         body: this.body,
         headers: this.headers,
         statusCode: this.statusCode
       };
     };
-    SailsResponse.prototype.pipe = function () {
+    JWR.prototype.pipe = function () {
       // TODO: look at substack's stuff
       return new Error('Not implemented yet.');
     };
@@ -166,7 +166,7 @@
       var sailsEndpoint = requestCtx.method;
       socket.emit(sailsEndpoint, requestCtx, function serverResponded ( responseCtx ) {
 
-        // Add backwards-compatibility for 0.9.x projects
+        // Adds backwards-compatibility for 0.9.x projects
         // If `responseCtx.body` does not exist, the entire
         // `responseCtx` object must actually be the `body`.
         var body;
@@ -177,8 +177,8 @@
           body = responseCtx.body;
         }
         
-        var serverResponseObj = new SailsResponse(responseCtx);
-        cb && cb(body, serverResponseObj);
+        // Send back (emulatedHTTPBody, jsonWebSocketResponse)
+        cb && cb(body, new JWR(responseCtx));
       });
     }
 
