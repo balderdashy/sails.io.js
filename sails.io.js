@@ -160,12 +160,25 @@
       var cb = requestCtx.cb;
       delete requestCtx.cb;
 
+
       // Name of socket request listener on the server
       // ( === the request method, e.g. 'get', 'post', 'put', etc. )
       var sailsEndpoint = requestCtx.method;
       socket.emit(sailsEndpoint, requestCtx, function serverResponded ( responseCtx ) {
-        var serverResponse = new SailsResponse(responseCtx);
-        cb && cb(serverResponse);
+
+        // Add backwards-compatibility for 0.9.x projects
+        // If `responseCtx.body` does not exist, the entire
+        // `responseCtx` object must actually be the `body`.
+        var body;
+        if ( !responseCtx.body ) {
+          body = responseCtx;
+        }
+        else {
+          body = responseCtx.body;
+        }
+        
+        var serverResponseObj = new SailsResponse(responseCtx);
+        cb && cb(body, serverResponseObj);
       });
     }
 
@@ -335,14 +348,7 @@
         data: options.data,
         url: options.url,
         headers: options.headers,
-        // Callback arguments are (body, response)
-        cb: function(data) {
-          if (data.body) {
-            cb(data.body, data);
-          } else {
-            cb(data);
-          }
-        }
+        cb: cb
       };
 
       // If this socket is not connected yet, queue up this request

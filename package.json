@@ -13,7 +13,8 @@
     "grunt-contrib-copy": "~0.5.0"
   },
   "devDependencies": {
-    "sails": "~0.10.0-rc4"
+    "sails": "~0.10.0-rc4",
+    "lodash": "^2.4.1"
   },
   "scripts": {
     "test": "mocha"
