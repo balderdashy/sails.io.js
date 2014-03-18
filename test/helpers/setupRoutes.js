@@ -22,7 +22,7 @@ module.exports = function setupRoutes (expectedResponses) {
   return function configuredFn () {
     _.each(expectedResponses, function (expectedResponse, routeAddress) {
       sails.router.bind(routeAddress, function (req, res) {
-        return res.send(expectedResponse);
+        return res.send(expectedResponse.statusCode || 200, expectedResponse.body);
       });
     });
   };
