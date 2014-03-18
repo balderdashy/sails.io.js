@@ -492,10 +492,14 @@
       });
 
       // Listen for failed connects:
-      // (usually because of a missing or invalid cookie)
+      // (usually because of a failed authorization, which is in turn
+      //  usually due to a missing or invalid cookie)
       io.socket.on('error', failedToConnect);
 
       function failedToConnect (err) {
+        // TODO:
+        // handle failed connections due to failed authorization
+        // in a smarter way (probably can listen for a different event)
         console && typeof console.log === 'function' && console.log(
           'Failed to connect socket (probably due to failed authorization on server)',
           'Error:', err
@@ -509,9 +513,6 @@
     return io;
 
 
-    // TODO:
-    // handle failed connections due to failed authorization
-    // in a smarter way (probably can listen for a different event)
 
     // TODO:
     // After a configurable period of time, if the socket has still not connected,
@@ -519,12 +520,9 @@
 
     // throw new Error(
     //  '\n' +
-    //  'Backbone is trying to communicate with the Sails server using '+ socketSrc +',\n'+
+    //  '`sails.io.js` is trying to communicate with the Sails server using '+ socketSrc +',\n'+
     //  'but its `connected` property is still set to false.\n' +
-    //  'But maybe Socket.io just hasn\'t finished connecting yet?\n' +
-    //  '\n' +
-    //  'You might check to be sure you\'re waiting for `socket.on(\'connect\')`\n' +
-    //  'before using sync methods on your Backbone models and collections.'
+    //  'But maybe Socket.io just hasn\'t finished connecting yet?\n'
     // );
 
   }
