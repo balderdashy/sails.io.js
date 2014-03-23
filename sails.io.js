@@ -1,20 +1,26 @@
 /**
  * sails.io.js
- *
+ * ------------------------------------------------------------------------
+ * JavaScript Client (SDK) for communicating with Sails.
+ * 
+ * Note that this script is completely optional, but it is handy if you're
+ * using WebSockets from the browser to talk to your Sails server.
+ * 
+ * For tips and documentation, visit:
+ * http://sailsjs.org/#!documentation/reference/BrowserSDK/BrowserSDK.html
+ * ------------------------------------------------------------------------
+ * 
  * This file allows you to send and receive socket.io messages to & from Sails
- * by simulating a REST client interface on top of socket.io.
- *
- * It models its API after the $.ajax pattern from jQuery you might be familiar with.
+ * by simulating a REST client interface on top of socket.io. It models its API
+ * after the $.ajax pattern from jQuery you might already be familiar with.
  *
  * So if you're switching from using AJAX to sockets, instead of:
  *    `$.post( url, [data], [cb] )`
  *
  * You would use:
  *    `socket.post( url, [data], [cb] )`
- *
- * For more information, visit:
- * http://sailsjs.org/#documentation
  */
+
 
 (function() {
 
