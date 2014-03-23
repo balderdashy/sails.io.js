@@ -530,7 +530,7 @@
          '  \\___/  '
         );
         consolog(
-         '`io.socket` is now connected and globally accessible.'+ '\n' +
+         '`io.socket` connected successfully.'+ '\n' +
          // 'e.g. to send a GET request to Sails via WebSockets, run:'+ '\n' +
          // '`io.socket.get("/foo", function serverRespondedWith (body, jwr) { console.log(body); })`'+ '\n' +
          ' (for help, see: http://sailsjs.org/#!documentation/reference/BrowserSDK/BrowserSDK.html)'
