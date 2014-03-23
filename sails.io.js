@@ -18,6 +18,22 @@
 
 (function() {
 
+  // Save the URL that this script was fetched from for use below.
+  // (skip this if this SDK is being used outside of the DOM, i.e. in a Node process)
+  var urlThisScriptWasFetchedFrom = (function() {
+    if (
+     typeof window !== 'object' ||
+     typeof window.document !== 'object' ||
+     typeof window.document.getElementsByTagName !== 'function'
+    ) { return ''; }
+
+    // Return the URL of the last script loaded (i.e. this one)
+    // (this must run before nextTick; see http://stackoverflow.com/a/2976714/486547)
+    var allScriptsCurrentlyInDOM = window.document.getElementsByTagName('script');
+    var thisScript = allScriptsCurrentlyInDOM[scripts.length - 1];
+    return thisScript.src;
+  })();
+
   // Constants
   var CONNECTION_METADATA_PARAMS = {
     version: '__sails_io_sdk_version',
@@ -421,11 +437,13 @@
       // Whether to automatically connect a socket and save it as `io.socket`.
       autoConnect: true,
 
-      // The environment we're running in. May be sent back by the server
-      // during connection handshake, but can also be manually overridden.
-      // Logs are not displayed when this is set to 'production'.
-      // (defaults to development)
-      environment: 'development'
+      // The environment we're running in.
+      // (logs are not displayed when this is set to 'production')
+      // 
+      // Defaults to development unless this script was fetched from a URL
+      // that ends in `*.min.js` or '#production' (may also be manually overridden.)
+      // 
+      environment: urlThisScriptWasFetchedFrom.match(/(\#production|\.min\.js)/) ? 'production' : 'development'
     };
 
 
@@ -488,13 +506,19 @@
       // Replay event bindings from the existing TmpSocket
       io.socket = io.socket.become(actualSocket);
 
-      // Attach a listener which fires when a connection is established:
+
+
+
+      /**
+       * 'connect' event is triggered when the socket establishes a connection
+       *  successfully.
+       */
       io.socket.on('connect', function socketConnected() {
 
         consolog(
-         'Socket is now connected and globally accessible as `socket`.'+ '\n' +
-         'e.g. to send a GET request to Sails via Socket.io, try:'+ '\n' +
-         '`socket.get("/foo", function serverRespondedWith (body, jwr) { console.log(body); })`'+ '\n' +
+         'Default socket is now connected and globally accessible as `io.socket`.'+ '\n' +
+         'e.g. to send a GET request to Sails via WebSockets, run:'+ '\n' +
+         '`io.socket.get("/foo", function serverRespondedWith (body, jwr) { console.log(body); })`'+ '\n' +
          '(for tips, check out: http://sailsjs.org/#!documentation/reference/BrowserSDK/BrowserSDK.html)'
         );
 
@@ -512,35 +536,51 @@
             _emitFrom(sockets[socketId], pendingRequest);
           }
         }
+
+
+
+        /**
+         * 'disconnect' event is triggered when the socket disconnects.
+         */
+        io.socket.on('disconnect', function() {
+          consolog('io.socket was disconnected from Sails.');
+        });
+
+
+
+
+        /**
+         * 'error' event is triggered if connection can not be established.
+         * (usually because of a failed authorization, which is in turn
+         * usually due to a missing or invalid cookie)
+         */
+        io.socket.on('error', function failedToConnect(err) {
+          
+          // TODO:
+          // handle failed connections due to failed authorization
+          // in a smarter way (probably can listen for a different event)
+          
+          consolog(
+           'Failed to connect socket (probably due to failed authorization on server)',
+           'Error:', err
+          );
+        });
       });
+
+
 
       // TODO:
-      // manage disconnects in a more helpful way
-      io.socket.on('disconnect', function() {
-        consolog('io.socket was disconnected from Sails.');
-      });
-
-      // Listen for failed connects:
-      // (usually because of a failed authorization, which is in turn
-      //  usually due to a missing or invalid cookie)
-      io.socket.on('error', function failedToConnect(err) {
-        // TODO:
-        // handle failed connections due to failed authorization
-        // in a smarter way (probably can listen for a different event)
-        
-        consolog(
-         'Failed to connect socket (probably due to failed authorization on server)',
-         'Error:', err
-        );
-      });
+      // Listen for a special private message on any connected that allows the server
+      // to set the environment (giving us 100% certainty that we guessed right)
+      // However, note that the `console.log`s called before and after connection
+      // are still forced to rely on our existing heuristics (to disable, tack #production
+      // onto the URL used to fetch this file.)
 
     }, 0); // </setTimeout>
 
 
     // Return the `io` object.
     return io;
-
-
   }
 
 
