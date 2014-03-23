@@ -30,7 +30,7 @@
     // Return the URL of the last script loaded (i.e. this one)
     // (this must run before nextTick; see http://stackoverflow.com/a/2976714/486547)
     var allScriptsCurrentlyInDOM = window.document.getElementsByTagName('script');
-    var thisScript = allScriptsCurrentlyInDOM[scripts.length - 1];
+    var thisScript = allScriptsCurrentlyInDOM[allScriptsCurrentlyInDOM.length - 1];
     return thisScript.src;
   })();
 
@@ -121,7 +121,8 @@
      * @api private
      * @factory
      */
-    function LoggerFactory() {
+    function LoggerFactory(options) {
+      options = options||{ prefix: true };
 
       // If `console.log` is not accessible, `log` is a noop.
       if (
@@ -134,18 +135,25 @@
       }
 
       return function log () {
+        var args = Array.prototype.slice.call(arguments);
         
         // All logs are disabled when `io.sails.environment = 'production'`.
         if (io.sails.environment === 'production') return;
 
+        // Add prefix to log messages (unless disabled)
+        var PREFIX = '';
+        if (options.prefix) { args.unshift(PREFIX); }
+
+        // Call wrapped logger
         console.log
          .bind(console)
-         .apply(this, Array.prototype.slice.call(arguments));
+         .apply(this, args);
       };
     }
 
     // Create a private logger instance
     var consolog = LoggerFactory();
+    consolog.noPrefix = LoggerFactory({ prefix: false });
 
 
 
@@ -496,9 +504,10 @@
         return io;
       }
 
+
       // Start connecting after the current cycle of the event loop
       // has completed.
-      consolog('Auto-connecting a socket to Sails... (`io.socket`)');
+      // consolog('Auto-connecting `io.socket` to Sails... (requests will be queued in the mean-time)');
 
       // Initiate connection
       var actualSocket = io.connect(io.sails.url);
@@ -515,12 +524,18 @@
        */
       io.socket.on('connect', function socketConnected() {
 
-        consolog(
-         'Default socket is now connected and globally accessible as `io.socket`.'+ '\n' +
-         'e.g. to send a GET request to Sails via WebSockets, run:'+ '\n' +
-         '`io.socket.get("/foo", function serverRespondedWith (body, jwr) { console.log(body); })`'+ '\n' +
-         '(for tips, check out: http://sailsjs.org/#!documentation/reference/BrowserSDK/BrowserSDK.html)'
+        consolog.noPrefix(
+         '\n' +
+         '    |>    ' + '\n' +
+         '  \\___/  '
         );
+        consolog(
+         '`io.socket` is now connected and globally accessible.'+ '\n' +
+         // 'e.g. to send a GET request to Sails via WebSockets, run:'+ '\n' +
+         // '`io.socket.get("/foo", function serverRespondedWith (body, jwr) { console.log(body); })`'+ '\n' +
+         ' (for help, see: http://sailsjs.org/#!documentation/reference/BrowserSDK/BrowserSDK.html)'
+        );
+        // consolog('(this app is running in development mode - log messages will be displayed)');
 
         // Save reference to socket when it connects
         sockets[io.socket.id] = io.socket;
