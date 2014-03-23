@@ -417,12 +417,15 @@
     // Set a `sails` object that may be used for configuration before the
     // first socket connects (i.e. to prevent auto-connect)
     io.sails = {
+
+      // Whether to automatically connect a socket and save it as `io.socket`.
       autoConnect: true,
 
-      // TODO:
-      // listen for a special private message from server with environment
-      // and other config.
-      environment: 'production'
+      // The environment we're running in. May be sent back by the server
+      // during connection handshake, but can also be manually overridden.
+      // Logs are not displayed when this is set to 'production'.
+      // (defaults to development)
+      environment: 'development'
     };
 
 
