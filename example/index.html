@@ -3,10 +3,35 @@
   <head>
   </head>
   <body>
+    <h1>Sails Socket SDK example (browser)</h1>
+    <em>(check out the javascript console)</h1>
+    
     <script type="text/javascript" src="../dist/sails.io.js"></script>
 
     <script>
     
+    //
+    // You can access `io` and `io.socket` here.
+    //
+
+    //
+    // As of v0.10-rc6, a socket (accessible as `io.socket`) connects to the
+    // server automatically when the browser SDK loads. `io.socket` is a perfectly
+    // ordinary Socket-- nothing particularly special about it-- except you don't
+    // have to wait for it to connect before you can use it.
+    // 
+    // How? Requests sent on `io.socket` before it's actually connected are
+    // queued, and are executed in order when the socket is ready. You can prevent
+    // this initial socket from connecting automatically by disabling `io.sails.autoConnect`
+    // before the first cycle of the event loop elapses.  This usually means putting it
+    // directly underneath the <script> tag where you bring in the SDK.
+    // So like... right here.  Uncomment the next line to try it out:
+    // io.sails.autoConnect = false;
+    // 
+    // You can, of course, connect as many additional sockets as you like.
+    // In any case, you can take advantage of standard socket.io usage, as well as
+    // the special .get(), .post(), etc. methods for talking to the Sails router.
+    // 
     </script>
   </body>
 </html>
