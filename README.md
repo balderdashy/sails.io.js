@@ -61,6 +61,7 @@ $ bower install sails.io.js
 #### Installation
 
 ```sh
+$ npm install socket.io-client
 $ npm install sails.io.js
 ```
 
