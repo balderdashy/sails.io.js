@@ -1,6 +1,6 @@
 {
   "name": "sails.io.js",
-  "main": "sails.io.js",
+  "main": "dist/sails.io.js",
   "version": "v0.10.0-rc1",
   "homepage": "https://github.com/balderdashy/sails.io.js",
   "authors": [
@@ -21,6 +21,10 @@
     "node_modules",
     "bower_components",
     "test",
+    "*.js",
+    "dependencies",
+    "example",
+    "package.json",
     "tests"
   ]
 }
