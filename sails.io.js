@@ -502,17 +502,11 @@
         }
 
         // Make the JSONP request
-        var script = document.createElement('script');
-        script.src = url + xOriginJsonpRoute;
-        document.getElementsByTagName('head')[0].appendChild(script);
-
-        goAheadAndActuallyConnect();
-      }
-      else return goAheadAndActuallyConnect();
-
-
-
-      function goAheadAndActuallyConnect () {
+        if (typeof window !== 'undefined') {
+          var script = document.createElement('script');
+          script.src = url + xOriginJsonpRoute;
+          document.getElementsByTagName('head')[0].appendChild(script);
+        }
 
         // Mix the current SDK version into the query string in
         // the connection request to the server:
