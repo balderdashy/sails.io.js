@@ -451,6 +451,9 @@
       // Whether to automatically connect a socket and save it as `io.socket`.
       autoConnect: true,
 
+      // Whether to use JSONP to get a cookie for cross-origin requests
+      useJsonpToGetXOriginCookie: true,
+
       // The environment we're running in.
       // (logs are not displayed when this is set to 'production')
       // 
@@ -478,12 +481,44 @@
       // If explicit connection url is specified, use it
       url = url || io.sails.url || undefined;
 
-      // Mix the current SDK version into the query string in
-      // the connection request to the server:
-      if (typeof opts.query !== 'string') opts.query = SDK_INFO.versionString;
-      else opts.query += '&' + SDK_INFO.versionString;
+      // Ensure URL has no trailing slash
+      url = url.replace(/(\/)$/, '');
 
-      return io.sails._origConnectFn(url, opts);
+      // If this is an attempt at a cross-origin or cross-port
+      // socket connection, send a JSONP request first to ensure
+      // that a valid cookie is available.  This can be disabled
+      // by setting `io.sails.useJsonpToGetXOriginCookie` to false.
+      var isXOrigin = url && true; //url.match();
+      if (io.sails.useJsonpToGetXOriginCookie && isXOrigin) {
+
+        // Figure out the x-origin JSONP route
+        // (Sails provides a default)
+        var xOriginJsonpRoute = '/__getcookie';
+        if (typeof useJsonpToGetXOriginCookie === 'string') {
+          xOriginJsonpRoute = useJsonpToGetXOriginCookie;
+        }
+
+        // Make the JSONP request
+        var script = document.createElement('script');
+        script.src = url + xOriginJsonpRoute;
+        document.getElementsByTagName('head')[0].appendChild(script);
+
+        goAheadAndActuallyConnect();
+      }
+      else return goAheadAndActuallyConnect();
+
+
+
+      function goAheadAndActuallyConnect () {
+
+        // Mix the current SDK version into the query string in
+        // the connection request to the server:
+        if (typeof opts.query !== 'string') opts.query = SDK_INFO.versionString;
+        else opts.query += '&' + SDK_INFO.versionString;
+
+        return io.sails._origConnectFn(url, opts);
+      }
+
     };
 
 
