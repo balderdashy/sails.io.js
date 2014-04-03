@@ -1,4 +1,20 @@
-sails.io.js
-===========
+# [<img title="sails.io.js - Browser Client SDK for Sails" src="http://i.imgur.com/Jgrc9k2.png" width="75px" alt="icon of a life preserver - the emblem of the sails client SDK"/>](https://github.com/balderdashy/sails.io.js) Sails JavaScript Client SDK
 
-Browser SDK for communicating w/ Sails via sockets
+[![NPM version](https://badge.fury.io/js/sails.io.js.png)](http://badge.fury.io/js/sails.io.js) &nbsp; &nbsp;
+[![Build Status](https://travis-ci.org/balderdashy/sails.io.js.svg?branch=master)](https://travis-ci.org/balderdashy/sails.io.js)
+
+JavaScript SDK for communicating w/ Sails via sockets from Node.js or the browser.
+
+### License
+
+**[MIT](./LICENSE)**
+&copy; 2014
+[Mike McNeil](http://michaelmcneil.com), [Balderdash](http://balderdash.co) & contributors
+
+This module is part of the [Sails framework](http://sailsjs.org), and is free and open-source under the [MIT License](http://sails.mit-license.org/).
+
+
+![image_squidhome@2x.png](http://i.imgur.com/RIvu9.png) 
+ 
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/a22d3919de208c90c898986619efaa85 "githalytics.com")](http://githalytics.com/balderdashy/sails.io.js)
