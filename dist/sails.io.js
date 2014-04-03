@@ -487,37 +487,12 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
       // Ensure URL has no trailing slash
       url = url.replace(/(\/)$/, '');
 
-      // If this is an attempt at a cross-origin or cross-port
-      // socket connection, send a JSONP request first to ensure
-      // that a valid cookie is available.  This can be disabled
-      // by setting `io.sails.useJsonpToGetXOriginCookie` to false.
-      var isXOrigin = url && true; //url.match();
+      // Mix the current SDK version into the query string in
+      // the connection request to the server:
+      if (typeof opts.query !== 'string') opts.query = SDK_INFO.versionString;
+      else opts.query += '&' + SDK_INFO.versionString;
 
-       // var port = global.location.port || ('https:' == global.location.protocol ? 443 : 80);
-       // this.options.host !== global.location.hostname || this.options.port != port;
-      if (io.sails.useJsonpToGetXOriginCookie && isXOrigin) {
-
-        // Figure out the x-origin JSONP route
-        // (Sails provides a default)
-        var xOriginJsonpRoute = '/__getcookie';
-        if (typeof useJsonpToGetXOriginCookie === 'string') {
-          xOriginJsonpRoute = useJsonpToGetXOriginCookie;
-        }
-
-        // Make the JSONP request
-        if (typeof window !== 'undefined') {
-          var script = document.createElement('script');
-          script.src = url + xOriginJsonpRoute;
-          document.getElementsByTagName('head')[0].appendChild(script);
-        }
-
-        // Mix the current SDK version into the query string in
-        // the connection request to the server:
-        if (typeof opts.query !== 'string') opts.query = SDK_INFO.versionString;
-        else opts.query += '&' + SDK_INFO.versionString;
-
-        return io.sails._origConnectFn(url, opts);
-      }
+      return io.sails._origConnectFn(url, opts);
 
     };
 
@@ -545,83 +520,128 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
         return io;
       }
 
+      // If this is an attempt at a cross-origin or cross-port
+      // socket connection, send a JSONP request first to ensure
+      // that a valid cookie is available.  This can be disabled
+      // by setting `io.sails.useJsonpToGetXOriginCookie` to false.
+      var isXOrigin = sails.io.url && true; //url.match();
 
+      // var port = global.location.port || ('https:' == global.location.protocol ? 443 : 80);
+      // this.options.host !== global.location.hostname || this.options.port != port;
+      if (io.sails.useJsonpToGetXOriginCookie && isXOrigin) {
+
+        // Figure out the x-origin JSONP route
+        // (Sails provides a default)
+        var xOriginJsonpRoute = '/__getcookie';
+        if (typeof useJsonpToGetXOriginCookie === 'string') {
+          xOriginJsonpRoute = useJsonpToGetXOriginCookie;
+        }
+
+        // Make the JSONP request
+        if (typeof window !== 'undefined') {
+          var script = window.document.createElement('script');
+          script.src = url + xOriginJsonpRoute;
+          script.async = true;
+
+          // Wait for script tag to finish loading
+          // (to guarantee we have the cookie)
+          var isReady = false;
+          script.onreadystatechange = script.onload = function() {
+            var state = script.readyState;
+            if (!isReady && (!state || /loaded|complete/.test(state))) {
+              isReady = true;
+              goAheadAndActuallyConnect();
+            }
+          };
+          window.document.getElementsByTagName('head')[0].appendChild(script);
+
+        }
+        // Otherwise just do it as JSON since we don't have any x-origin
+        // policy to deal with:
+        else {
+          // todo: do ajax request (for usage w/ node.js)
+          goAheadAndActuallyConnect();
+        }
+      }
+      else goAheadAndActuallyConnect();
+      
       // Start connecting after the current cycle of the event loop
       // has completed.
       // consolog('Auto-connecting `io.socket` to Sails... (requests will be queued in the mean-time)');
+      function goAheadAndActuallyConnect () {
 
-      // Initiate connection
-      var actualSocket = io.connect(io.sails.url);
+        // Initiate connection
+        var actualSocket = io.connect(io.sails.url);
 
-      // Replay event bindings from the existing TmpSocket
-      io.socket = io.socket.become(actualSocket);
-
-
-
-
-      /**
-       * 'connect' event is triggered when the socket establishes a connection
-       *  successfully.
-       */
-      io.socket.on('connect', function socketConnected() {
-
-        consolog.noPrefix(
-         '\n' +
-         '    |>    ' + '\n' +
-         '  \\___/  '
-        );
-        consolog(
-         '`io.socket` connected successfully.'+ '\n' +
-         // 'e.g. to send a GET request to Sails via WebSockets, run:'+ '\n' +
-         // '`io.socket.get("/foo", function serverRespondedWith (body, jwr) { console.log(body); })`'+ '\n' +
-         ' (for help, see: http://sailsjs.org/#!documentation/reference/BrowserSDK/BrowserSDK.html)'
-        );
-        // consolog('(this app is running in development mode - log messages will be displayed)');
-
-        // Save reference to socket when it connects
-        sockets[io.socket.id] = io.socket;
-
-        // Run the request queue for each socket.
-        for (var socketId in requestQueues) {
-          var pendingRequestsForSocket = requestQueues[socketId];
-
-          for (var i in pendingRequestsForSocket) {
-            var pendingRequest = pendingRequestsForSocket[i];
-
-            // Emit the request.
-            _emitFrom(sockets[socketId], pendingRequest);
-          }
-        }
-
+        // Replay event bindings from the existing TmpSocket
+        io.socket = io.socket.become(actualSocket);
 
 
         /**
-         * 'disconnect' event is triggered when the socket disconnects.
+         * 'connect' event is triggered when the socket establishes a connection
+         *  successfully.
          */
-        io.socket.on('disconnect', function() {
-          consolog('io.socket was disconnected from Sails.');
-        });
+        io.socket.on('connect', function socketConnected() {
 
-
-
-
-        /**
-         * 'error' event is triggered if connection can not be established.
-         * (usually because of a failed authorization, which is in turn
-         * usually due to a missing or invalid cookie)
-         */
-        io.socket.on('error', function failedToConnect(err) {
-          
-          // TODO:
-          // handle failed connections due to failed authorization
-          // in a smarter way (probably can listen for a different event)
-          
-          consolog(
-           'Failed to connect socket (probably due to failed authorization on server)',
-           'Error:', err
+          consolog.noPrefix(
+           '\n' +
+           '    |>    ' + '\n' +
+           '  \\___/  '
           );
+          consolog(
+           '`io.socket` connected successfully.'+ '\n' +
+           // 'e.g. to send a GET request to Sails via WebSockets, run:'+ '\n' +
+           // '`io.socket.get("/foo", function serverRespondedWith (body, jwr) { console.log(body); })`'+ '\n' +
+           ' (for help, see: http://sailsjs.org/#!documentation/reference/BrowserSDK/BrowserSDK.html)'
+          );
+          // consolog('(this app is running in development mode - log messages will be displayed)');
+
+          // Save reference to socket when it connects
+          sockets[io.socket.id] = io.socket;
+
+          // Run the request queue for each socket.
+          for (var socketId in requestQueues) {
+            var pendingRequestsForSocket = requestQueues[socketId];
+
+            for (var i in pendingRequestsForSocket) {
+              var pendingRequest = pendingRequestsForSocket[i];
+
+              // Emit the request.
+              _emitFrom(sockets[socketId], pendingRequest);
+            }
+          }
+
+
+
+          /**
+           * 'disconnect' event is triggered when the socket disconnects.
+           */
+          io.socket.on('disconnect', function() {
+            consolog('io.socket was disconnected from Sails.');
+          });
+
+
+
+
+          /**
+           * 'error' event is triggered if connection can not be established.
+           * (usually because of a failed authorization, which is in turn
+           * usually due to a missing or invalid cookie)
+           */
+          io.socket.on('error', function failedToConnect(err) {
+            
+            // TODO:
+            // handle failed connections due to failed authorization
+            // in a smarter way (probably can listen for a different event)
+            
+            consolog(
+             'Failed to connect socket (probably due to failed authorization on server)',
+             'Error:', err
+            );
+          });
         });
-      });
+
+      }
 
 
 
