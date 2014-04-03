@@ -9,8 +9,8 @@ JavaScript SDK for communicating w/ Sails via sockets from Node.js or the browse
 
 |    | Jump to...        |
 |-----|-------------------------|
-| I   | [Browser](https://github.com/balderdashy/sails.io.js#browser)                 |
-| II  | [Node.js](https://github.com/balderdashy/sails.io.js#node.js)                 |
+| I   | [Browser](https://github.com/balderdashy/sails.io.js#for-the-browser)                 |
+| II  | [Node.js](https://github.com/balderdashy/sails.io.js#for-nodejs)                 |
 | III | [Version Notes](https://github.com/balderdashy/sails.io.js#version)          |
 | IV  | [License](https://github.com/balderdashy/sails.io.js#license)                 |
 
