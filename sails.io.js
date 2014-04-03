@@ -489,6 +489,9 @@
       // that a valid cookie is available.  This can be disabled
       // by setting `io.sails.useJsonpToGetXOriginCookie` to false.
       var isXOrigin = url && true; //url.match();
+
+       // var port = global.location.port || ('https:' == global.location.protocol ? 443 : 80);
+       // this.options.host !== global.location.hostname || this.options.port != port;
       if (io.sails.useJsonpToGetXOriginCookie && isXOrigin) {
 
         // Figure out the x-origin JSONP route
