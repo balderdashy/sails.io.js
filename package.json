@@ -1,7 +1,7 @@
 {
   "name": "sails.io.js",
-  "version": "0.0.0",
-  "description": "Javascript SDK for communicating w/ a sails server via WebSockets/socket.io.",
+  "version": "0.10.0-rc1",
+  "description": "Javascript SDK for communicating w/ a Sails server via WebSockets/socket.io.",
   "main": "sails.io.js",
   "directories": {
     "test": "test"
