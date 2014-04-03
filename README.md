@@ -6,6 +6,9 @@
 
 JavaScript SDK for communicating w/ Sails via sockets from Node.js or the browser.
 
+========================================
+
+### Contents
 
 |    | Jump to...        |
 |-----|-------------------------|
@@ -13,6 +16,8 @@ JavaScript SDK for communicating w/ Sails via sockets from Node.js or the browse
 | II  | [Node.js](https://github.com/balderdashy/sails.io.js#for-nodejs)                 |
 | III | [Version Notes](https://github.com/balderdashy/sails.io.js#version)          |
 | IV  | [License](https://github.com/balderdashy/sails.io.js#license)                 |
+
+========================================
 
 
 ### For the Browser
@@ -50,7 +55,7 @@ $ bower install sails.io.js
 </html>
 ```
 
-
+========================================
 
 ### For Node.js
 
@@ -61,6 +66,7 @@ $ bower install sails.io.js
 #### Installation
 
 ```sh
+$ npm install socket.io-client
 $ npm install sails.io.js
 ```
 
@@ -70,9 +76,9 @@ $ npm install sails.io.js
 var socketIOClient = require('socket.io-client');
 var sailsIOClient = require('sails.io.js');
 
-// Instantiate socket client.
+// Instantiate the socket client (`io`)
 // (for now, you must explicitly pass in the socket.io client when using this library from Node.js)
-io = sailsClient(socketIOClient);
+var io = sailsIOClient(socketIOClient);
 
 // Set some options:
 // (you have to specify the host and port of the Sails backend when using this library from Node.js)
@@ -97,10 +103,13 @@ io.socket.get('/hello', function serverResponded (body, sailsResponseObject) {
 
 See the [tests in this repository](https://github.com/balderdashy/sails.io.js/blob/master/test/helpers/lifecycle.js) for more examples.
 
+========================================
 
 ### Version
 
 This repository holds the socket client SDK for Sails versions 0.10.0 and up.  If you're looking for the SDK for the v0.9.x releases of Sails, the source is [located here](https://github.com/balderdashy/sails/blob/v0.9.16/bin/boilerplates/assets/js/sails.io.js).
+
+========================================
 
 ### License
 
