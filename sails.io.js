@@ -184,6 +184,39 @@
 
 
     /**
+     * [ajax description]
+     * @return {[type]} [description]
+     */
+    function ajax (opts, cb) {
+      opts = opts || {};
+      var xmlhttp;
+
+      if (typeof window === 'undefined') {
+        // TODO: refactor node usage in here
+        return cb();
+      }
+
+      if (window.XMLHttpRequest) {
+          // code for IE7+, Firefox, Chrome, Opera, Safari
+          xmlhttp = new XMLHttpRequest();
+      } else {
+          // code for IE6, IE5
+          xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+      }
+
+      xmlhttp.onreadystatechange = function() {
+          if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+              cb(xmlhttp.responseText);
+          }
+      }
+
+      xmlhttp.open(opts.method, opts.url, true);
+      xmlhttp.send();
+    }
+
+
+
+    /**
      * The JWR (JSON WebSocket Response) received from a Sails server.
      *
      * @api private
@@ -539,23 +572,30 @@
           xOriginCookieRoute = io.sails.useCORSRouteToGetCookie;
         }
 
+        var xOriginCookieURL = io.sails.url + xOriginCookieRoute;
+
         // Make the AJAX request (CORS)
         if (typeof window !== 'undefined') {
-          var script = window.document.createElement('script');
-          script.src = io.sails.url + xOriginCookieRoute;
-          script.async = true;
+          // var script = window.document.createElement('script');
+          // script.src = io.sails.url + xOriginCookieRoute;
+          // script.async = true;
 
-          // Wait for script tag to finish loading
-          // (to guarantee we have the cookie)
-          var isReady = false;
-          script.onreadystatechange = script.onload = function() {
-            var state = script.readyState;
-            if (!isReady && (!state || /loaded|complete/.test(state))) {
-              isReady = true;
-              goAheadAndActuallyConnect();
-            }
-          };
-          window.document.getElementsByTagName('head')[0].appendChild(script);
+          // // Wait for script tag to finish loading
+          // // (to guarantee we have the cookie)
+          // var isReady = false;
+          // script.onreadystatechange = script.onload = function() {
+          //   var state = script.readyState;
+          //   if (!isReady && (!state || /loaded|complete/.test(state))) {
+          //     isReady = true;
+          //     goAheadAndActuallyConnect();
+          //   }
+          // };
+          // window.document.getElementsByTagName('head')[0].appendChild(script);
+
+          ajax({
+            url: xOriginCookieURL,
+            method: 'GET'
+          }, goAheadAndActuallyConnect);
 
         }
 
