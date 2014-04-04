@@ -22,7 +22,7 @@
     "test",
     "dependencies",
     "example",
-    "./sails.io.js",
+    "Gruntfile.js",
     ".*",
     "bower.json",
     ".bower.json",
