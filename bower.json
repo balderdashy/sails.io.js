@@ -17,17 +17,17 @@
   ],
   "license": "MIT",
   "ignore": [
-    "node_modules",
-    "bower_components",
-    "test",
-    "sails.io.js",
-    "bower.json",
-    ".bower.json",
-    "LICENSE",
-    "README.md",
-    "dependencies",
-    "example",
-    "package.json",
-    "tests"
+    "./node_modules",
+    "./bower_components",
+    "./test",
+    "./sails.io.js",
+    "./bower.json",
+    "./.bower.json",
+    "./LICENSE",
+    "./README.md",
+    "./dependencies",
+    "./example",
+    "./package.json",
+    "./tests"
   ]
 }
