@@ -452,7 +452,7 @@
       autoConnect: true,
 
       // Whether to use JSONP to get a cookie for cross-origin requests
-      useJsonpToGetXOriginCookie: true,
+      useCORSRouteToGetCookie: true,
 
       // The environment we're running in.
       // (logs are not displayed when this is set to 'production')
@@ -518,26 +518,26 @@
       }
 
       // If this is an attempt at a cross-origin or cross-port
-      // socket connection, send a JSONP request first to ensure
+      // socket connection, send an AJAX request first to ensure
       // that a valid cookie is available.  This can be disabled
-      // by setting `io.sails.useJsonpToGetXOriginCookie` to false.
+      // by setting `io.sails.useCORSRouteToGetCookie` to false.
       var isXOrigin = io.sails.url && true; //url.match();
 
       // var port = global.location.port || ('https:' == global.location.protocol ? 443 : 80);
       // this.options.host !== global.location.hostname || this.options.port != port;
-      if (io.sails.useJsonpToGetXOriginCookie && isXOrigin) {
+      if (io.sails.useCORSRouteToGetCookie && isXOrigin) {
 
-        // Figure out the x-origin JSONP route
+        // Figure out the x-origin CORS route
         // (Sails provides a default)
-        var xOriginJsonpRoute = '/__getcookie';
-        if (typeof useJsonpToGetXOriginCookie === 'string') {
-          xOriginJsonpRoute = useJsonpToGetXOriginCookie;
+        var xOriginCookieRoute = '/__getcookie';
+        if (typeof io.sails.useCORSRouteToGetCookie === 'string') {
+          xOriginCookieRoute = io.sails.useCORSRouteToGetCookie;
         }
 
-        // Make the JSONP request
+        // Make the AJAX request (CORS)
         if (typeof window !== 'undefined') {
           var script = window.document.createElement('script');
-          script.src = url + xOriginJsonpRoute;
+          script.src = url + xOriginCookieRoute;
           script.async = true;
 
           // Wait for script tag to finish loading
@@ -553,11 +553,22 @@
           window.document.getElementsByTagName('head')[0].appendChild(script);
 
         }
-        // Otherwise just do it as JSON since we don't have any x-origin
-        // policy to deal with:
+
+        // If there's no `window` object, we must be running in Node.js
+        // so just require the request module and send the HTTP request that
+        // way.
         else {
-          // todo: do ajax request (for usage w/ node.js)
-          goAheadAndActuallyConnect();
+          var mikealsReq = require('request');
+          mikealsReq.get(xOriginCookieRoute, function (err, httpResponse, body) {
+            if (err) {
+              consolog(
+               'Failed to connect socket (failed to get cookie)',
+               'Error:', err
+              );
+              return;
+            }
+            goAheadAndActuallyConnect();
+          });
         }
       }
       else goAheadAndActuallyConnect();
