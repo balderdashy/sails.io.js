@@ -537,7 +537,7 @@
         // Make the AJAX request (CORS)
         if (typeof window !== 'undefined') {
           var script = window.document.createElement('script');
-          script.src = url + xOriginCookieRoute;
+          script.src = io.sails.url + xOriginCookieRoute;
           script.async = true;
 
           // Wait for script tag to finish loading
@@ -559,7 +559,7 @@
         // way.
         else {
           var mikealsReq = require('request');
-          mikealsReq.get(xOriginCookieRoute, function (err, httpResponse, body) {
+          mikealsReq.get(io.sails.url + xOriginCookieRoute, function (err, httpResponse, body) {
             if (err) {
               consolog(
                'Failed to connect socket (failed to get cookie)',
