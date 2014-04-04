@@ -17,11 +17,10 @@
   ],
   "license": "MIT",
   "ignore": [
-    "**/.*",
     "node_modules",
     "bower_components",
     "test",
-    "*.js",
+    "sails.io.js",
     "bower.json",
     ".bower.json",
     "LICENSE",
