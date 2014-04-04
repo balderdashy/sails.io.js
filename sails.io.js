@@ -115,6 +115,11 @@
         }
         return actualSocket;
       };
+      this.get = Socket.prototype.get;
+      this.post = Socket.prototype.post;
+      this.put = Socket.prototype.put;
+      this.delete = Socket.prototype.delete;
+      this._request = Socket.prototype._request;
     }
 
 
@@ -482,13 +487,13 @@
       url = url || io.sails.url || undefined;
 
       // Ensure URL has no trailing slash
-      url = url.replace(/(\/)$/, '');
+      url = url ? url.replace(/(\/)$/, '') : undefined;
 
       // Mix the current SDK version into the query string in
       // the connection request to the server:
       if (typeof opts.query !== 'string') opts.query = SDK_INFO.versionString;
       else opts.query += '&' + SDK_INFO.versionString;
-
+      
       return io.sails._origConnectFn(url, opts);
 
     };
