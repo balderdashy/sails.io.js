@@ -436,7 +436,7 @@
       }
 
       return this._request({
-          method: method || '',
+          method: method || 'get',
           data: data,
           url: url
       }, cb);
