@@ -660,10 +660,12 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
             var pendingRequestsForSocket = requestQueues[socketId];
 
             for (var i in pendingRequestsForSocket) {
-              var pendingRequest = pendingRequestsForSocket[i];
+              if (({}).hasOwnProperty.call(pendingRequestsForSocket, i)) {
+                var pendingRequest = pendingRequestsForSocket[i];
 
-              // Emit the request.
-              _emitFrom(sockets[socketId], pendingRequest);
+                // Emit the request.
+                _emitFrom(sockets[socketId], pendingRequest);
+              }
             }
           }
 
