@@ -419,36 +419,36 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
 
 
 
-     /**
-      * Simulate an HTTP request to sails
-      * e.g.
-      *    `socket.request('/user', newUser, $spinner.hide, 'post')`
-      *
-      * @api public
-      * @param {String} url    ::    destination URL
-      * @param {Object} params ::    parameters to send with the request [optional]
-      * @param {Function} cb   ::    callback function to call when finished [optional]
-      * @param {String} method ::    HTTP request method [optional]
-      */
+    /**
+     * Simulate an HTTP request to sails
+     * e.g.
+     *    `socket.request('/user', newUser, $spinner.hide, 'post')`
+     *
+     * @api public
+     * @param {String} url    ::    destination URL
+     * @param {Object} params ::    parameters to send with the request [optional]
+     * @param {Function} cb   ::    callback function to call when finished [optional]
+     * @param {String} method ::    HTTP request method [optional]
+     */
 
     Socket.prototype.request = function(url, data, cb, method) {
 
       // `cb` is optional
       if (typeof cb === 'string') {
-          method = cb;
-          cb = null;
+        method = cb;
+        cb = null;
       }
 
       // `data` is optional
       if (typeof data === 'function') {
-          cb = data;
-          data = {};
+        cb = data;
+        data = {};
       }
 
       return this._request({
-          method: method || 'get',
-          data: data,
-          url: url
+        method: method || 'get',
+        data: data,
+        url: url
       }, cb);
     };
 
@@ -605,6 +605,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
       // that a valid cookie is available.  This can be disabled
       // by setting `io.sails.useCORSRouteToGetCookie` to false.
       var isXOrigin = io.sails.url && true; //url.match();
+      // TODO: check whether the URL is cross-domain
 
       // var port = global.location.port || ('https:' == global.location.protocol ? 443 : 80);
       // this.options.host !== global.location.hostname || this.options.port != port;
@@ -621,21 +622,6 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
 
         // Make the AJAX request (CORS)
         if (typeof window !== 'undefined') {
-          // var script = window.document.createElement('script');
-          // script.src = io.sails.url + xOriginCookieRoute;
-          // script.async = true;
-
-          // // Wait for script tag to finish loading
-          // // (to guarantee we have the cookie)
-          // var isReady = false;
-          // script.onreadystatechange = script.onload = function() {
-          //   var state = script.readyState;
-          //   if (!isReady && (!state || /loaded|complete/.test(state))) {
-          //     isReady = true;
-          //     goAheadAndActuallyConnect();
-          //   }
-          // };
-          // window.document.getElementsByTagName('head')[0].appendChild(script);
 
           ajax({
             url: xOriginCookieURL,
@@ -701,7 +687,13 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
             var pendingRequestsForSocket = requestQueues[socketId];
 
             for (var i in pendingRequestsForSocket) {
-              if (({}).hasOwnProperty.call(pendingRequestsForSocket, i)) {
+
+              // Double-check that `pendingRequestsForSocket[i]` will not
+              // inadvertently discover extra properties attached to the Object
+              // and/or Array prototype by other libraries/frameworks/tools.
+              // (e.g. Ember does this. See https://github.com/balderdashy/sails.io.js/pull/5)
+              var isSafeToDereference = ({}).hasOwnProperty.call(pendingRequestsForSocket, i);
+              if (isSafeToDereference) {
                 var pendingRequest = pendingRequestsForSocket[i];
 
                 // Emit the request.
@@ -724,7 +716,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
           io.socket.on('reconnect', function() {
             consolog('io.socket was successfully reconnected.');
           });
-          
+
           io.socket.on('reconnecting', function() {
             consolog('io.socket is trying to reconnect to Sails...');
           });

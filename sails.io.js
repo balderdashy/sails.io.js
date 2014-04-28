@@ -416,36 +416,36 @@
 
 
 
-     /**
-      * Simulate an HTTP request to sails
-      * e.g.
-      *    `socket.request('/user', newUser, $spinner.hide, 'post')`
-      *
-      * @api public
-      * @param {String} url    ::    destination URL
-      * @param {Object} params ::    parameters to send with the request [optional]
-      * @param {Function} cb   ::    callback function to call when finished [optional]
-      * @param {String} method ::    HTTP request method [optional]
-      */
+    /**
+     * Simulate an HTTP request to sails
+     * e.g.
+     *    `socket.request('/user', newUser, $spinner.hide, 'post')`
+     *
+     * @api public
+     * @param {String} url    ::    destination URL
+     * @param {Object} params ::    parameters to send with the request [optional]
+     * @param {Function} cb   ::    callback function to call when finished [optional]
+     * @param {String} method ::    HTTP request method [optional]
+     */
 
     Socket.prototype.request = function(url, data, cb, method) {
 
       // `cb` is optional
       if (typeof cb === 'string') {
-          method = cb;
-          cb = null;
+        method = cb;
+        cb = null;
       }
 
       // `data` is optional
       if (typeof data === 'function') {
-          cb = data;
-          data = {};
+        cb = data;
+        data = {};
       }
 
       return this._request({
-          method: method || 'get',
-          data: data,
-          url: url
+        method: method || 'get',
+        data: data,
+        url: url
       }, cb);
     };
 
@@ -684,7 +684,7 @@
             var pendingRequestsForSocket = requestQueues[socketId];
 
             for (var i in pendingRequestsForSocket) {
-              
+
               // Double-check that `pendingRequestsForSocket[i]` will not
               // inadvertently discover extra properties attached to the Object
               // and/or Array prototype by other libraries/frameworks/tools.
@@ -713,7 +713,7 @@
           io.socket.on('reconnect', function() {
             consolog('io.socket was successfully reconnected.');
           });
-          
+
           io.socket.on('reconnecting', function() {
             consolog('io.socket is trying to reconnect to Sails...');
           });
