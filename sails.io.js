@@ -619,7 +619,7 @@
 
         // Make the AJAX request (CORS)
         if (typeof window !== 'undefined') {
-          
+
           ajax({
             url: xOriginCookieURL,
             method: 'GET'
@@ -684,7 +684,13 @@
             var pendingRequestsForSocket = requestQueues[socketId];
 
             for (var i in pendingRequestsForSocket) {
-              if (({}).hasOwnProperty.call(pendingRequestsForSocket, i)) {
+              
+              // Double-check that `pendingRequestsForSocket[i]` will not
+              // inadvertently discover extra properties attached to the Object
+              // and/or Array prototype by other libraries/frameworks/tools.
+              // (e.g. Ember does this. See https://github.com/balderdashy/sails.io.js/pull/5)
+              var isSafeToDereference = ({}).hasOwnProperty.call(pendingRequestsForSocket, i);
+              if (isSafeToDereference) {
                 var pendingRequest = pendingRequestsForSocket[i];
 
                 // Emit the request.
