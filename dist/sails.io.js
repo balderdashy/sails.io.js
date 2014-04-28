@@ -419,6 +419,41 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
 
 
 
+     /**
+      * Simulate an HTTP request to sails
+      * e.g.
+      *    `socket.request('/user', newUser, $spinner.hide, 'post')`
+      *
+      * @api public
+      * @param {String} url    ::    destination URL
+      * @param {Object} params ::    parameters to send with the request [optional]
+      * @param {Function} cb   ::    callback function to call when finished [optional]
+      * @param {String} method ::    HTTP request method [optional]
+      */
+
+    Socket.prototype.request = function(url, data, cb, method) {
+
+      // `cb` is optional
+      if (typeof cb === 'string') {
+          method = cb;
+          cb = null;
+      }
+
+      // `data` is optional
+      if (typeof data === 'function') {
+          cb = data;
+          data = {};
+      }
+
+      return this._request({
+          method: method || 'get',
+          data: data,
+          url: url
+      }, cb);
+    };
+
+
+
     /**
      * Socket.prototype._request
      *
