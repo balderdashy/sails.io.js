@@ -2,14 +2,14 @@
  * sails.io.js
  * ------------------------------------------------------------------------
  * JavaScript Client (SDK) for communicating with Sails.
- * 
+ *
  * Note that this script is completely optional, but it is handy if you're
  * using WebSockets from the browser to talk to your Sails server.
- * 
+ *
  * For tips and documentation, visit:
  * http://sailsjs.org/#!documentation/reference/BrowserSDK/BrowserSDK.html
  * ------------------------------------------------------------------------
- * 
+ *
  * This file allows you to send and receive socket.io messages to & from Sails
  * by simulating a REST client interface on top of socket.io. It models its API
  * after the $.ajax pattern from jQuery you might already be familiar with.
@@ -28,10 +28,12 @@
   // (skip this if this SDK is being used outside of the DOM, i.e. in a Node process)
   var urlThisScriptWasFetchedFrom = (function() {
     if (
-     typeof window !== 'object' ||
-     typeof window.document !== 'object' ||
-     typeof window.document.getElementsByTagName !== 'function'
-    ) { return ''; }
+      typeof window !== 'object' ||
+      typeof window.document !== 'object' ||
+      typeof window.document.getElementsByTagName !== 'function'
+    ) {
+      return '';
+    }
 
     // Return the URL of the last script loaded (i.e. this one)
     // (this must run before nextTick; see http://stackoverflow.com/a/2976714/486547)
@@ -133,38 +135,43 @@
      * @factory
      */
     function LoggerFactory(options) {
-      options = options||{ prefix: true };
+      options = options || {
+        prefix: true
+      };
 
       // If `console.log` is not accessible, `log` is a noop.
       if (
-       typeof console !== 'object' ||
-       typeof console.log !== 'function' ||
-       typeof console.log.bind !== 'function'
-      )
-      {
+        typeof console !== 'object' ||
+        typeof console.log !== 'function' ||
+        typeof console.log.bind !== 'function'
+      ) {
         return function noop() {};
       }
 
-      return function log () {
+      return function log() {
         var args = Array.prototype.slice.call(arguments);
-        
+
         // All logs are disabled when `io.sails.environment = 'production'`.
         if (io.sails.environment === 'production') return;
 
         // Add prefix to log messages (unless disabled)
         var PREFIX = '';
-        if (options.prefix) { args.unshift(PREFIX); }
+        if (options.prefix) {
+          args.unshift(PREFIX);
+        }
 
         // Call wrapped logger
         console.log
-         .bind(console)
-         .apply(this, args);
+          .bind(console)
+          .apply(this, args);
       };
     }
 
     // Create a private logger instance
     var consolog = LoggerFactory();
-    consolog.noPrefix = LoggerFactory({ prefix: false });
+    consolog.noPrefix = LoggerFactory({
+      prefix: false
+    });
 
 
 
@@ -187,7 +194,7 @@
      * [ajax description]
      * @return {[type]} [description]
      */
-    function ajax (opts, cb) {
+    function ajax(opts, cb) {
       opts = opts || {};
       var xmlhttp;
 
@@ -197,17 +204,17 @@
       }
 
       if (window.XMLHttpRequest) {
-          // code for IE7+, Firefox, Chrome, Opera, Safari
-          xmlhttp = new XMLHttpRequest();
+        // code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp = new XMLHttpRequest();
       } else {
-          // code for IE6, IE5
-          xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        // code for IE6, IE5
+        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
       }
 
       xmlhttp.onreadystatechange = function() {
-          if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-              cb(xmlhttp.responseText);
-          }
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+          cb(xmlhttp.responseText);
+        }
       }
 
       xmlhttp.open(opts.method, opts.url, true);
@@ -526,7 +533,7 @@
       // the connection request to the server:
       if (typeof opts.query !== 'string') opts.query = SDK_INFO.versionString;
       else opts.query += '&' + SDK_INFO.versionString;
-      
+
       return io.sails._origConnectFn(url, opts);
 
     };
@@ -604,24 +611,23 @@
         // way.
         else {
           var mikealsReq = require('request');
-          mikealsReq.get(io.sails.url + xOriginCookieRoute, function (err, httpResponse, body) {
+          mikealsReq.get(io.sails.url + xOriginCookieRoute, function(err, httpResponse, body) {
             if (err) {
               consolog(
-               'Failed to connect socket (failed to get cookie)',
-               'Error:', err
+                'Failed to connect socket (failed to get cookie)',
+                'Error:', err
               );
               return;
             }
             goAheadAndActuallyConnect();
           });
         }
-      }
-      else goAheadAndActuallyConnect();
-      
+      } else goAheadAndActuallyConnect();
+
       // Start connecting after the current cycle of the event loop
       // has completed.
       // consolog('Auto-connecting `io.socket` to Sails... (requests will be queued in the mean-time)');
-      function goAheadAndActuallyConnect () {
+      function goAheadAndActuallyConnect() {
 
         // Initiate connection
         var actualSocket = io.connect(io.sails.url);
@@ -637,15 +643,15 @@
         io.socket.on('connect', function socketConnected() {
 
           consolog.noPrefix(
-           '\n' +
-           '    |>    ' + '\n' +
-           '  \\___/  '
+            '\n' +
+            '    |>    ' + '\n' +
+            '  \\___/  '
           );
           consolog(
-           '`io.socket` connected successfully.'+ '\n' +
-           // 'e.g. to send a GET request to Sails via WebSockets, run:'+ '\n' +
-           // '`io.socket.get("/foo", function serverRespondedWith (body, jwr) { console.log(body); })`'+ '\n' +
-           ' (for help, see: http://sailsjs.org/#!documentation/reference/BrowserSDK/BrowserSDK.html)'
+            '`io.socket` connected successfully.' + '\n' +
+            // 'e.g. to send a GET request to Sails via WebSockets, run:'+ '\n' +
+            // '`io.socket.get("/foo", function serverRespondedWith (body, jwr) { console.log(body); })`'+ '\n' +
+            ' (for help, see: http://sailsjs.org/#!documentation/reference/BrowserSDK/BrowserSDK.html)'
           );
           // consolog('(this app is running in development mode - log messages will be displayed)');
 
@@ -666,13 +672,33 @@
 
 
 
-          /**
-           * 'disconnect' event is triggered when the socket disconnects.
-           */
           io.socket.on('disconnect', function() {
+            consolog('====================================');
             consolog('io.socket was disconnected from Sails.');
+            consolog('Usually, this is due to one of the following reasons:' + '\n' +
+              ' -> the server ' + (io.sails.url ? io.sails.url + ' ' : '') + 'was taken down' + '\n' +
+              ' -> your browser lost internet connectivity');
+            consolog('====================================');
           });
 
+          io.socket.on('reconnect', function() {
+            consolog('io.socket was successfully reconnected.');
+          });
+          
+          io.socket.on('reconnecting', function() {
+            consolog('io.socket is trying to reconnect to Sails...');
+          });
+
+          // A bug in Socket.io 0.9.x causes `connect_failed`
+          // and `reconnect_failed` not to fire.
+          // Check out the discussion in github issues for details:
+          // https://github.com/LearnBoost/socket.io/issues/652
+          // io.socket.on('connect_failed', function () {
+          //  consolog('io.socket emitted `connect_failed`');
+          // });
+          // io.socket.on('reconnect_failed', function () {
+          //  consolog('io.socket emitted `reconnect_failed`');
+          // });
 
 
 
@@ -682,14 +708,14 @@
            * usually due to a missing or invalid cookie)
            */
           io.socket.on('error', function failedToConnect(err) {
-            
+
             // TODO:
             // handle failed connections due to failed authorization
             // in a smarter way (probably can listen for a different event)
-            
+
             consolog(
-             'Failed to connect socket (probably due to failed authorization on server)',
-             'Error:', err
+              'Failed to connect socket (probably due to failed authorization on server)',
+              'Error:', err
             );
           });
         });
@@ -715,7 +741,8 @@
 
   // Add CommonJS support to allow this client SDK to be used from Node.js.
   if (typeof module === 'object' && typeof module.exports !== 'undefined') {
-    return module.exports = SailsIOClient;
+    module.exports = SailsIOClient;
+    return SailsIOClient;
   }
 
   // Otherwise, try to instantiate the client:
