@@ -602,6 +602,7 @@
       // that a valid cookie is available.  This can be disabled
       // by setting `io.sails.useCORSRouteToGetCookie` to false.
       var isXOrigin = io.sails.url && true; //url.match();
+      // TODO: check whether the URL is cross-domain
 
       // var port = global.location.port || ('https:' == global.location.protocol ? 443 : 80);
       // this.options.host !== global.location.hostname || this.options.port != port;
@@ -618,22 +619,7 @@
 
         // Make the AJAX request (CORS)
         if (typeof window !== 'undefined') {
-          // var script = window.document.createElement('script');
-          // script.src = io.sails.url + xOriginCookieRoute;
-          // script.async = true;
-
-          // // Wait for script tag to finish loading
-          // // (to guarantee we have the cookie)
-          // var isReady = false;
-          // script.onreadystatechange = script.onload = function() {
-          //   var state = script.readyState;
-          //   if (!isReady && (!state || /loaded|complete/.test(state))) {
-          //     isReady = true;
-          //     goAheadAndActuallyConnect();
-          //   }
-          // };
-          // window.document.getElementsByTagName('head')[0].appendChild(script);
-
+          
           ajax({
             url: xOriginCookieURL,
             method: 'GET'
