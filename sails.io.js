@@ -120,7 +120,7 @@
       this.get = Socket.prototype.get;
       this.post = Socket.prototype.post;
       this.put = Socket.prototype.put;
-      this.delete = Socket.prototype.delete;
+      this['delete'] = Socket.prototype['delete'];
       this._request = Socket.prototype._request;
     }
 
