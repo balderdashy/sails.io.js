@@ -1,20 +1,20 @@
 {
   "name": "sails.io.js",
-  "version": "0.10.0-rc2",
+  "version": "0.10.0-rc3",
   "description": "Javascript SDK for communicating w/ a Sails server via WebSockets/socket.io.",
   "main": "sails.io.js",
   "directories": {
     "test": "test"
   },
   "dependencies": {
+    "request": "~2.34.0"
+  },
+  "devDependencies": {
     "grunt": "~0.4.3",
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-watch": "~0.6.0",
     "grunt-contrib-copy": "~0.5.0",
-    "request": "~2.34.0"
-  },
-  "devDependencies": {
-    "sails": "~0.10.0-rc4",
+    "sails": "~0.10.0-rc5",
     "lodash": "~2.4.1",
     "mocha": "~1.18.0",
     "socket.io-client": "~0.9.16"
