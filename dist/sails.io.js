@@ -703,53 +703,63 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
           }
 
 
+          if (!io.socket.$events.disconnect) {
+            io.socket.on('disconnect', function() {
+              consolog('====================================');
+              consolog('io.socket was disconnected from Sails.');
+              consolog('Usually, this is due to one of the following reasons:' + '\n' +
+                ' -> the server ' + (io.sails.url ? io.sails.url + ' ' : '') + 'was taken down' + '\n' +
+                ' -> your browser lost internet connectivity');
+              consolog('====================================');
+            });
+          }
 
-          io.socket.on('disconnect', function() {
-            consolog('====================================');
-            consolog('io.socket was disconnected from Sails.');
-            consolog('Usually, this is due to one of the following reasons:' + '\n' +
-              ' -> the server ' + (io.sails.url ? io.sails.url + ' ' : '') + 'was taken down' + '\n' +
-              ' -> your browser lost internet connectivity');
-            consolog('====================================');
-          });
+          if (!io.socket.$events.reconnect) {
+            io.socket.on('reconnect', function(transport, numAttempts) {
+              var numSecsOffline = io.socket.msSinceConnectionLost / 1000;
+              consolog(
+                'io.socket reconnected successfully after being offline ' +
+                'for ' + numSecsOffline + ' seconds.');
+            });
+          }
 
-          io.socket.on('reconnect', function() {
-            consolog('io.socket was successfully reconnected.');
-          });
-
-          io.socket.on('reconnecting', function() {
-            consolog('io.socket is trying to reconnect to Sails...');
-          });
-
-          // A bug in Socket.io 0.9.x causes `connect_failed`
-          // and `reconnect_failed` not to fire.
-          // Check out the discussion in github issues for details:
-          // https://github.com/LearnBoost/socket.io/issues/652
-          // io.socket.on('connect_failed', function () {
-          //  consolog('io.socket emitted `connect_failed`');
-          // });
-          // io.socket.on('reconnect_failed', function () {
-          //  consolog('io.socket emitted `reconnect_failed`');
-          // });
+          if (!io.socket.$events.reconnecting) {
+            io.socket.on('reconnecting', function(msSinceConnectionLost, numAttempts) {
+              io.socket.msSinceConnectionLost = msSinceConnectionLost;
+              consolog(
+                'io.socket is trying to reconnect to Sails...' +
+                '(attempt #' + numAttempts + ')');
+            });
+          }
 
 
+          // 'error' event is triggered if connection can not be established.
+          // (usually because of a failed authorization, which is in turn
+          // usually due to a missing or invalid cookie)
+          if (!io.socket.$events.error) {
+            io.socket.on('error', function failedToConnect(err) {
 
-          /**
-           * 'error' event is triggered if connection can not be established.
-           * (usually because of a failed authorization, which is in turn
-           * usually due to a missing or invalid cookie)
-           */
-          io.socket.on('error', function failedToConnect(err) {
+              // TODO:
+              // handle failed connections due to failed authorization
+              // in a smarter way (probably can listen for a different event)
 
-            // TODO:
-            // handle failed connections due to failed authorization
-            // in a smarter way (probably can listen for a different event)
+              // A bug in Socket.io 0.9.x causes `connect_failed`
+              // and `reconnect_failed` not to fire.
+              // Check out the discussion in github issues for details:
+              // https://github.com/LearnBoost/socket.io/issues/652
+              // io.socket.on('connect_failed', function () {
+              //  consolog('io.socket emitted `connect_failed`');
+              // });
+              // io.socket.on('reconnect_failed', function () {
+              //  consolog('io.socket emitted `reconnect_failed`');
+              // });
 
-            consolog(
-              'Failed to connect socket (probably due to failed authorization on server)',
-              'Error:', err
-            );
-          });
+              consolog(
+                'Failed to connect socket (probably due to failed authorization on server)',
+                'Error:', err
+              );
+            });
+          }
         });
 
       }
