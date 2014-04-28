@@ -107,15 +107,34 @@
 
     function TmpSocket() {
       var boundEvents = {};
-      this.on = function(evName, fn) {
+      this.on = function (evName, fn) {
         boundEvents[evName] = fn;
         return this;
       };
       this.become = function(actualSocket) {
+
+        // Pass events and a reference to the request queue
+        // off to the actualSocket for consumption
         for (var evName in boundEvents) {
           actualSocket.on(evName, boundEvents[evName]);
         }
         actualSocket.requestQueue = this.requestQueue;
+
+        // Bind a one-time function to run the request queue
+        // when the actualSocket connects.
+        if (!_isConnected(actualSocket)) {
+          var alreadyRanRequestQueue = false;
+          actualSocket.on('connect', function onActualSocketConnect() {
+            if (alreadyRanRequestQueue) return;
+            runRequestQueue(actualSocket);
+            alreadyRanRequestQueue = true;
+          });
+        }
+        // Or run it immediately if actualSocket is already connected
+        else {
+          runRequestQueue(actualSocket);
+        }
+
         return actualSocket;
       };
 
@@ -185,7 +204,7 @@
 
 
     /**
-     * isConnected
+     * _isConnected
      *
      * @api private
      * @param  {Socket}  socket
@@ -195,6 +214,37 @@
 
     function _isConnected(socket) {
       return socket.socket && socket.socket.connected;
+    }
+
+
+
+    /**
+     * What is the `requestQueue`?
+     * 
+     * The request queue is used to simplify app-level connection logic--
+     * i.e. so you don't have to wait for the socket to be connected
+     * to start trying to  synchronize data.
+     * 
+     * @api private
+     * @param  {Socket}  socket
+     */
+
+    function runRequestQueue (socket) {
+      var queue = socket.requestQueue;
+
+      if (!queue) return;
+      for (var i in queue) {
+
+        // Double-check that `queue[i]` will not
+        // inadvertently discover extra properties attached to the Object
+        // and/or Array prototype by other libraries/frameworks/tools.
+        // (e.g. Ember does this. See https://github.com/balderdashy/sails.io.js/pull/5)
+        var isSafeToDereference = ({}).hasOwnProperty.call(queue, i);
+        if (isSafeToDereference) {
+          // Emit the request.
+          _emitFrom(socket, queue[i]);
+        }
+      }
     }
 
 
@@ -493,8 +543,6 @@
         throw new Error('Invalid or missing URL!\n' + usage);
       }
 
-      var self = this;
-
       // Build a simulated request object.
       var request = {
         method: options.method,
@@ -507,37 +555,20 @@
       // If this socket is not connected yet, queue up this request
       // instead of sending it.
       // (so it can be replayed when the socket comes online.)
-      if (!_isConnected(self)) {
+      if (!_isConnected(this)) {
 
         // If no queue array exists for this socket yet, create it.
-        self.requestQueue = self.requestQueue || [];
-        self.requestQueue.push(request);
+        this.requestQueue = this.requestQueue || [];
+        this.requestQueue.push(request);
         return;
       }
 
 
       // Otherwise, our socket is ok!
       // Send the request.
-      _emitFrom(self, request);
+      _emitFrom(this, request);
     };
 
-
-
-    // `requestQueues` and `sockets`
-    // 
-    // Used to simplify app-level connection logic-- i.e. so you don't
-    // have to wait for the socket to be connected to start trying to 
-    // synchronize data.
-    // 
-    // It supports use across multiple sockets, and ends up looking
-    // something like:
-    // {
-    //   '9ha021381359': [{...queuedReq26...}, {...queuedReq27...}, ...],
-    //   '2abcd8d8d211': [{...queuedReq18...}, {...queuedReq19...}, ...],
-    //   '992294111131': [{...queuedReq11...}, {...queuedReq12...}, ...]
-    // }
-    var requestQueues = {};
-    var sockets = {};
 
 
     // Set a `sails` object that may be used for configuration before the
@@ -588,38 +619,6 @@
       return io.sails._origConnectFn(url, opts);
 
     };
-
-
-    // Currently, the request queue and auto-connect behavior is only
-    // supported for a single, initial socket:  `io.socket`
-    // 
-    // Future versions may include request queueing for all sockets
-    // connected via the SDK, i.e.:
-    //
-    // ========================================================
-    // // Save reference to socket when it connects
-    // sockets[io.socket.id] = io.socket;
-    //
-    // // Run the request queue for each socket.
-    // for (var socketId in requestQueues) {
-    //   var pendingRequestsForSocket = requestQueues[socketId];
-    //
-    //   for (var i in pendingRequestsForSocket) {
-    //
-    //     // Double-check that `pendingRequestsForSocket[i]` will not
-    //     // inadvertently discover extra properties attached to the Object
-    //     // and/or Array prototype by other libraries/frameworks/tools.
-    //     // (e.g. Ember does this. See https://github.com/balderdashy/sails.io.js/pull/5)
-    //     var isSafeToDereference = ({}).hasOwnProperty.call(pendingRequestsForSocket, i);
-    //     if (isSafeToDereference) {
-    //       var pendingRequest = pendingRequestsForSocket[i];
-    //
-    //       // Emit the request.
-    //       _emitFrom(sockets[socketId], pendingRequest);
-    //     }
-    //   }
-    // }
-    // ========================================================
 
 
 
@@ -723,20 +722,6 @@
             ' (for help, see: http://sailsjs.org/#!documentation/reference/BrowserSDK/BrowserSDK.html)'
           );
           // consolog('(this app is running in development mode - log messages will be displayed)');
-
-          // Run the request queue for `io.socket`
-          for (var i in io.socket.requestQueue) {
-
-            // Double-check that `io.socket.requestQueue[i]` will not
-            // inadvertently discover extra properties attached to the Object
-            // and/or Array prototype by other libraries/frameworks/tools.
-            // (e.g. Ember does this. See https://github.com/balderdashy/sails.io.js/pull/5)
-            var isSafeToDereference = ({}).hasOwnProperty.call(io.socket.requestQueue, i);
-            if (isSafeToDereference) {
-              // Emit the request.
-              _emitFrom(io.socket, io.socket.requestQueue[i]);
-            }
-          }
 
 
           if (!io.socket.$events.disconnect) {
