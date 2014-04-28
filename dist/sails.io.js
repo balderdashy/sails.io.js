@@ -118,12 +118,21 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
         for (var evName in boundEvents) {
           actualSocket.on(evName, boundEvents[evName]);
         }
+        actualSocket.requestQueue = this.requestQueue;
         return actualSocket;
       };
+
+      // Uses `this` instead of `TmpSocket.prototype` purely
+      // for convenience, since it makes more sense to attach
+      // our extra methods to the `Socket` prototype down below.
+      // This could be optimized by moving those Socket method defs
+      // to the top of this SDK file instead of the bottom.  Will
+      // gladly do it if it is an issue for anyone.
       this.get = Socket.prototype.get;
       this.post = Socket.prototype.post;
       this.put = Socket.prototype.put;
       this['delete'] = Socket.prototype['delete'];
+      this.request = Socket.prototype.request;
       this._request = Socket.prototype._request;
     }
 
@@ -194,15 +203,19 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
 
 
     /**
-     * [ajax description]
-     * @return {[type]} [description]
+     * Send an AJAX request.
+     * 
+     * @param  {Object}   opts [optional]
+     * @param  {Function} cb
+     * @return {XMLHttpRequest}
      */
+
     function ajax(opts, cb) {
       opts = opts || {};
       var xmlhttp;
 
       if (typeof window === 'undefined') {
-        // TODO: refactor node usage in here
+        // TODO: refactor node usage to live in here
         return cb();
       }
 
@@ -218,10 +231,11 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
           cb(xmlhttp.responseText);
         }
-      }
+      };
 
       xmlhttp.open(opts.method, opts.url, true);
       xmlhttp.send();
+      return xmlhttp;
     }
 
 
@@ -291,7 +305,9 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
         }
 
         // Send back (emulatedHTTPBody, jsonWebSocketResponse)
-        cb && cb(body, new JWR(responseCtx));
+        if (cb) {
+          cb(body, new JWR(responseCtx));
+        }
       });
     }
 
@@ -497,8 +513,8 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
       if (!_isConnected(self)) {
 
         // If no queue array exists for this socket yet, create it.
-        requestQueues[self.id] = requestQueues[self.id] || [];
-        requestQueues[self.id].push(request);
+        self.requestQueue = self.requestQueue || [];
+        self.requestQueue.push(request);
         return;
       }
 
@@ -575,6 +591,38 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
       return io.sails._origConnectFn(url, opts);
 
     };
+
+
+    // Currently, the request queue and auto-connect behavior is only
+    // supported for a single, initial socket:  `io.socket`
+    // 
+    // Future versions may include request queueing for all sockets
+    // connected via the SDK, i.e.:
+    //
+    // ========================================================
+    // // Save reference to socket when it connects
+    // sockets[io.socket.id] = io.socket;
+    //
+    // // Run the request queue for each socket.
+    // for (var socketId in requestQueues) {
+    //   var pendingRequestsForSocket = requestQueues[socketId];
+    //
+    //   for (var i in pendingRequestsForSocket) {
+    //
+    //     // Double-check that `pendingRequestsForSocket[i]` will not
+    //     // inadvertently discover extra properties attached to the Object
+    //     // and/or Array prototype by other libraries/frameworks/tools.
+    //     // (e.g. Ember does this. See https://github.com/balderdashy/sails.io.js/pull/5)
+    //     var isSafeToDereference = ({}).hasOwnProperty.call(pendingRequestsForSocket, i);
+    //     if (isSafeToDereference) {
+    //       var pendingRequest = pendingRequestsForSocket[i];
+    //
+    //       // Emit the request.
+    //       _emitFrom(sockets[socketId], pendingRequest);
+    //     }
+    //   }
+    // }
+    // ========================================================
 
 
 
@@ -679,26 +727,17 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
           );
           // consolog('(this app is running in development mode - log messages will be displayed)');
 
-          // Save reference to socket when it connects
-          sockets[io.socket.id] = io.socket;
+          // Run the request queue for `io.socket`
+          for (var i in io.socket.requestQueue) {
 
-          // Run the request queue for each socket.
-          for (var socketId in requestQueues) {
-            var pendingRequestsForSocket = requestQueues[socketId];
-
-            for (var i in pendingRequestsForSocket) {
-
-              // Double-check that `pendingRequestsForSocket[i]` will not
-              // inadvertently discover extra properties attached to the Object
-              // and/or Array prototype by other libraries/frameworks/tools.
-              // (e.g. Ember does this. See https://github.com/balderdashy/sails.io.js/pull/5)
-              var isSafeToDereference = ({}).hasOwnProperty.call(pendingRequestsForSocket, i);
-              if (isSafeToDereference) {
-                var pendingRequest = pendingRequestsForSocket[i];
-
-                // Emit the request.
-                _emitFrom(sockets[socketId], pendingRequest);
-              }
+            // Double-check that `io.socket.requestQueue[i]` will not
+            // inadvertently discover extra properties attached to the Object
+            // and/or Array prototype by other libraries/frameworks/tools.
+            // (e.g. Ember does this. See https://github.com/balderdashy/sails.io.js/pull/5)
+            var isSafeToDereference = ({}).hasOwnProperty.call(io.socket.requestQueue, i);
+            if (isSafeToDereference) {
+              // Emit the request.
+              _emitFrom(io.socket, io.socket.requestQueue[i]);
             }
           }
 
