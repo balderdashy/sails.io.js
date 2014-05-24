@@ -807,8 +807,9 @@
     module.exports = SailsIOClient;
     return SailsIOClient;
   }
-
-  // Attach the sails client to the global object
-  window.SailsIOClient = SailsIOClient;
+  else {
+    // Attach the sails client to the global object
+    window.SailsIOClient = SailsIOClient;
+  }
 
 })();
