@@ -808,9 +808,7 @@
     return SailsIOClient;
   }
 
-  // Otherwise, try to instantiate the client:
-  // In case you're wrapping the socket.io client to prevent pollution of the
-  // global namespace, you can replace the global `io` with your own `io` here:
-  return SailsIOClient();
+  // Attach the sails client to the global object
+  window.SailsIOClient = SailsIOClient;
 
 })();
