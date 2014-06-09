@@ -108,7 +108,8 @@
     function TmpSocket() {
       var boundEvents = {};
       this.on = function (evName, fn) {
-        boundEvents[evName] = fn;
+        if (!boundEvents[evName]) boundEvents[evName] = [fn];
+        else boundEvents[evName].push(fn);
         return this;
       };
       this.become = function(actualSocket) {
@@ -116,7 +117,9 @@
         // Pass events and a reference to the request queue
         // off to the actualSocket for consumption
         for (var evName in boundEvents) {
-          actualSocket.on(evName, boundEvents[evName]);
+          for (var i in boundEvents[evName]) {
+            actualSocket.on(evName, boundEvents[evName][i]);
+          }
         }
         actualSocket.requestQueue = this.requestQueue;
 
