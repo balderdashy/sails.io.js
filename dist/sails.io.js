@@ -111,7 +111,8 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
     function TmpSocket() {
       var boundEvents = {};
       this.on = function (evName, fn) {
-        boundEvents[evName] = fn;
+        if (!boundEvents[evName]) boundEvents[evName] = [fn];
+        else boundEvents[evName].push(fn);
         return this;
       };
       this.become = function(actualSocket) {
@@ -119,7 +120,9 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
         // Pass events and a reference to the request queue
         // off to the actualSocket for consumption
         for (var evName in boundEvents) {
-          actualSocket.on(evName, boundEvents[evName]);
+          for (var i in boundEvents[evName]) {
+            actualSocket.on(evName, boundEvents[evName][i]);
+          }
         }
         actualSocket.requestQueue = this.requestQueue;
 
