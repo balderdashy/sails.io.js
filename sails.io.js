@@ -248,6 +248,9 @@
           _emitFrom(socket, queue[i]);
         }
       }
+
+      // Now empty the queue to remove it as a source of additional complexity.
+      queue = null;
     }
 
 
@@ -590,7 +593,7 @@
       // Defaults to development unless this script was fetched from a URL
       // that ends in `*.min.js` or '#production' (may also be manually overridden.)
       // 
-      environment: urlThisScriptWasFetchedFrom.match(/(\#production|\.min\.js)/) ? 'production' : 'development'
+      environment: urlThisScriptWasFetchedFrom.match(/(\#production|\.min\.js)/g) ? 'production' : 'development'
     };
 
 

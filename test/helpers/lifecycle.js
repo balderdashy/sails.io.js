@@ -51,8 +51,16 @@ module.exports = {
 
 
 
-  teardown: function (cb) {
+  teardown: function (done) {
 
+    // If the socket never connected, don't worry about disconnecting
+    // TODO:
+    // cancel the connection attempt if one exists-
+    // or better yet, extend `disconnect()` to do this
+    if (!global.io || !io.socket || !_isConnected(io.socket)) {
+      return done();
+    }
+    
     // Disconnect socket
     io.socket.disconnect();
     setTimeout(function ensureDisconnect () {
@@ -61,12 +69,30 @@ module.exports = {
       var isActuallyDisconnected = (io.socket.socket.connected === false);
       
       // Tear down sails server
-      global.server.lower(cb);
+      global.server.lower(function (){
 
-      // Delete globals (just in case-- shouldn't matter)
-      delete global.server;
-      delete global.io;
+        // Delete globals (just in case-- shouldn't matter)
+        delete global.server;
+        delete global.io;
+        return done();
+      });
       
     }, 0);
   }
 };
+
+
+
+
+/**
+ * _isConnected
+ *
+ * @api private
+ * @param  {Socket}  socket
+ * @return {Boolean} whether the socket is connected and able to
+ *                           communicate w/ the server.
+ */
+
+function _isConnected(socket) {
+  return socket.socket && socket.socket.connected;
+}
