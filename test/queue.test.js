@@ -136,7 +136,7 @@ describe('before connecting, socket', function () {
 function _getFreshClient (url) {
 
   // Invalidate socket.io-client in require cache
-  _(require.cache).keys().each(function (modulePath) {
+  _.each(_.keys(require.cache), function (modulePath) {
     if (modulePath.match(/socket.io-client/)){
       delete require.cache[modulePath];
     }
