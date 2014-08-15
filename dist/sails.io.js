@@ -124,7 +124,6 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
             actualSocket.on(evName, boundEvents[evName][i]);
           }
         }
-        actualSocket.requestQueue = this.requestQueue;
 
         // Bind a one-time function to run the request queue
         // when the actualSocket connects.
