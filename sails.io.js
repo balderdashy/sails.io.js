@@ -671,7 +671,7 @@
         // so just require the request module and send the HTTP request that
         // way.
         else {
-          var mikealsReq = GLOBAL['require']('request');
+          var mikealsReq = this['require']('request');
           mikealsReq.get(io.sails.url + xOriginCookieRoute, function(err, httpResponse, body) {
             if (err) {
               consolog(
