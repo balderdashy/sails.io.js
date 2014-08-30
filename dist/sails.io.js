@@ -529,6 +529,12 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
         (options.method || 'request') +
         '( destinationURL, [dataToSend], [fnToCallWhenComplete] )';
 
+      // Move headers out of data if they exist
+      if (options.data && options.data.headers) {
+        options.headers = options.data.headers;
+        delete options.data.headers;
+      }
+
       options = options || {};
       options.data = options.data || {};
       options.headers = options.headers || {};
