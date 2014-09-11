@@ -272,7 +272,11 @@
       }
 
       var scriptEl = document.createElement('script');
-      window._sailsIoJSConnect = cb;
+      window._sailsIoJSConnect = function() {
+        scriptEl.parentNode.removeChild(scriptEl);
+        
+        cb();
+      };
       scriptEl.src = opts.url;
       document.getElementsByTagName('head')[0].appendChild(scriptEl);
 
