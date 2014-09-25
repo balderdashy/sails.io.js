@@ -1,7 +1,7 @@
 {
   "name": "sails.io.js",
   "main": "dist/sails.io.js",
-  "version": "v0.10.1",
+  "version": "v0.10.3",
   "homepage": "https://github.com/balderdashy/sails.io.js",
   "authors": [
     "Mike McNeil <mike@balderdash.co>"
