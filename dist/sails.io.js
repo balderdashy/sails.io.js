@@ -588,8 +588,12 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
         // (e.g. Ember does this. See https://github.com/balderdashy/sails.io.js/pull/5)
         var isSafeToDereference = ({}).hasOwnProperty.call(queue, i);
         if (isSafeToDereference) {
+          // remove the request for queue list to dont re-execute it
+          var request = queue[i];
+          delete queue[i];
+
           // Emit the request.
-          _emitFrom(socket, queue[i]);
+          _emitFrom(socket, request);
         }
       }
 
