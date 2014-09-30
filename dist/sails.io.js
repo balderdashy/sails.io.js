@@ -760,11 +760,6 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
           //
           // run requests queued after connect
           io.socket.runRequestQueue();
-          // run requests queued after reconnect
-          io.socket.on('reconnect', function(transport, numAttempts) {
-            console.warn('reconnectou',numAttempts);
-            io.socket.runRequestQueue();
-          });
 
           if (!io.socket.$events.disconnect) {
             io.socket.on('disconnect', function() {
@@ -783,6 +778,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
               consolog(
                 'io.socket reconnected successfully after being offline ' +
                 'for ' + numSecsOffline + ' seconds.');
+                io.socket.runRequestQueue();
             });
           }
 
