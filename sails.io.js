@@ -756,7 +756,7 @@
           // @TODO add a config to disable this feature
           //
           // run requests queued after connect
-          io.socket.runRequestQueue();
+          io.socket.runRequestQueue(actualSocket);
 
           if (!io.socket.$events.disconnect) {
             io.socket.on('disconnect', function() {
