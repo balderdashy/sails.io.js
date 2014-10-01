@@ -124,7 +124,14 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
             actualSocket.on(evName, boundEvents[evName][i]);
           }
         }
-        actualSocket.requestQueue = this.requestQueue;
+
+        if (this.requestQueue) {
+          if (actualSocket.requestQueue) {
+            actualSocket.requestQueue.concat(this.requestQueue);
+          } else {
+            actualSocket.requestQueue = this.requestQueue;
+          }
+        }
 
         // Bind a one-time function to run the request queue
         // when the actualSocket connects.
@@ -759,7 +766,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
           // @TODO add a config to disable this feature
           //
           // run requests queued after connect
-          io.socket.runRequestQueue();
+          io.socket.runRequestQueue(actualSocket);
 
           if (!io.socket.$events.disconnect) {
             io.socket.on('disconnect', function() {
