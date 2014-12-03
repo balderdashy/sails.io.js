@@ -121,7 +121,14 @@
             actualSocket.on(evName, boundEvents[evName][i]);
           }
         }
-        actualSocket.requestQueue = this.requestQueue;
+
+        if (this.requestQueue) {
+          if (actualSocket.requestQueue) {
+            actualSocket.requestQueue.concat(this.requestQueue);
+          } else {
+            actualSocket.requestQueue = this.requestQueue;
+          }
+        }
 
         // Bind a one-time function to run the request queue
         // when the actualSocket connects.
@@ -223,11 +230,11 @@
 
     /**
      * What is the `requestQueue`?
-     * 
+     *
      * The request queue is used to simplify app-level connection logic--
      * i.e. so you don't have to wait for the socket to be connected
      * to start trying to  synchronize data.
-     * 
+     *
      * @api private
      * @param  {Socket}  socket
      */
@@ -257,7 +264,7 @@
 
     /**
      * Send a JSONP request.
-     * 
+     *
      * @param  {Object}   opts [optional]
      * @param  {Function} cb
      * @return {XMLHttpRequest}
@@ -357,7 +364,7 @@
 
 
 
-    // We'll be adding methods to `io.SocketNamespace.prototype`, the prototype for the 
+    // We'll be adding methods to `io.SocketNamespace.prototype`, the prototype for the
     // Socket instance returned when the browser connects with `io.connect()`
     var Socket = io.SocketNamespace;
 
@@ -564,6 +571,41 @@
 
 
 
+    /**
+     * Socket runRequestQueue method
+     *
+     * By default sails.io run requests did while disconnected after connect or reconnect
+     *
+     */
+    Socket.prototype.runRequestQueue = function runRequestQueue () {
+
+      var socket = this;
+
+      var queue = socket.requestQueue;
+
+      if (!queue) return;
+      for (var i in queue) {
+
+        // Double-check that `queue[i]` will not
+        // inadvertently discover extra properties attached to the Object
+        // and/or Array prototype by other libraries/frameworks/tools.
+        // (e.g. Ember does this. See https://github.com/balderdashy/sails.io.js/pull/5)
+        var isSafeToDereference = ({}).hasOwnProperty.call(queue, i);
+        if (isSafeToDereference) {
+          // remove the request for queue list to dont re-execute it
+          var request = queue[i];
+          delete queue[i];
+
+          // Emit the request.
+          _emitFrom(socket, request);
+        }
+      }
+
+      // Now empty the queue to remove it as a source of additional complexity.
+      queue = null;
+    };
+
+
     // Set a `sails` object that may be used for configuration before the
     // first socket connects (i.e. to prevent auto-connect)
     io.sails = {
@@ -576,10 +618,10 @@
 
       // The environment we're running in.
       // (logs are not displayed when this is set to 'production')
-      // 
+      //
       // Defaults to development unless this script was fetched from a URL
       // that ends in `*.min.js` or '#production' (may also be manually overridden.)
-      // 
+      //
       environment: urlThisScriptWasFetchedFrom.match(/(\#production|\.min\.js)/g) ? 'production' : 'development'
     };
 
@@ -616,13 +658,13 @@
 
 
     // io.socket
-    // 
+    //
     // The eager instance of Socket which will automatically try to connect
     // using the host that this js file was served from.
-    // 
+    //
     // This can be disabled or configured by setting `io.socket.options` within the
     // first cycle of the event loop.
-    // 
+    //
 
     // In the mean time, this eager socket will be defined as a TmpSocket
     // so that events bound by the user before the first cycle of the event
@@ -716,6 +758,12 @@
           );
           // consolog('(this app is running in development mode - log messages will be displayed)');
 
+          // REQUEST queue triggers
+          //
+          // @TODO add a config to disable this feature
+          //
+          // run requests queued after connect
+          io.socket.runRequestQueue(actualSocket);
 
           if (!io.socket.$events.disconnect) {
             io.socket.on('disconnect', function() {
@@ -734,6 +782,7 @@
               consolog(
                 'io.socket reconnected successfully after being offline ' +
                 'for ' + numSecsOffline + ' seconds.');
+                io.socket.runRequestQueue();
             });
           }
 
