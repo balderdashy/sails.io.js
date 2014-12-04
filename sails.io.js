@@ -641,7 +641,7 @@
       // socket connection, send a JSONP request first to ensure
       // that a valid cookie is available.  This can be disabled
       // by setting `io.sails.useCORSRouteToGetCookie` to false.
-      var isXOrigin = io.sails.url.replace(/^[a-z]+:\/\//i, '').search(location.hostname) !== 0;
+      var isXOrigin = typeof io.sails.url === 'string' && io.sails.url.replace(/^[a-z]+:\/\//i, '').search(location.hostname) !== 0;
 
       // var port = global.location.port || ('https:' == global.location.protocol ? 443 : 80);
       // this.options.host !== global.location.hostname || this.options.port != port;
