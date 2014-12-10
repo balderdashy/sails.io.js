@@ -152,7 +152,11 @@
      */
 
     function _isConnected(socket) {
-      return socket.socket && socket.socket.connected;
+      if (!socket._raw) {
+        return false;
+      }
+
+      return !!socket._raw.connected;
     }
 
 
@@ -272,6 +276,7 @@
       // Name of socket request listener on the server
       // ( === the request method, e.g. 'get', 'post', 'put', etc. )
       var sailsEndpoint = requestCtx.method;
+      // console.log('Emitting:', sailsEndpoint, requestCtx);
       socket._raw.emit(sailsEndpoint, requestCtx, function serverResponded(responseCtx) {
 
         // Adds backwards-compatibility for 0.9.x projects
@@ -361,7 +366,7 @@
 
       // Bind a one-time function to run the request queue
       // when the self._raw connects.
-      if (!_isConnected(self._raw)) {
+      if (!_isConnected(self)) {
         var alreadyRanRequestQueue = false;
         self._raw.on('connect', function whenRawSocketConnects() {
           if (alreadyRanRequestQueue) return;
@@ -588,7 +593,8 @@
         cb: cb
       };
 
-      console.log('SENT REQUEST:',request);
+      // console.log('REQUESTING::',request);
+      // console.log('is conneted?',_isConnected(this));
 
       // If this socket is not connected yet, queue up this request
       // instead of sending it.
@@ -641,7 +647,7 @@
      * @param  {Object} opts [optional]
      * @return {Socket}
      */
-    io.sails._origConnectFn = io.connect;
+    io.sails._origConnectFn = io;
     io.connect = function(url, opts) {
       opts = opts || {};
 
