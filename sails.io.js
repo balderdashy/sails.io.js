@@ -92,70 +92,6 @@
     /////                              ///////////////////////////
     //////////////////////////////////////////////////////////////
 
-    /**
-     * TmpSocket
-     *
-     * A mock Socket used for binding events before the real thing
-     * has been instantiated (since we need to use io.connect() to
-     * instantiate the real thing, which would kick off the connection
-     * process w/ the server, and we don't necessarily have the valid
-     * configuration to know WHICH SERVER to talk to yet.)
-     *
-     * @api private
-     * @constructor
-     */
-
-    function TmpSocket() {
-      var boundEvents = {};
-      this.on = function (evName, fn) {
-        if (!boundEvents[evName]) boundEvents[evName] = [fn];
-        else boundEvents[evName].push(fn);
-        return this;
-      };
-      this.become = function(actualSocket) {
-
-        // Pass events and a reference to the request queue
-        // off to the actualSocket for consumption
-        for (var evName in boundEvents) {
-          for (var i in boundEvents[evName]) {
-            actualSocket.on(evName, boundEvents[evName][i]);
-          }
-        }
-        actualSocket.requestQueue = this.requestQueue;
-
-        // Bind a one-time function to run the request queue
-        // when the actualSocket connects.
-        if (!_isConnected(actualSocket)) {
-          var alreadyRanRequestQueue = false;
-          actualSocket.on('connect', function onActualSocketConnect() {
-            if (alreadyRanRequestQueue) return;
-            runRequestQueue(actualSocket);
-            alreadyRanRequestQueue = true;
-          });
-        }
-        // Or run it immediately if actualSocket is already connected
-        else {
-          runRequestQueue(actualSocket);
-        }
-
-        return actualSocket;
-      };
-
-      // Uses `this` instead of `TmpSocket.prototype` purely
-      // for convenience, since it makes more sense to attach
-      // our extra methods to the `Socket` prototype down below.
-      // This could be optimized by moving those Socket method defs
-      // to the top of this SDK file instead of the bottom.  Will
-      // gladly do it if it is an issue for anyone.
-      this.get = SailsSocket.prototype.get;
-      this.post = SailsSocket.prototype.post;
-      this.put = SailsSocket.prototype.put;
-      this['delete'] = SailsSocket.prototype['delete'];
-      this.request = SailsSocket.prototype.request;
-      this._request = SailsSocket.prototype._request;
-    }
-
-
 
     /**
      * A little logger for this library to use internally.
@@ -323,6 +259,10 @@
 
     function _emitFrom(socket, requestCtx) {
 
+      if (!socket._raw) {
+        throw new Error('Failed to emit from socket- raw SIO socket is missing.');
+      }
+
       // Since callback is embedded in requestCtx,
       // retrieve it and delete the key before continuing.
       var cb = requestCtx.cb;
@@ -332,7 +272,7 @@
       // Name of socket request listener on the server
       // ( === the request method, e.g. 'get', 'post', 'put', etc. )
       var sailsEndpoint = requestCtx.method;
-      socket.emit(sailsEndpoint, requestCtx, function serverResponded(responseCtx) {
+      socket._raw.emit(sailsEndpoint, requestCtx, function serverResponded(responseCtx) {
 
         // Adds backwards-compatibility for 0.9.x projects
         // If `responseCtx.body` does not exist, the entire
@@ -366,9 +306,18 @@
     // This makes our solution more future-proof and helps us work better w/ the Socket.io team
     // when changes are rolled out in the future.
 
+
+
     /**
+     * SailsSocket
+     * 
      * A wrapper for an underlying Socket instance that communicates directly
      * to the Socket.io server running inside of Sails.
+     *
+     * If `eager:true` is passed in, SailsSocket will function as a mock. It will queue socket
+     * requests and event handler bindings, replaying them when the raw underlying socket actually
+     * connects. This is handy when we don't necessarily have the valid configuration to know
+     * WHICH SERVER to talk to yet, etc.  It is also used by `io.socket` for your convenience.
      * 
      * @constructor
      */
@@ -377,15 +326,56 @@
       opts = opts||{};
 
       if (!opts.eager && !opts.socket) {
-        throw new Error('Cannot instantiate SailsSocket as `eager:false` without a true Socket.io instance (should be provided as the `socket` option.)');
+        throw new Error('Cannot instantiate a SailsSocket as `eager:false` without providing a raw Socket instance from Socket.io (as the `socket` option.)');
       }
 
       // Save the actual socket that was passed in as `_raw`.
       this._raw = opts.socket;
 
-      // Set "eventHandlers" (like the $events property from sio < 1)
-      this.eventHandlers = {};
+      // Set up "eventQueue" to hold event handlers which have not been set on the actual raw socket yet.
+      // (Note that this is NOT comparable to the $events property from sio < 1)
+      this.eventQueue = {};
+
+
+      // Set up `$events` to match expectations of code relying on sio < 1
+      // (warning: this private property will be deprecated)
+      this.$events = {};
     }
+
+
+
+    /**
+     * [replay description]
+     * @return {[type]} [description]
+     */
+    SailsSocket.prototype.replay = function (){
+      var self = this;
+
+      // Pass events and a reference to the request queue
+      // off to the self._raw for consumption
+      for (var evName in self.eventQueue) {
+        for (var i in self.eventQueue[evName]) {
+          self._raw.on(evName, self.eventQueue[evName][i]);
+        }
+      }
+
+      // Bind a one-time function to run the request queue
+      // when the self._raw connects.
+      if (!_isConnected(self._raw)) {
+        var alreadyRanRequestQueue = false;
+        self._raw.on('connect', function whenRawSocketConnects() {
+          if (alreadyRanRequestQueue) return;
+          runRequestQueue(self);
+          alreadyRanRequestQueue = true;
+        });
+      }
+      // Or run it immediately if self._raw is already connected
+      else {
+        runRequestQueue(self);
+      }
+
+      return self;
+    };
 
 
     /**
@@ -397,17 +387,20 @@
      */
     SailsSocket.prototype.on = function (evName, fn){
 
-      // Bind the event to the raw underlying socket.
-      this._raw.on(evName, fn);
+      // Bind the event to the raw underlying socket if possible.
+      if (this._raw) {
+        this._raw.on(evName, fn);
+        return this;
+      }
 
-      if (!this.eventHandlers[evName]) {
-        this.eventHandlers[evName] = [fn];
+      // Otherwise queue the event binding.
+      if (!this.eventQueue[evName]) {
+        this.eventQueue[evName] = [fn];
       }
       else {
-        this.eventHandlers[evName].push(fn);
+        this.eventQueue[evName].push(fn);
       }
 
-      // Chainable
       return this;
     };
 
@@ -595,6 +588,8 @@
         cb: cb
       };
 
+      console.log('SENT REQUEST:',request);
+
       // If this socket is not connected yet, queue up this request
       // instead of sending it.
       // (so it can be replayed when the socket comes online.)
@@ -638,7 +633,9 @@
     /**
      * Override `io.connect` to coerce it into using the io.sails
      * connection URL config, as well as sending identifying information
-     * (most importantly, the current version of this SDK)
+     * (most importantly, the current version of this SDK).
+     *
+     * Perhaps most importantly, this override makes `io.connect()` return a SailsSocket.
      *
      * @param  {String} url  [optional]
      * @param  {Object} opts [optional]
@@ -664,6 +661,7 @@
 
       // Instantiate and return a new SailsSocket, passing it `_legitSocket`
       return new SailsSocket({
+        eager: false,
         socket: _legitSocket
       });
 
@@ -686,6 +684,20 @@
     io.socket = new SailsSocket({
       eager: true
     });
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // TODO: pull most of the stuff in this setTimeout into SailsSocket.
 
 
     // Start connecting after the current cycle of the event loop
@@ -751,10 +763,10 @@
         // consolog('Auto-connecting `io.socket` to Sails... (requests will be queued in the mean-time)');
 
         // Initiate connection
-        var actualSocket = io.connect(io.sails.url);
+        io.socket._raw = io.connect(io.sails.url)._raw;
 
         // Replay event bindings from the eager socket
-        io.socket = io.socket.become(actualSocket);
+        io.socket.replay();
 
 
         /**
@@ -777,7 +789,7 @@
           // consolog('(this app is running in development mode - log messages will be displayed)');
 
 
-          if (!io.socket.eventHandlers.disconnect) {
+          if (!io.socket.$events.disconnect) {
             io.socket.on('disconnect', function() {
               consolog('====================================');
               consolog('io.socket was disconnected from Sails.');
@@ -788,7 +800,7 @@
             });
           }
 
-          if (!io.socket.eventHandlers.reconnect) {
+          if (!io.socket.$events.reconnect) {
             io.socket.on('reconnect', function(transport, numAttempts) {
               var numSecsOffline = io.socket.msSinceConnectionLost / 1000;
               consolog(
@@ -797,7 +809,7 @@
             });
           }
 
-          if (!io.socket.eventHandlers.reconnecting) {
+          if (!io.socket.$events.reconnecting) {
             io.socket.on('reconnecting', function(msSinceConnectionLost, numAttempts) {
               io.socket.msSinceConnectionLost = msSinceConnectionLost;
               consolog(
@@ -810,7 +822,7 @@
           // 'error' event is triggered if connection can not be established.
           // (usually because of a failed authorization, which is in turn
           // usually due to a missing or invalid cookie)
-          if (!io.socket.eventHandlers.error) {
+          if (!io.socket.$events.error) {
             io.socket.on('error', function failedToConnect(err) {
 
               // TODO:
