@@ -21,7 +21,7 @@
     "async": "~0.9.0"
   },
   "scripts": {
-    "test": "mocha -b --timeout 10000"
+    "test": "node ./node_modules/bin/mocha -b --timeout 10000"
   },
   "repository": {
     "type": "git",
