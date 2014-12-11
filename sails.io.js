@@ -143,25 +143,6 @@
 
 
     /**
-     * _isConnected
-     *
-     * @api private
-     * @param  {SailsSocket}  socket
-     * @return {Boolean} whether the socket is connected and able to
-     *                           communicate w/ the server.
-     */
-
-    function _isConnected(socket) {
-      if (!socket._raw) {
-        return false;
-      }
-
-      return !!socket._raw.connected;
-    }
-
-
-
-    /**
      * What is the `requestQueue`?
      * 
      * The request queue is used to simplify app-level connection logic--
@@ -348,6 +329,23 @@
     }
 
 
+    /**
+     * isConnected
+     *
+     * @api private
+     * @return {Boolean} whether the socket is connected and able to
+     *                           communicate w/ the server.
+     */
+
+    SailsSocket.prototype.isConnected = function () {
+      if (!this._raw) {
+        return false;
+      }
+
+      return !!this._raw.connected;
+    };
+
+
 
     /**
      * [replay description]
@@ -366,7 +364,7 @@
 
       // Bind a one-time function to run the request queue
       // when the self._raw connects.
-      if (!_isConnected(self)) {
+      if ( !self.isConnected() ) {
         var alreadyRanRequestQueue = false;
         self._raw.on('connect', function whenRawSocketConnects() {
           if (alreadyRanRequestQueue) return;
@@ -594,12 +592,11 @@
       };
 
       // console.log('REQUESTING::',request);
-      // console.log('is conneted?',_isConnected(this));
 
       // If this socket is not connected yet, queue up this request
       // instead of sending it.
       // (so it can be replayed when the socket comes online.)
-      if (!_isConnected(this)) {
+      if ( ! this.isConnected() ) {
 
         // If no queue array exists for this socket yet, create it.
         this.requestQueue = this.requestQueue || [];
