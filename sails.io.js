@@ -322,6 +322,14 @@
       // (Note that this is NOT comparable to the $events property from sio < 1)
       this.eventQueue = {};
 
+      // Listen for special `parseError` event sent from sockets hook on the backend
+      // if an error occurs but a valid callback was not received from the client
+      // (i.e. so the server had no other way to send back the error information)
+      this.on('sails:parseError', function (err){
+        consolog(err.message);
+        consolog(err.details);
+      });
+
 
       // Set up `$events` to match expectations of code relying on sio < 1
       // (warning: this private property will be deprecated)
