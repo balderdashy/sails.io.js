@@ -193,7 +193,11 @@
       }
 
       var scriptEl = document.createElement('script');
-      window._sailsIoJSConnect = cb;
+      window._sailsIoJSConnect = function(response) {
+        scriptEl.parentNode.removeChild(scriptEl);
+        
+        cb(response);
+      };
       scriptEl.src = opts.url;
       document.getElementsByTagName('head')[0].appendChild(scriptEl);
 
