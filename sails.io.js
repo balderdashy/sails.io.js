@@ -380,7 +380,7 @@
 
         // Figure out the x-origin CORS route
         // (Sails provides a default)
-        var xOriginCookieURL = self.url + xOriginCookiePath;
+        var xOriginCookieURL = self.url;
         if (typeof self.useCORSRouteToGetCookie === 'string') {
           xOriginCookieURL += self.useCORSRouteToGetCookie;
         }
