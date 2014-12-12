@@ -38,22 +38,70 @@ $ bower install sails.io.js
   <script type="text/javascript">
   
     // `io` is available as a global.
-    // `io.socket` will connect automatically, but it is not ready yet (think of $(document).ready() from jQuery).
+    // `io.socket` will connect automatically, but at this point in the DOM, it is not ready yet
+    // (think of $(document).ready() from jQuery)
+    // 
     // Fortunately, this library provides an abstraction to avoid this issue.
     // Requests you make before `io` is ready will be queued and replayed automatically when the socket connects.
-    // To disable this behavior or configure other things, you can set properties on `io`.
-    // You have one cycle of the event loop to change `io` settings before the auto-connection behavior starts.
+    // To disable this behavior or configure other things, you can set properties on `io.sails`.
+    // You have one cycle of the event loop to set `io.sails.autoConnect` to false before the auto-connection
+    // behavior starts.
     
-    io.socket.get('/hello', function serverResponded (body, sailsResponseObject) {
-      
-      // body === sailsResponseObject.body
+    io.socket.get('/hello', function serverResponded (body, JWR) {
+
+      // JWR ==> "JSON WebSocket Response"
       console.log('Sails responded with: ', body);
-      console.log('with headers: ', sailsResponseObject.headers);
-      console.log('and with status code: ', sailsResponseObject.statusCode);
+      console.log('with headers: ', JWR.headers);
+      console.log('and with status code: ', JWR.statusCode);
+
+      // first argument `body` === `JWR.body`
+      // (just for convenience, and to maintain familiar usage, a la `JQuery.get()`)
     });
   </script>
 </html>
 ```
+
+#### Advanced Usage
+
+###### Cross-domain
+
+Connect to a server other than the one that served ths project (i.e. on a different domain/subdomain):
+
+```html
+<script type="text/javascript" src="./path/to/bower_components/sails.io.js"></script>
+<script type="text/javascript">
+io.sails.url = 'https://api.mysite.com';
+</script>
+```
+
+
+###### Disable `autoConnect` and/or connect sockets manually
+
+Disable `io.socket` and its auto-connecting behavior and/or connect 1 or more sockets manually:
+
+```html
+<script type="text/javascript" src="./path/to/bower_components/sails.io.js"></script>
+<script type="text/javascript">
+io.sails.autoConnect = false;
+
+// e.g. at some point later, connect 3 sockets, using default settings
+setTimeout(function (){
+
+  // socket0 and socket1 will use default settings from `io.sails`
+  var socket0 = io.sails.connect();
+  var socket1 = io.sails.connect();
+
+  // but socket2's `url` option will be overridden as specified:
+  var socket2 = io.sails.connect({
+    url: 'https://api.mysite.com'
+  });
+}, 1000);
+</script>
+```
+
+> Note that the `io.sails` config functions as the default for all connected sockets, but it can be overridden on a socket-by-socket basis by passing in an object to `io.sails.connect(opts)`
+
+
 
 ========================================
 
@@ -86,11 +134,11 @@ io.sails.url = 'http://localhost:1337';
 // ...
 
 // Send a GET request to `http://localhost:1337/hello`:
-io.socket.get('/hello', function serverResponded (body, sailsResponseObject) {
-  // body === sailsResponseObject.body
+io.socket.get('/hello', function serverResponded (body, JWR) {
+  // body === JWR.body
   console.log('Sails responded with: ', body);
-  console.log('with headers: ', sailsResponseObject.headers);
-  console.log('and with status code: ', sailsResponseObject.statusCode);
+  console.log('with headers: ', JWR.headers);
+  console.log('and with status code: ', JWR.statusCode);
   
   // When you are finished with `io.socket`, or any other sockets you connect manually,
   // you should make sure and disconnect them, e.g.:
@@ -114,7 +162,7 @@ This repository holds the socket client SDK for Sails versions 0.10.0 and up.  I
 ### License
 
 **[MIT](./LICENSE)**
-&copy; 2014
+&copy; 2014-
 [Mike McNeil](http://michaelmcneil.com), [Balderdash](http://balderdash.co) & contributors
 
 This module is part of the [Sails framework](http://sailsjs.org), and is free and open-source under the [MIT License](http://sails.mit-license.org/).
