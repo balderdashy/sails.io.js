@@ -57,7 +57,7 @@ module.exports = {
     // TODO:
     // cancel the connection attempt if one exists-
     // or better yet, extend `disconnect()` to do this
-    if (!global.io || !io.socket || !_isConnected(io.socket)) {
+    if (!global.io || !io.socket || !io.socket.isConnected()) {
       return done();
     }
     
@@ -66,7 +66,7 @@ module.exports = {
     setTimeout(function ensureDisconnect () {
       
       // Ensure socket is actually disconnected
-      var isActuallyDisconnected = (io.socket.socket.connected === false);
+      var isActuallyDisconnected = (io.socket.isConnected() === false);
       
       // Tear down sails server
       global.server.lower(function (){
@@ -83,16 +83,3 @@ module.exports = {
 
 
 
-
-/**
- * _isConnected
- *
- * @api private
- * @param  {Socket}  socket
- * @return {Boolean} whether the socket is connected and able to
- *                           communicate w/ the server.
- */
-
-function _isConnected(socket) {
-  return socket.socket && socket.socket.connected;
-}

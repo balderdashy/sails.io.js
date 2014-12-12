@@ -560,6 +560,19 @@
     };
 
 
+    /**
+     * Disconnect the underlying socket.
+     *
+     * @api public
+     */
+    SailsSocket.prototype.disconnect = function (){
+      if (!this._raw) {
+        throw new Error('Cannot disconnect- socket is already disconnected');
+      }
+      return this._raw.disconnect();
+    };
+
+
 
     /**
      * isConnected

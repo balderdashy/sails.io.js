@@ -196,7 +196,11 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
       }
 
       var scriptEl = document.createElement('script');
-      window._sailsIoJSConnect = cb;
+      window._sailsIoJSConnect = function(response) {
+        scriptEl.parentNode.removeChild(scriptEl);
+        
+        cb(response);
+      };
       scriptEl.src = opts.url;
       document.getElementsByTagName('head')[0].appendChild(scriptEl);
 
@@ -363,20 +367,77 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
       if (typeof self.query !== 'string') self.query = SDK_INFO.versionString;
       else self.query += '&' + SDK_INFO.versionString;
 
-      // If this is an attempt at a cross-origin or cross-port
-      // socket connection, send a JSONP request first to ensure
-      // that a valid cookie is available.  This can be disabled
-      // by setting `io.sails.useCORSRouteToGetCookie` to false.
-      var isXOrigin = self.url && true; //url.match();
-      // TODO:
-      // set reasonable default by checking whether the URL is cross-domain
-      // (just for convenience)
+      // Determine whether this is a cross-origin socket by examining the
+      // hostname and port on the `window.location` object.
+      var isXOrigin = (function (){
+
+        // If `window` doesn't exist (i.e. being used from node.js), then it's
+        // always "cross-domain".
+        if (typeof window === 'undefined' || typeof window.location === 'undefined') {
+          return false;
+        }
+
+        // If `self.url` (aka "target") is falsy, then we don't need to worry about it.
+        if (typeof self.url !== 'string') { return false; }
+        
+        // Get information about the "target" (`self.url`)
+        var targetProtocol = (function (){
+          try {
+            targetProtocol = self.url.match(/^([a-z]+:\/\/)/i)[1].toLowerCase();
+          }
+          catch (e) {}
+          targetProtocol = targetProtocol || 'http://';
+          return targetProtocol;
+        })();
+        var isTargetSSL = !!self.url.match('^https');
+        var targetPort = (function (){
+          try {
+            return self.url.match(/^[a-z]+:\/\/[^:]*:([0-9]*)/i)[1];
+          }
+          catch (e){}
+          return isTargetSSL ? '443' : '80';
+        })();
+        var targetAfterProtocol = self.url.replace(/^([a-z]+:\/\/)/i, '');
+
+
+        // If target protocol is different than the actual protocol,
+        // then we'll consider this cross-origin.
+        if (targetProtocol.replace(/[:\/]/g, '') !== window.location.protocol.replace(/[:\/]/g,'')) {
+          return true;
+        }
+
+
+        // If target hostname is different than actual hostname, we'll consider this cross-origin.
+        var hasSameHostname = targetAfterProtocol.search(window.location.hostname) !== 0;
+        if (!hasSameHostname) {
+          return true;
+        }
+
+        // If no actual port is explicitly set on the `window.location` object,
+        // we'll assume either 80 or 443.
+        var isLocationSSL = window.location.protocol.match(/https/i);
+        var locationPort = (window.location.port+'') || (isLocationSSL ? '443' : '80');
+
+        // Finally, if ports don't match, we'll consider this cross-origin.
+        if (targetPort !== locationPort) {
+          return true;
+        }
+
+        // Otherwise, it's the same origin.
+        return false;
+
+      })();
+
 
       // Prepare to start connecting the socket
       (function selfInvoking (cb){
 
-        // var port = global.location.port || ('https:' == global.location.protocol ? 443 : 80);
-        // this.options.host !== global.location.hostname || this.options.port != port;
+        // If this is an attempt at a cross-origin or cross-port
+        // socket connection, send a JSONP request first to ensure
+        // that a valid cookie is available.  This can be disabled
+        // by setting `io.sails.useCORSRouteToGetCookie` to false.
+        // 
+        // Otherwise, skip the stuff below.
         if (!(self.useCORSRouteToGetCookie && isXOrigin)) {
           return cb();
         }
