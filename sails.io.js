@@ -326,8 +326,8 @@
       // if an error occurs but a valid callback was not received from the client
       // (i.e. so the server had no other way to send back the error information)
       this.on('sails:parseError', function (err){
-        consolog(err.message);
-        consolog(err.details);
+        consolog('Sails encountered an error parsing a socket message sent from this client, and did not have access to a callback function to respond with.');
+        consolog('Error details:',err);
       });
 
 
