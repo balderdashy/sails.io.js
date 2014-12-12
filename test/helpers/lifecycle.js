@@ -23,7 +23,7 @@ module.exports = {
     // and lift it.
     var app = Sails();
     app.lift({
-      log: { level: 'silent' },
+      log: { level: 'error' },
       port: TEST_SERVER_PORT,
       sockets: {
         authorization: false
