@@ -374,46 +374,58 @@
           return false;
         }
 
-        // Check `url`
+        // If `self.url` (aka "target") is falsy, then we don't need to worry about it.
         if (typeof self.url !== 'string') { return false; }
-        var withProtocolStripped = self.url.replace(/^[a-z]+:\/\//i, '');
+        
+        // Get information about the "target" (`self.url`)
+        var targetProtocol = (function (){
+          try {
+            targetProtocol = self.url.match(/^([a-z]+:\/\/)/i)[1].toLowerCase();
+          }
+          catch (e) {}
+          targetProtocol = targetProtocol || 'http://';
+          return targetProtocol;
+        })();
+        var isTargetSSL = !!self.url.match('^https');
+        var targetPort = (function (){
+          try {
+            return self.url.match(/^[a-z]+:\/\/[^:]*:([0-9]*)/i)[1];
+          }
+          catch (e){}
+          return isTargetSSL ? '443' : '80';
+        })();
+        var targetAfterProtocol = self.url.replace(/^([a-z]+:\/\/)/i, '');
 
-        // Check for hostname match
-        var hasSameHostname = withProtocolStripped.search(window.location.hostname) !== 0;
+
+        // If target protocol is different than the actual protocol,
+        // then we'll consider this cross-origin.
+        if (targetProtocol.replace(/[:\/]/g, '') !== window.location.protocol.replace(/[:\/]/g,'')) {
+          return true;
+        }
+
+
+        // If target hostname is different than actual hostname, we'll consider this cross-origin.
+        var hasSameHostname = targetAfterProtocol.search(window.location.hostname) !== 0;
         if (!hasSameHostname) {
           return true;
         }
-        
-        // OK so at this point, the hostnames are the same.
-        // Let's check the port.
 
         // If no actual port is explicitly set on the `window.location` object,
         // we'll assume either 80 or 443.
-        var isSSL = window.location.protocol.match(/https/);
-        var actualPort = (window.location.port+'') || (isSSL ? '443' : '80');
-        var hasSamePort = (withProtocolStripped.search(':'+actualPort)) > -1;
-        if (hasSamePort) { return true; }
+        var isLocationSSL = window.location.protocol.match(/https/i);
+        var locationPort = (window.location.port+'') || (isLocationSSL ? '443' : '80');
 
-        // So at this point, the port is not explicitly in `self.url`, but it might
-        // still be on the same domain if the port is implied for the protocol
-        // (i.e. 80 or 443). We'll consider `self.url` a match even if it doesn't
-        // have ":80" or ":443" in it, as long the protocols match up.
-        if ((isSSL && actualPort === '443') || (!isSSL && actualPort === '80')) {
-          
-          // If there is an explicit port specified in `self.url`, then we're pointed
-          // at a different domain, because if the explicit port was correct, we would
-          // have already caught it above.
-          if (withProtocolStripped.match(/^[^:\/]:[0-9]+/)) {
-            return true;
-          }
-          else {
-            return false;
-          }
+        // Finally, if ports don't match, we'll consider this cross-origin.
+        if (targetPort !== locationPort) {
+          return true;
         }
+
+        // Otherwise, it's the same origin.
+        return false;
 
       })();
 
-      
+
       // Prepare to start connecting the socket
       (function selfInvoking (cb){
 
