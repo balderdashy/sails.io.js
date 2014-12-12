@@ -433,6 +433,8 @@
         // socket connection, send a JSONP request first to ensure
         // that a valid cookie is available.  This can be disabled
         // by setting `io.sails.useCORSRouteToGetCookie` to false.
+        // 
+        // Otherwise, skip the stuff below.
         if (!(self.useCORSRouteToGetCookie && isXOrigin)) {
           return cb();
         }
