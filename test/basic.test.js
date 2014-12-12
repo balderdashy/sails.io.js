@@ -2,6 +2,7 @@
  * Module dependencies
  */
 
+var util = require('util');
 var assert = require('assert');
 var lifecycle = require('./helpers/lifecycle');
 var _setupRoutes = require('./helpers/setupRoutes');
@@ -11,10 +12,10 @@ var _assertResponse = function ( expectedResponses ) {
     var jwr = callbackArgs[1];
 
     // Ensure JWR is valid
-    assert(typeof jwr === 'object');
+    assert.equal(typeof jwr, 'object');
 
     // Ensure body's type is correct
-    assert((typeof body) === (typeof expectedResponses[routeAddress].body));
+    assert.equal((typeof body),(typeof expectedResponses[routeAddress].body), util.format('Expecting type:%s:\n%s\n\nbut got type:%s:\n%s\n', (typeof expectedResponses[routeAddress].body), util.inspect(expectedResponses[routeAddress].body, false, null), (typeof body),util.inspect(body,false,null)));
 
     // Ensure body is the correct value
     assert.deepEqual(expectedResponses[routeAddress].body, body);
