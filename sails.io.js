@@ -759,33 +759,38 @@
     /**
      * Simulate an HTTP request to sails
      * e.g.
-     *    `socket.request('/user', newUser, $spinner.hide, 'post')`
+     * ```
+     * socket.request({
+     *   url:'/user',
+     *   params: {},
+     *   method: 'POST',
+     *   headers: {}
+     * }, function (responseBody, JWR) {
+     *   // ...
+     * });
+     * ```
      *
      * @api public
-     * @param {String} url    ::    destination URL
-     * @param {Object} params ::    parameters to send with the request [optional]
-     * @param {Function} cb   ::    callback function to call when finished [optional]
-     * @param {String} method ::    HTTP request method [optional]
+     * @option {String} url    ::    destination URL
+     * @option {Object} params ::    parameters to send with the request [optional]
+     * @option {Object} headers::    headers to send with the request [optional]
+     * @option {Function} cb   ::    callback function to call when finished [optional]
+     * @option {String} method ::    HTTP request method [optional]
      */
 
-    SailsSocket.prototype.request = function(url, data, cb, method) {
+    SailsSocket.prototype.request = function(options, cb) {
 
-      // `cb` is optional
-      if (typeof cb === 'string') {
-        method = cb;
-        cb = null;
-      }
-
-      // `data` is optional
-      if (typeof data === 'function') {
-        cb = data;
-        data = {};
+      // `options` are optional
+      if (typeof options === 'function') {
+        cb = options;
+        options = {};
       }
 
       return this._request({
         method: method || 'get',
-        data: data,
-        url: url
+        headers: options.headers || {},
+        data: options.params || {},
+        url: options.url
       }, cb);
     };
 
