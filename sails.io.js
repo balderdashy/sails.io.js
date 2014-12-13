@@ -264,19 +264,9 @@
       // console.log('Emitting:', sailsEndpoint, requestCtx);
       socket._raw.emit(sailsEndpoint, requestCtx, function serverResponded(responseCtx) {
 
-        // Adds backwards-compatibility for 0.9.x projects
-        // If `responseCtx.body` does not exist, the entire
-        // `responseCtx` object must actually be the `body`.
-        var body;
-        if (!responseCtx.body) {
-          body = responseCtx;
-        } else {
-          body = responseCtx.body;
-        }
-
         // Send back (emulatedHTTPBody, jsonWebSocketResponse)
         if (cb) {
-          cb(body, new JWR(responseCtx));
+          cb(responseCtx.body, new JWR(responseCtx));
         }
       });
     }
