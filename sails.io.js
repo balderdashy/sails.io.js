@@ -787,7 +787,7 @@
       }
 
       return this._request({
-        method: method || 'get',
+        method: options.method || 'get',
         headers: options.headers || {},
         data: options.params || {},
         url: options.url
