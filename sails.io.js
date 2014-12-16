@@ -79,7 +79,10 @@
   function SailsIOClient(io) {
 
     // Prefer the passed-in `io` instance, but also use the global one if we've got it.
-    io = io || _io;
+    if (!io) {
+      io = _io;
+    }
+
 
     // If the socket.io client is not available, none of this will work.
     if (!io) throw new Error('`sails.io.js` requires a socket.io client, but `io` was not passed in.');
@@ -467,8 +470,8 @@
 
       })(function goAheadAndActuallyConnect() {
 
-        // Now that we're ready to connect, get ahold of the actually underlying socket.io
-        // Socket and save it as `_raw`
+        // Now that we're ready to connect, create a raw underlying Socket
+        // using Socket.io and save it as `_raw` (this will start it connecting)
         self._raw = io(self.url, self);
 
         // Replay event bindings from the eager socket
