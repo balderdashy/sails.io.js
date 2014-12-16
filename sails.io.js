@@ -266,6 +266,7 @@
 
         // Send back (emulatedHTTPBody, jsonWebSocketResponse)
         if (cb) {
+          // console.log('\n* * *\nResponse:\n',responseCtx);
           cb(responseCtx.body, new JWR(responseCtx));
         }
       });
@@ -665,7 +666,7 @@
 
       return this.request({
         method: 'get',
-        data: data,
+        params: data,
         url: url
       }, cb);
     };
@@ -721,7 +722,7 @@
 
       return this.request({
         method: 'put',
-        data: data,
+        params: data,
         url: url
       }, cb);
     };
@@ -749,7 +750,7 @@
 
       return this.request({
         method: 'delete',
-        data: data,
+        params: data,
         url: url
       }, cb);
     };
@@ -826,7 +827,7 @@
         cb: cb
       };
 
-      // console.log('REQUESTING::',request);
+      // console.log('REQUESTING::',requestCtx);
 
       // If this socket is not connected yet, queue up this request
       // instead of sending it.

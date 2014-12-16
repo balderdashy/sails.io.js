@@ -239,7 +239,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
     };
     JWR.prototype.pipe = function() {
       // TODO: look at substack's stuff
-      return new Error('Not implemented yet.');
+      return new Error('Client-side streaming support not implemented yet.');
     };
 
 
@@ -260,26 +260,17 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
       var cb = requestCtx.cb;
       delete requestCtx.cb;
 
-
-      // Name of socket request listener on the server
-      // ( === the request method, e.g. 'get', 'post', 'put', etc. )
+      // Name of the appropriate socket.io listener on the server
+      // ( === the request method or "verb", e.g. 'get', 'post', 'put', etc. )
       var sailsEndpoint = requestCtx.method;
+
       // console.log('Emitting:', sailsEndpoint, requestCtx);
       socket._raw.emit(sailsEndpoint, requestCtx, function serverResponded(responseCtx) {
 
-        // Adds backwards-compatibility for 0.9.x projects
-        // If `responseCtx.body` does not exist, the entire
-        // `responseCtx` object must actually be the `body`.
-        var body;
-        if (!responseCtx.body) {
-          body = responseCtx;
-        } else {
-          body = responseCtx.body;
-        }
-
         // Send back (emulatedHTTPBody, jsonWebSocketResponse)
         if (cb) {
-          cb(body, new JWR(responseCtx));
+          console.log('\n* * *\nResponse:\n',responseCtx);
+          cb(responseCtx.body, new JWR(responseCtx));
         }
       });
     }
@@ -676,7 +667,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
         data = {};
       }
 
-      return this._request({
+      return this.request({
         method: 'get',
         data: data,
         url: url
@@ -704,7 +695,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
         data = {};
       }
 
-      return this._request({
+      return this.request({
         method: 'post',
         data: data,
         url: url
@@ -732,7 +723,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
         data = {};
       }
 
-      return this._request({
+      return this.request({
         method: 'put',
         data: data,
         url: url
@@ -760,7 +751,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
         data = {};
       }
 
-      return this._request({
+      return this.request({
         method: 'delete',
         data: data,
         url: url
@@ -772,34 +763,90 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
     /**
      * Simulate an HTTP request to sails
      * e.g.
-     *    `socket.request('/user', newUser, $spinner.hide, 'post')`
+     * ```
+     * socket.request({
+     *   url:'/user',
+     *   params: {},
+     *   method: 'POST',
+     *   headers: {}
+     * }, function (responseBody, JWR) {
+     *   // ...
+     * });
+     * ```
      *
      * @api public
-     * @param {String} url    ::    destination URL
-     * @param {Object} params ::    parameters to send with the request [optional]
-     * @param {Function} cb   ::    callback function to call when finished [optional]
-     * @param {String} method ::    HTTP request method [optional]
+     * @option {String} url    ::    destination URL
+     * @option {Object} params ::    parameters to send with the request [optional]
+     * @option {Object} headers::    headers to send with the request [optional]
+     * @option {Function} cb   ::    callback function to call when finished [optional]
+     * @option {String} method ::    HTTP request method [optional]
      */
 
-    SailsSocket.prototype.request = function(url, data, cb, method) {
+    SailsSocket.prototype.request = function(options, cb) {
 
-      // `cb` is optional
-      if (typeof cb === 'string') {
-        method = cb;
-        cb = null;
+      var usage =
+      'Usage:\n'+
+      'socket.request( options, [fnToCallWhenComplete] )\n\n'+
+      'options.url :: e.g. "/foo/bar"'+'\n'+
+      'options.method :: e.g. "get", "post", "put", or "delete", etc.'+'\n'+
+      'options.params :: e.g. { emailAddress: "mike@sailsjs.org" }'+'\n'+
+      'options.headers :: e.g. { "x-my-custom-header": "some string" }';
+      // Old usage:
+      // var usage = 'Usage:\n socket.'+(options.method||'request')+'('+
+      //   ' destinationURL, [dataToSend], [fnToCallWhenComplete] )';
+
+
+      // Validate options and callback
+      if (typeof options !== 'object' || typeof options.url !== 'string') {
+        throw new Error('Invalid or missing URL!\n' + usage);
+      }
+      if (options.method && typeof options.method !== 'string') {
+        throw new Error('Invalid `method` provided (should be a string like "post" or "put")\n' + usage);
+      }
+      if (options.headers && typeof options.headers !== 'object') {
+        throw new Error('Invalid `headers` provided (should be an object with string values)\n' + usage);
+      }
+      if (options.params && typeof options.params !== 'object') {
+        throw new Error('Invalid `params` provided (should be an object with string values)\n' + usage);
+      }
+      if (cb && typeof cb !== 'function') {
+        throw new Error('Invalid callback function!\n' + usage);
+      }
+      
+
+      // Build a simulated request object
+      // (and sanitize/marshal options along the way)
+      var requestCtx = {
+
+        method: options.method.toLowerCase() || 'get',
+
+        headers: options.headers || {},
+
+        data: options.params || options.data || {},
+
+        // Remove trailing slashes and spaces to make packets smaller.
+        url: options.url.replace(/^(.+)\/*\s*$/, '$1'),
+
+        cb: cb
+      };
+
+      console.log('REQUESTING::',requestCtx);
+
+      // If this socket is not connected yet, queue up this request
+      // instead of sending it.
+      // (so it can be replayed when the socket comes online.)
+      if ( ! this.isConnected() ) {
+
+        // If no queue array exists for this socket yet, create it.
+        this.requestQueue = this.requestQueue || [];
+        this.requestQueue.push(requestCtx);
+        return;
       }
 
-      // `data` is optional
-      if (typeof data === 'function') {
-        cb = data;
-        data = {};
-      }
 
-      return this._request({
-        method: method || 'get',
-        data: data,
-        url: url
-      }, cb);
+      // Otherwise, our socket is ok!
+      // Send the request.
+      _emitFrom(this, requestCtx);
     };
 
 
@@ -814,48 +861,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
      * @param  {Function} cb      [description]
      */
     SailsSocket.prototype._request = function(options, cb) {
-
-      // Sanitize options (also data & headers)
-      var usage = 'Usage:\n socket.' +
-        (options.method || 'request') +
-        '( destinationURL, [dataToSend], [fnToCallWhenComplete] )';
-
-      options = options || {};
-      options.data = options.data || {};
-      options.headers = options.headers || {};
-
-      // Remove trailing slashes and spaces to make packets smaller.
-      options.url = options.url.replace(/^(.+)\/*\s*$/, '$1');
-      if (typeof options.url !== 'string') {
-        throw new Error('Invalid or missing URL!\n' + usage);
-      }
-
-      // Build a simulated request object.
-      var request = {
-        method: options.method,
-        data: options.data,
-        url: options.url,
-        headers: options.headers,
-        cb: cb
-      };
-
-      // console.log('REQUESTING::',request);
-
-      // If this socket is not connected yet, queue up this request
-      // instead of sending it.
-      // (so it can be replayed when the socket comes online.)
-      if ( ! this.isConnected() ) {
-
-        // If no queue array exists for this socket yet, create it.
-        this.requestQueue = this.requestQueue || [];
-        this.requestQueue.push(request);
-        return;
-      }
-
-
-      // Otherwise, our socket is ok!
-      // Send the request.
-      _emitFrom(this, request);
+      throw new Error('`_request()` was a private API deprecated as of v0.11 of the sails.io.js client. Use `.request()` instead.');
     };
 
 
