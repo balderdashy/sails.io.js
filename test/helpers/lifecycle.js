@@ -35,6 +35,8 @@ module.exports = {
       io = sailsIO(io);
       // Set some options.
       io.sails.url = 'http://localhost:'+TEST_SERVER_PORT;
+      // Disable the sails.io.js client's logger
+      io.sails.environment = 'production';
       
       // Globalize sails app as `server`
       global.server = app;

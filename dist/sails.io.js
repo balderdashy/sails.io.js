@@ -269,7 +269,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
 
         // Send back (emulatedHTTPBody, jsonWebSocketResponse)
         if (cb) {
-          console.log('\n* * *\nResponse:\n',responseCtx);
+          // console.log('\n* * *\nResponse:\n',responseCtx);
           cb(responseCtx.body, new JWR(responseCtx));
         }
       });
@@ -669,7 +669,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
 
       return this.request({
         method: 'get',
-        data: data,
+        params: data,
         url: url
       }, cb);
     };
@@ -725,7 +725,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
 
       return this.request({
         method: 'put',
-        data: data,
+        params: data,
         url: url
       }, cb);
     };
@@ -753,7 +753,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
 
       return this.request({
         method: 'delete',
-        data: data,
+        params: data,
         url: url
       }, cb);
     };
@@ -830,7 +830,7 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
         cb: cb
       };
 
-      console.log('REQUESTING::',requestCtx);
+      // console.log('REQUESTING::',requestCtx);
 
       // If this socket is not connected yet, queue up this request
       // instead of sending it.

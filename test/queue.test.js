@@ -148,6 +148,9 @@ function _getFreshClient (url) {
   // Instantiate a sails.io.js client and configure the url.
   var io = sailsIO(socketIOClient);
   io.sails.url = url||'http://localhost:'+TEST_SERVER_PORT;
+  // Disable logger in sails.io.js client
+  io.sails.environment = 'production';
+  
   return io;
 }
 
