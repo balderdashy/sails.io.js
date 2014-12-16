@@ -483,11 +483,14 @@
 
           consolog.noPrefix(
             '\n' +
+            '\n' +
             // '    |>    ' + '\n' +
             // '  \\___/  '+️
             // '\n'+
              '  |>    Now connected to Sails.' + '\n' +
             '\\___/   For help, see: http://bit.ly/1DmTvgK' + '\n' +
+             '        (using '+io.sails.sdk.platform+' SDK @v'+io.sails.sdk.version+')'+ '\n' +
+            '\n'+
             '\n'+
             // '\n'+
             ''
@@ -495,8 +498,6 @@
             // 'e.g. to send a GET request to Sails via WebSockets, run:'+ '\n' +
             // '`io.socket.get("/foo", function serverRespondedWith (body, jwr) { console.log(body); })`'+ '\n' +
           );
-          // consolog('(sails.io.js JavaScript SDK version '+SDK_INFO.version+')');
-          consolog('('+io.sails.sdk.platform+' SDK@v'+io.sails.sdk.version+')');
         });
         
         self.on('disconnect', function() {
@@ -511,16 +512,22 @@
 
         self.on('reconnecting', function(numAttempts) {
           consolog(
-            'Socket is trying to reconnect to Sails...' +
-            '(attempt #' + numAttempts + ')');
+            '\n'+
+            '        Socket is trying to reconnect to Sails...\n'+
+            '_-|>_-  (attempt #' + numAttempts + ')'+'\n'+
+            '\n'
+          );
         });
       
         self.on('reconnect', function(transport, numAttempts) {
           var msSinceConnectionLost = ((new Date()).getTime() - self.connectionLostTimestamp);
           var numSecsOffline = (msSinceConnectionLost / 1000);
           consolog(
-            'Socket reconnected successfully after being offline ' +
-            'for ~' + numSecsOffline + ' seconds.');
+            '\n'+
+             '  |>    Socket reconnected successfully after'+'\n'+
+            '\\___/   being offline for ~' + numSecsOffline + ' seconds.'+'\n'+
+            '\n'
+          );
         });
       
         // 'error' event is triggered if connection can not be established.
