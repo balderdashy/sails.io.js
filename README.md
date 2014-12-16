@@ -24,6 +24,29 @@ JavaScript SDK for communicating w/ Sails via sockets from Node.js or the browse
 
 #### Installation
 
+The `sails.io.js` client comes automatically installed in new Sails projects, but there is nothing _project-specific_ about the client SDK.  You can just as easily copy and paste it yourself, get it from Bower, or just link a script tag directly to a hosted CDN.
+
+<!--
+##### With a CDN
+
+CDNs can offer a performance benefit by hosting sails.io.js on servers spread across the globe. This also offers an advantage that if the visitor to your webpage has already downloaded a copy of `sails.io.js` on another website, but from the same CDN, it won't have to be re-downloaded.
+
+TODO: sourcemaps
+
+TODO: code examples for different CDNs
+To use the CDN, just reference the file directly in a script tag:
+
+(e.g. <script src="//..."></script>)
+
+MaxCDN
+Google CDN
+Microsoft CDN
+CDNJS CDN
+jsDelivr CDN
+-->
+
+###### Using Bower
+
 ```sh
 $ bower install sails.io.js
 ```
@@ -73,6 +96,16 @@ Connect to a server other than the one that served ths project (i.e. on a differ
 io.sails.url = 'https://api.mysite.com';
 </script>
 ```
+
+> Note that in order for `req.session` on a cross-domain server to work, there is a bit of pregaming that sails.io.js does behind the scenes.  This is because it relies on cookies, and browsers (thankfully) do not let us access cross-origin cookies.
+> This JavaScript SDK circumvents that issue by (1) detecting a cross-origin scenario by examining `window.location` (if available) and comparing it with the connection base URL, then (2) sending a JSONP request to the cross-origin server in order to gain access to a cookie.
+> In order for that to work, the cross-origin sails server must have CORS enabled for `http://yourdomain.com` so that 3rd-party cookies are granted with the JSONP request.
+> Fortunately, Sails supports this behavior out of the box.
+> 
+> For example, imagine the sails.io.js client is being used on a webpage served from a Sails server (or any other kind of server, like nginx) at `http://yourdomain.com`, but you need to connect a WebSocket to a different Sails server at `http://api.your-other-domain.com`.
+> First, sails.io.js will send a JSONP request to the configured "cookie route" (i.e. `/__getcookie` by default).  That particular "cookie route" comes with CORS enabled out of the box, which means it will grant cookies to 3rd party domains.  In your `config/sockets.js` file, you can restrict cross-domain cookie access to particular domains (i.e. `http://yourdomain.com`, in this example)
+
+
 
 
 ###### Disable `autoConnect` and/or connect sockets manually
