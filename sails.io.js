@@ -495,6 +495,8 @@
             // 'e.g. to send a GET request to Sails via WebSockets, run:'+ '\n' +
             // '`io.socket.get("/foo", function serverRespondedWith (body, jwr) { console.log(body); })`'+ '\n' +
           );
+          // consolog('(sails.io.js JavaScript SDK version '+SDK_INFO.version+')');
+          consolog('('+io.sails.sdk.platform+' SDK@v'+io.sails.sdk.version+')');
         });
         
         self.on('disconnect', function() {
@@ -880,7 +882,10 @@
       // Defaults to development unless this script was fetched from a URL
       // that ends in `*.min.js` or '#production' (may also be manually overridden.)
       // 
-      environment: urlThisScriptWasFetchedFrom.match(/(\#production|\.min\.js)/g) ? 'production' : 'development'
+      environment: urlThisScriptWasFetchedFrom.match(/(\#production|\.min\.js)/g) ? 'production' : 'development',
+
+      // The version of this sails.io.js client SDK
+      sdk: SDK_INFO
     };
 
 
