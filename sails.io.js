@@ -211,11 +211,12 @@
     /**
      * The JWR (JSON WebSocket Response) received from a Sails server.
      *
-     * @api private
+     * @api public
      * @param  {Object}  responseCtx
      *         => :body
      *         => :statusCode
      *         => :headers
+     * 
      * @constructor
      */
 
@@ -223,6 +224,9 @@
       this.body = responseCtx.body || {};
       this.headers = responseCtx.headers || {};
       this.statusCode = responseCtx.statusCode || 200;
+      if (this.statusCode < 200 || this.statusCode >= 400) {
+        this.error = this.body || this.statusCode;
+      }
     }
     JWR.prototype.toString = function() {
       return '[ResponseFromSails]' + '  -- ' +
