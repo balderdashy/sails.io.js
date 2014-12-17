@@ -268,12 +268,10 @@
       // ( === the request method or "verb", e.g. 'get', 'post', 'put', etc. )
       var sailsEndpoint = requestCtx.method;
 
-      // console.log('Emitting:', sailsEndpoint, requestCtx);
       socket._raw.emit(sailsEndpoint, requestCtx, function serverResponded(responseCtx) {
 
         // Send back (emulatedHTTPBody, jsonWebSocketResponse)
         if (cb) {
-          // console.log('\n* * *\nResponse:\n',responseCtx);
           cb(responseCtx.body, new JWR(responseCtx));
         }
       });
@@ -320,6 +318,7 @@
       // Absorb opts
       self.useCORSRouteToGetCookie = opts.useCORSRouteToGetCookie;
       self.url = opts.url;
+      self.multiplex = opts.multiplex;
 
       // Set up "eventQueue" to hold event handlers which have not been set on the actual raw socket yet.
       self.eventQueue = {};
@@ -842,8 +841,6 @@
 
         cb: cb
       };
-
-      // console.log('REQUESTING::',requestCtx);
 
       // If this socket is not connected yet, queue up this request
       // instead of sending it.
