@@ -82,7 +82,10 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
   function SailsIOClient(io) {
 
     // Prefer the passed-in `io` instance, but also use the global one if we've got it.
-    io = io || _io;
+    if (!io) {
+      io = _io;
+    }
+
 
     // If the socket.io client is not available, none of this will work.
     if (!io) throw new Error('`sails.io.js` requires a socket.io client, but `io` was not passed in.');
@@ -470,8 +473,8 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
 
       })(function goAheadAndActuallyConnect() {
 
-        // Now that we're ready to connect, get ahold of the actually underlying socket.io
-        // Socket and save it as `_raw`
+        // Now that we're ready to connect, create a raw underlying Socket
+        // using Socket.io and save it as `_raw` (this will start it connecting)
         self._raw = io(self.url, self);
 
         // Replay event bindings from the eager socket
@@ -486,11 +489,14 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
 
           consolog.noPrefix(
             '\n' +
+            '\n' +
             // '    |>    ' + '\n' +
             // '  \\___/  '+️
             // '\n'+
              '  |>    Now connected to Sails.' + '\n' +
             '\\___/   For help, see: http://bit.ly/1DmTvgK' + '\n' +
+             '        (using '+io.sails.sdk.platform+' SDK @v'+io.sails.sdk.version+')'+ '\n' +
+            '\n'+
             '\n'+
             // '\n'+
             ''
@@ -512,16 +518,22 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
 
         self.on('reconnecting', function(numAttempts) {
           consolog(
-            'Socket is trying to reconnect to Sails...' +
-            '(attempt #' + numAttempts + ')');
+            '\n'+
+            '        Socket is trying to reconnect to Sails...\n'+
+            '_-|>_-  (attempt #' + numAttempts + ')'+'\n'+
+            '\n'
+          );
         });
       
         self.on('reconnect', function(transport, numAttempts) {
           var msSinceConnectionLost = ((new Date()).getTime() - self.connectionLostTimestamp);
           var numSecsOffline = (msSinceConnectionLost / 1000);
           consolog(
-            'Socket reconnected successfully after being offline ' +
-            'for ~' + numSecsOffline + ' seconds.');
+            '\n'+
+             '  |>    Socket reconnected successfully after'+'\n'+
+            '\\___/   being offline for ~' + numSecsOffline + ' seconds.'+'\n'+
+            '\n'
+          );
         });
       
         // 'error' event is triggered if connection can not be established.
@@ -883,7 +895,10 @@ var io="undefined"==typeof module?{}:module.exports;(function(){(function(a,b){v
       // Defaults to development unless this script was fetched from a URL
       // that ends in `*.min.js` or '#production' (may also be manually overridden.)
       // 
-      environment: urlThisScriptWasFetchedFrom.match(/(\#production|\.min\.js)/g) ? 'production' : 'development'
+      environment: urlThisScriptWasFetchedFrom.match(/(\#production|\.min\.js)/g) ? 'production' : 'development',
+
+      // The version of this sails.io.js client SDK
+      sdk: SDK_INFO
     };
 
 
