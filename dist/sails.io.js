@@ -218,11 +218,12 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
     /**
      * The JWR (JSON WebSocket Response) received from a Sails server.
      *
-     * @api private
+     * @api public
      * @param  {Object}  responseCtx
      *         => :body
      *         => :statusCode
      *         => :headers
+     * 
      * @constructor
      */
 
@@ -230,6 +231,9 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
       this.body = responseCtx.body || {};
       this.headers = responseCtx.headers || {};
       this.statusCode = responseCtx.statusCode || 200;
+      if (this.statusCode < 200 || this.statusCode >= 400) {
+        this.error = this.body || this.statusCode;
+      }
     }
     JWR.prototype.toString = function() {
       return '[ResponseFromSails]' + '  -- ' +
@@ -271,12 +275,10 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
       // ( === the request method or "verb", e.g. 'get', 'post', 'put', etc. )
       var sailsEndpoint = requestCtx.method;
 
-      // console.log('Emitting:', sailsEndpoint, requestCtx);
       socket._raw.emit(sailsEndpoint, requestCtx, function serverResponded(responseCtx) {
 
         // Send back (emulatedHTTPBody, jsonWebSocketResponse)
         if (cb) {
-          // console.log('\n* * *\nResponse:\n',responseCtx);
           cb(responseCtx.body, new JWR(responseCtx));
         }
       });
@@ -323,6 +325,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
       // Absorb opts
       self.useCORSRouteToGetCookie = opts.useCORSRouteToGetCookie;
       self.url = opts.url;
+      self.multiplex = opts.multiplex;
 
       // Set up "eventQueue" to hold event handlers which have not been set on the actual raw socket yet.
       self.eventQueue = {};
@@ -662,7 +665,48 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
       return this;
     };
 
+    /**
+     * Chainable method to unbind an event from the socket.
+     * 
+     * @param  {String}   evName [event name]
+     * @param  {Function} fn     [event handler function]
+     * @return {SailsSocket}
+     */
+    SailsSocket.prototype.off = function (evName, fn){
 
+      // Bind the event to the raw underlying socket if possible.
+      if (this._raw) {
+        this._raw.off(evName, fn);
+        return this;
+      }
+
+      // Otherwise queue the event binding.
+      if (this.eventQueue[evName] && this.eventQueue[evName].indexOf(fn) > -1) {
+        this.eventQueue[evName].splice(this.eventQueue[evName].indexOf(fn), 1);
+      }
+
+      return this;
+    };
+
+
+    /**
+     * Chainable method to unbind all events from the socket.
+     * 
+     * @return {SailsSocket}
+     */
+    SailsSocket.prototype.removeAllListeners = function (){
+
+      // Bind the event to the raw underlying socket if possible.
+      if (this._raw) {
+        this._raw.removeAllListeners();
+        return this;
+      }
+
+      // Otherwise queue the event binding.
+      this.eventQueue = {};
+      
+      return this;
+    };
 
     /**
      * Simulate a GET request to sails
@@ -845,8 +889,6 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
 
         cb: cb
       };
-
-      // console.log('REQUESTING::',requestCtx);
 
       // If this socket is not connected yet, queue up this request
       // instead of sending it.
