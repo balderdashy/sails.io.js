@@ -658,7 +658,48 @@
       return this;
     };
 
+    /**
+     * Chainable method to unbind an event from the socket.
+     * 
+     * @param  {String}   evName [event name]
+     * @param  {Function} fn     [event handler function]
+     * @return {SailsSocket}
+     */
+    SailsSocket.prototype.off = function (evName, fn){
 
+      // Bind the event to the raw underlying socket if possible.
+      if (this._raw) {
+        this._raw.off(evName, fn);
+        return this;
+      }
+
+      // Otherwise queue the event binding.
+      if (this.eventQueue[evName] && this.eventQueue[evName].indexOf(fn) > -1) {
+        this.eventQueue[evName].splice(this.eventQueue[evName].indexOf(fn), 1);
+      }
+
+      return this;
+    };
+
+
+    /**
+     * Chainable method to unbind all events from the socket.
+     * 
+     * @return {SailsSocket}
+     */
+    SailsSocket.prototype.removeAllListeners = function (){
+
+      // Bind the event to the raw underlying socket if possible.
+      if (this._raw) {
+        this._raw.removeAllListeners();
+        return this;
+      }
+
+      // Otherwise queue the event binding.
+      this.eventQueue = {};
+      
+      return this;
+    };
 
     /**
      * Simulate a GET request to sails
