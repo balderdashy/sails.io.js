@@ -134,6 +134,16 @@ setTimeout(function (){
 
 > Note that the `io.sails` config functions as the default for all connected sockets, but it can be overridden on a socket-by-socket basis by passing in an object to `io.sails.connect(opts)`
 
+###### Change the `transports` used to connect to the server
+
+In some cases you may want to change the transorts that the socket client uses to connect to the server, and vice versa.  For instance, some server environments--*notably Heroku*--do not support "sticky load balancing", causing the "polling" transport to fail.  In these cases, you should first [change the transports listed in the `config/sockets.js` file](http://sailsjs.org/#/documentation/reference/sails.config/sails.config.sockets.html?q=advanced-configuration) in your Sails app.  Then change the transports in the client by setting `io.sails.transports`:
+
+```
+<script type="text/javascript" src="./path/to/bower_components/sails.io.js"></script>
+<script type="text/javascript">
+  io.sails.transports = ['websocket'];
+</script>
+```
 
 
 ========================================
