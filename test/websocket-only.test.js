@@ -41,13 +41,16 @@ var assertResponse = _assertResponse(EXPECTED_RESPONSES);
 
 describe('io.socket', function () {
 
-  describe('With default settings', function() {
-    before(lifecycle.setup);
-    before(setupRoutes);
+  describe('With transport: [\'websocket\']', function() {
 
-    it('should connect automatically', function (cb) {
-      io.socket.on('connect', cb);
+    var socket;
+    before(function(done) {
+      lifecycle.setup({transports: ['websocket']}, function() {
+        // socket = io.sails.connect(io.sails.url);
+        done();
+      });
     });
+    before(setupRoutes);
 
     describe('once connected, socket', function () {
 
