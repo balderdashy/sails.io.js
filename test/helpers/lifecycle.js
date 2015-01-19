@@ -2,10 +2,8 @@
  * Module dependencies
  */
 
-var io = require('socket.io-client');
-var sailsIO = require('../../sails.io.js');
 var Sails = require('sails/lib/app');
-
+var _ = require('lodash');
 
 // Use a weird port to avoid tests failing if we
 // forget to shut down another Sails app
@@ -17,7 +15,23 @@ var TEST_SERVER_PORT = 1577;
  */
 module.exports = {
 
-  setup: function (cb) {
+  setup: function (opts, cb) {
+
+    // Invalidate socket.io-client in require cache
+    _.each(_.keys(require.cache), function (modulePath) {
+      if (modulePath.match(/socket.io-client/)){
+        delete require.cache[modulePath];
+      }
+    });
+
+    // Require socket.io-client and sails.io.js fresh
+    var io = require('socket.io-client');
+    var sailsIO = require('../../sails.io.js');
+
+    if (typeof opts == 'function') {
+      cb = opts;
+      opts = {};
+    }
 
     // New up an instance of Sails
     // and lift it.
@@ -26,7 +40,8 @@ module.exports = {
       log: { level: 'error' },
       port: TEST_SERVER_PORT,
       sockets: {
-        authorization: false
+        authorization: false,
+        transports: opts.transports
       }
     },function (err) {
       if (err) return cb(err);
@@ -34,16 +49,31 @@ module.exports = {
       // Instantiate socket client.
       io = sailsIO(io);
       // Set some options.
-      io.sails.url = 'http://localhost:'+TEST_SERVER_PORT;
+      io.sails.url = opts.url || 'http://localhost:'+TEST_SERVER_PORT;
       // Disable the sails.io.js client's logger
-      io.sails.environment = 'production';
-      
+      io.sails.environment = opts.environment || 'production';
+
+      if (typeof (opts.multiplex) != 'undefined') {
+        io.sails.multiplex = opts.multiplex;
+      }
+
+      if (typeof (opts.transports) != 'undefined') {
+        io.sails.transports = opts.transports;
+      }
+
+      if (typeof (opts.autoConnect) != 'undefined') {
+        io.sails.autoConnect = opts.autoConnect;
+      }
+
+      if (typeof (opts.useCORSRouteToGetCookie) != 'undefined') {
+        io.sails.useCORSRouteToGetCookie = opts.useCORSRouteToGetCookie;
+      }
+
       // Globalize sails app as `server`
       global.server = app;
 
       // Globalize sails.io client as `io`
       global.io = io;
-
       return cb(err);
     });
     
