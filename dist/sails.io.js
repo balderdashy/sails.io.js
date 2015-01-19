@@ -326,6 +326,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
       self.useCORSRouteToGetCookie = opts.useCORSRouteToGetCookie;
       self.url = opts.url;
       self.multiplex = opts.multiplex;
+      self.transports = opts.transports;
 
       // Set up "eventQueue" to hold event handlers which have not been set on the actual raw socket yet.
       self.eventQueue = {};
@@ -359,6 +360,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
       // (now that at least one tick has elapsed)
       self.useCORSRouteToGetCookie = self.useCORSRouteToGetCookie||io.sails.useCORSRouteToGetCookie;
       self.url = self.url||io.sails.url;
+      self.transports = self.transports || io.sails.transports;
 
       // Ensure URL has no trailing slash
       self.url = self.url ? self.url.replace(/(\/)$/, '') : undefined;
@@ -944,7 +946,10 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
       environment: urlThisScriptWasFetchedFrom.match(/(\#production|\.min\.js)/g) ? 'production' : 'development',
 
       // The version of this sails.io.js client SDK
-      sdk: SDK_INFO
+      sdk: SDK_INFO,
+
+      // Transports to use when communicating with the server, in the order they will be tried
+      transports: ['polling', 'websocket']
     };
 
 
