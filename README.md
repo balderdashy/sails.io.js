@@ -51,6 +51,7 @@ jsDelivr CDN
 $ bower install sails.io.js
 ```
 
+> Always use the version of `sails.io.js` that is compatible with your version of Sails.  This repository (and Bower) will always include the version of `sails.io.js` that is compatible with the *latest* Sails version.  If you have an older install, use the copy that is included in the `assets/js/dependencies` folder of your Sails app.
 
 #### Basic Usage
 
