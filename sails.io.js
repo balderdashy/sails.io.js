@@ -479,15 +479,14 @@
         // using Socket.io and save it as `_raw` (this will start it connecting)
         self._raw = io(self.url, self);
 
-        // Replay event bindings from the eager socket
-        self.replay();
-
-
         /**
          * 'connect' event is triggered when the socket establishes a connection
          *  successfully.
          */
         self.on('connect', function socketConnected() {
+
+          // Replay event bindings from the eager socket
+          self.replay();
 
           consolog.noPrefix(
             '\n' +
