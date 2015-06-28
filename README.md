@@ -199,7 +199,7 @@ See the [tests in this repository](https://github.com/balderdashy/sails.io.js/bl
 
 ### Version
 
-This repository holds the socket client SDK for Sails versions 0.10.0 and up.  If you're looking for the SDK for the v0.9.x releases of Sails, the source is [located here](https://github.com/balderdashy/sails/blob/v0.9.16/bin/boilerplates/assets/js/sails.io.js).
+This repository holds the socket client SDK for Sails versions 0.11.0 and up.  If you're looking for the SDK for the v0.9.x releases of Sails, the source is [located here](https://github.com/balderdashy/sails/blob/v0.9.16/bin/boilerplates/assets/js/sails.io.js).  If you're looking for v0.10.x, check out the relevant [tags](https://github.com/balderdashy/sails.io.js/releases/tag/v0.10.3).
 
 ========================================
 
