@@ -139,12 +139,31 @@ setTimeout(function (){
 
 In some cases you may want to change the transorts that the socket client uses to connect to the server, and vice versa.  For instance, some server environments--*notably Heroku*--do not support "sticky load balancing", causing the "polling" transport to fail.  In these cases, you should first [change the transports listed in the `config/sockets.js` file](http://sailsjs.org/#/documentation/reference/sails.config/sails.config.sockets.html?q=advanced-configuration) in your Sails app.  Then change the transports in the client by setting `io.sails.transports`:
 
-```
+```html
 <script type="text/javascript" src="./path/to/bower_components/sails.io.js"></script>
 <script type="text/javascript">
   io.sails.transports = ['websocket'];
 </script>
 ```
+
+
+#### RequireJS/AMD Usage
+
+To use this in an AMD environment, *use the sails.io.js in the root* of this repo, not in dist. The dist build bundles a version of the socket.io client which will cause errors when trying to load two anonymous AMD modules from the same file. The file in root is not bundled with socket.io
+
+Usage with AMD will be very similar as node. Require in sails.io, socket.io, and instantiate the sails.io client:
+
+```js
+define(['path/to/socketIOClient', 'path/to/sailsIOClient'], function(socketIOClient, sailsIOClient)  {
+    var io = sailsIOClient(socketIOClient);
+    io.sails.url = 'http:/example.com';
+
+    io.socket.get('/example/path', { data: 'example' }, function(response) {
+        console.log('got response', response)
+    });
+});
+```
+
 
 
 ========================================
