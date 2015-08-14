@@ -1017,10 +1017,17 @@
     module.exports = SailsIOClient;
     return SailsIOClient;
   }
-
-  // Otherwise, try to instantiate the client:
-  // In case you're wrapping the socket.io client to prevent pollution of the
-  // global namespace, you can replace the global `io` with your own `io` here:
-  return SailsIOClient();
-
+  else if (typeof define === 'function' && define.amd) {
+      // AMD. Register as an anonymous module.
+      define([], function() {
+        return SailsIOClient;
+      });
+  }
+  else {
+    // Otherwise, try to instantiate the client:
+    // In case you're wrapping the socket.io client to prevent pollution of the
+    // global namespace, you can replace the global `io` with your own `io` here:
+    return SailsIOClient();
+  }
+  
 })();
