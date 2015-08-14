@@ -6,6 +6,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
 
     PATHS: {
+      amdInstructions: './dependencies/amd_instructions.js',
       socketioClient: './dependencies/socket.io.min.js',
       sailsio: './sails.io.js',
       dist: './dist/sails.io.js'
@@ -16,7 +17,7 @@ module.exports = function(grunt) {
         separator: ';\n\n',
       },
       dev: {
-        src: ['<%= PATHS.socketioClient %>', '<%= PATHS.sailsio %>'],
+        src: ['<%= PATHS.amdInstructions %>', '<%= PATHS.socketioClient %>', '<%= PATHS.sailsio %>'],
         dest: '<%= PATHS.dist %>'
       }
     },
