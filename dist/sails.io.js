@@ -165,11 +165,11 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
 
     /**
      * What is the `requestQueue`?
-     * 
+     *
      * The request queue is used to simplify app-level connection logic--
      * i.e. so you don't have to wait for the socket to be connected
      * to start trying to  synchronize data.
-     * 
+     *
      * @api private
      * @param  {SailsSocket}  socket
      */
@@ -199,7 +199,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
 
     /**
      * Send a JSONP request.
-     * 
+     *
      * @param  {Object}   opts [optional]
      * @param  {Function} cb
      * @return {XMLHttpRequest}
@@ -216,7 +216,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
       var scriptEl = document.createElement('script');
       window._sailsIoJSConnect = function(response) {
         scriptEl.parentNode.removeChild(scriptEl);
-        
+
         cb(response);
       };
       scriptEl.src = opts.url;
@@ -234,7 +234,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
      *         => :body
      *         => :statusCode
      *         => :headers
-     * 
+     *
      * @constructor
      */
 
@@ -302,9 +302,9 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
 
 
     // Version note:
-    // 
+    //
     // `io.SocketNamespace.prototype` doesn't exist in sio 1.0.
-    // 
+    //
     // Rather than adding methods to the prototype for the Socket instance that is returned
     // when the browser connects with `io.connect()`, we create our own constructor, `SailsSocket`.
     // This makes our solution more future-proof and helps us work better w/ the Socket.io team
@@ -317,7 +317,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
 
     /**
      * SailsSocket
-     * 
+     *
      * A wrapper for an underlying Socket instance that communicates directly
      * to the Socket.io server running inside of Sails.
      *
@@ -325,10 +325,10 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
      * requests and event handler bindings, replaying them when the raw underlying socket actually
      * connects. This is handy when we don't necessarily have the valid configuration to know
      * WHICH SERVER to talk to yet, etc.  It is also used by `io.socket` for your convenience.
-     * 
+     *
      * @constructor
      */
-    
+
     function SailsSocket (opts){
       var self = this;
       opts = opts||{};
@@ -361,7 +361,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
 
     /**
      * Start connecting this socket.
-     * 
+     *
      * @api private
      */
     SailsSocket.prototype._connect = function (){
@@ -393,7 +393,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
 
         // If `self.url` (aka "target") is falsy, then we don't need to worry about it.
         if (typeof self.url !== 'string') { return false; }
-        
+
         // Get information about the "target" (`self.url`)
         var targetProtocol = (function (){
           try {
@@ -450,7 +450,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
         // socket connection, send a JSONP request first to ensure
         // that a valid cookie is available.  This can be disabled
         // by setting `io.sails.useCORSRouteToGetCookie` to false.
-        // 
+        //
         // Otherwise, skip the stuff below.
         if (!(self.useCORSRouteToGetCookie && isXOrigin)) {
           return cb();
@@ -525,7 +525,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
             // '`io.socket.get("/foo", function serverRespondedWith (body, jwr) { console.log(body); })`'+ '\n' +
           );
         });
-        
+
         self.on('disconnect', function() {
           self.connectionLostTimestamp = (new Date()).getTime();
           consolog('====================================');
@@ -544,7 +544,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
             '\n'
           );
         });
-      
+
         self.on('reconnect', function(transport, numAttempts) {
           var msSinceConnectionLost = ((new Date()).getTime() - self.connectionLostTimestamp);
           var numSecsOffline = (msSinceConnectionLost / 1000);
@@ -555,7 +555,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
             '\n'
           );
         });
-      
+
         // 'error' event is triggered if connection can not be established.
         // (usually because of a failed authorization, which is in turn
         // usually due to a missing or invalid cookie)
@@ -654,7 +654,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
 
     /**
      * Chainable method to bind an event to the socket.
-     * 
+     *
      * @param  {String}   evName [event name]
      * @param  {Function} fn     [event handler function]
      * @return {SailsSocket}
@@ -679,8 +679,30 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
     };
 
     /**
+     * Adds an `event` listener that will be invoked a single
+     * time then automatically removed.
+     *
+     * @param  {String}   evName [event name]
+     * @param  {Function} fn     [event handler function]
+     * @return {SailsSocket}
+     */
+
+    SailsSocket.prototype.once = function(event, fn){
+      var self = this;
+
+      function on() {
+        self.off(event, on);
+        fn.apply(this, arguments);
+      }
+
+      on.fn = fn;
+      this.on(event, on);
+      return this;
+    };
+
+    /**
      * Chainable method to unbind an event from the socket.
-     * 
+     *
      * @param  {String}   evName [event name]
      * @param  {Function} fn     [event handler function]
      * @return {SailsSocket}
@@ -704,7 +726,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
 
     /**
      * Chainable method to unbind all events from the socket.
-     * 
+     *
      * @return {SailsSocket}
      */
     SailsSocket.prototype.removeAllListeners = function (){
@@ -717,7 +739,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
 
       // Otherwise queue the event binding.
       this.eventQueue = {};
-      
+
       return this;
     };
 
@@ -885,7 +907,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
       if (cb && typeof cb !== 'function') {
         throw new Error('Invalid callback function!\n' + usage);
       }
-      
+
 
       // Build a simulated request object
       // (and sanitize/marshal options along the way)
@@ -950,10 +972,10 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
 
       // The environment we're running in.
       // (logs are not displayed when this is set to 'production')
-      // 
+      //
       // Defaults to development unless this script was fetched from a URL
       // that ends in `*.min.js` or '#production' (may also be manually overridden.)
-      // 
+      //
       environment: urlThisScriptWasFetchedFrom.match(/(\#production|\.min\.js)/g) ? 'production' : 'development',
 
       // The version of this sails.io.js client SDK
@@ -990,15 +1012,15 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
 
 
     // io.socket
-    // 
+    //
     // The eager instance of Socket which will automatically try to connect
     // using the host that this js file was served from.
-    // 
+    //
     // This can be disabled or configured by setting properties on `io.sails.*` within the
     // first cycle of the event loop.
-    // 
+    //
 
-    
+
     // Build `io.socket` so it exists
     // (this does not start the connection process)
     io.socket = new SailsSocket();
@@ -1047,5 +1069,5 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
     // global namespace, you can replace the global `io` with your own `io` here:
     return SailsIOClient();
   }
-  
+
 })();
