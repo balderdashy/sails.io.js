@@ -371,6 +371,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
       // (now that at least one tick has elapsed)
       self.useCORSRouteToGetCookie = self.useCORSRouteToGetCookie||io.sails.useCORSRouteToGetCookie;
       self.url = self.url||io.sails.url;
+      self.path = self.path||io.sails.path||'/socket.io';
       self.transports = self.transports || io.sails.transports;
 
       // Ensure URL has no trailing slash

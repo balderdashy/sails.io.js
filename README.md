@@ -89,12 +89,13 @@ $ bower install sails.io.js
 
 ###### Cross-domain
 
-Connect to a server other than the one that served ths project (i.e. on a different domain/subdomain):
+Connect to a server other than the one that served ths project (i.e. on a different domain/subdomain or path):
 
 ```html
 <script type="text/javascript" src="./path/to/bower_components/sails.io.js"></script>
 <script type="text/javascript">
 io.sails.url = 'https://api.mysite.com';
+io.sails.path = '/im.v1/socket.io';
 </script>
 ```
 
