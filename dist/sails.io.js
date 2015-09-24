@@ -422,7 +422,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
 
 
         // If target hostname is different than actual hostname, we'll consider this cross-origin.
-        var hasSameHostname = targetAfterProtocol.search(window.location.hostname) !== 0;
+        var hasSameHostname = targetAfterProtocol.search(window.location.hostname) === 0;
         if (!hasSameHostname) {
           return true;
         }
