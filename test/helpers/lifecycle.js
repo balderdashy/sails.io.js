@@ -69,6 +69,10 @@ module.exports = {
         io.sails.useCORSRouteToGetCookie = opts.useCORSRouteToGetCookie;
       }
 
+      if (typeof (opts.query) != 'undefined') {
+        io.sails.query = opts.query;
+      }
+
       // Globalize sails app as `server`
       global.server = app;
 
