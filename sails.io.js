@@ -357,6 +357,7 @@
       self.url = self.url||io.sails.url;
       self.transports = self.transports || io.sails.transports;
       self.query = self.query || io.sails.query;
+      self.forceNew = self.forceNew || io.sails.forceNew;
 
       // Ensure URL has no trailing slash
       self.url = self.url ? self.url.replace(/(\/)$/, '') : undefined;
