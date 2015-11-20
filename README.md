@@ -127,9 +127,7 @@ setTimeout(function (){
   var socket1 = io.sails.connect();
 
   // but socket2's `url` option will be overridden as specified:
-  var socket2 = io.sails.connect({
-    url: 'https://api.mysite.com'
-  });
+  var socket2 = io.sails.connect('https://api.mysite.com');
 }, 1000);
 </script>
 ```
