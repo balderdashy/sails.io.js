@@ -144,6 +144,11 @@ In some cases you may want to change the transorts that the socket client uses t
 </script>
 ```
 
+###### Muting console.log messages
+
+Sails.io.js console.log messages are automatically muted in production environments.  Thus, to mute messages,
+sails.io.js should be loaded from a URL that ends in `*.min.js` or `#production`, e.g. `production.min.js` or 
+`scripts.js#production`.
 
 #### RequireJS/AMD Usage
 
