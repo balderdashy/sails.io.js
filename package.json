@@ -1,6 +1,6 @@
 {
   "name": "sails.io.js",
-  "version": "0.11.7",
+  "version": "0.12.0",
   "description": "Javascript SDK for communicating w/ a Sails server via WebSockets/socket.io.",
   "main": "sails.io.js",
   "directories": {
@@ -17,7 +17,7 @@
     "sails": "~0.11.0",
     "lodash": "~2.4.1",
     "mocha": "~1.18.0",
-    "socket.io-client": "~1.2.1",
+    "socket.io-client": "~1.3.7",
     "async": "~0.9.0"
   },
   "scripts": {
