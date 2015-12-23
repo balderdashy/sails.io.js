@@ -339,6 +339,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
       self.multiplex = opts.multiplex;
       self.transports = opts.transports;
       self.query = opts.query;
+      self.forceNew = opts.forceNew;
 
       // Set up "eventQueue" to hold event handlers which have not been set on the actual raw socket yet.
       self.eventQueue = {};
@@ -374,6 +375,7 @@ var parts=["source","protocol","authority","userInfo","user","password","host","
       self.url = self.url||io.sails.url;
       self.transports = self.transports || io.sails.transports;
       self.query = self.query || io.sails.query;
+      self.forceNew = self.forceNew || io.sails.forceNew;
 
       // Ensure URL has no trailing slash
       self.url = self.url ? self.url.replace(/(\/)$/, '') : undefined;
