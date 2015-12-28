@@ -65,6 +65,10 @@ module.exports = {
         io.sails.autoConnect = opts.autoConnect;
       }
 
+      if (typeof (opts.forceNew) != 'undefined') {
+        io.sails.forceNew = opts.forceNew;
+      }
+
       if (typeof (opts.useCORSRouteToGetCookie) != 'undefined') {
         io.sails.useCORSRouteToGetCookie = opts.useCORSRouteToGetCookie;
       }
