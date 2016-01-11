@@ -65,6 +65,10 @@ module.exports = {
         io.sails.autoConnect = opts.autoConnect;
       }
 
+      if (typeof (opts.forceNew) != 'undefined') {
+        io.sails.forceNew = opts.forceNew;
+      }
+
       if (typeof (opts.useCORSRouteToGetCookie) != 'undefined') {
         io.sails.useCORSRouteToGetCookie = opts.useCORSRouteToGetCookie;
       }
@@ -83,10 +87,6 @@ module.exports = {
     
   },
 
-
-
-
-
   teardown: function (done) {
 
     // If the socket never connected, don't worry about disconnecting
@@ -96,23 +96,18 @@ module.exports = {
     if (!global.io || !io.socket || !io.socket.isConnected()) {
       return done();
     }
-    
+
     // Disconnect socket
     io.socket.disconnect();
     setTimeout(function ensureDisconnect () {
       
       // Ensure socket is actually disconnected
       var isActuallyDisconnected = (io.socket.isConnected() === false);
+      delete global.io;
       
       // Tear down sails server
-      global.server.lower(function (){
-
-        // Delete globals (just in case-- shouldn't matter)
-        delete global.server;
-        delete global.io;
-        return done();
-      });
-      
+      global.server.lower();
+      return done();
     }, 0);
   }
 };
