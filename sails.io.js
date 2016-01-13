@@ -356,6 +356,7 @@
       self.url = self.url||io.sails.url;
       self.transports = self.transports || io.sails.transports;
       self.query = self.query || io.sails.query;
+      // TODO: support `io.sails.headers` as a way to set common headers for all outgoing socket requests
 
       // Ensure URL has no trailing slash
       self.url = self.url ? self.url.replace(/(\/)$/, '') : undefined;
