@@ -9,7 +9,7 @@ var _  = require('lodash');
 
 function _dotToObject(obj, path) {
   return path.split('.').reduce(function objectIndex(obj, i) {
-    return obj[i]
+    return obj[i];
   }, obj);
 }
 

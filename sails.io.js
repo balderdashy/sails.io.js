@@ -356,7 +356,7 @@
       self.url = self.url||io.sails.url;
       self.transports = self.transports || io.sails.transports;
       self.query = self.query || io.sails.query;
-      // TODO: support `io.sails.headers` as a way to set common headers for all outgoing socket requests
+      self.headers = self.query || io.sails.headers;
 
       // Ensure URL has no trailing slash
       self.url = self.url ? self.url.replace(/(\/)$/, '') : undefined;
@@ -870,7 +870,18 @@
       if (cb && typeof cb !== 'function') {
         throw new Error('Invalid callback function!\n' + usage);
       }
-      
+
+      // Default headers to an empty object
+      options.headers = options.headers || {};
+
+      // Merge global headers in
+      if (this.headers && 'object' == typeof this.headers) {
+        for (var header in this.headers) {
+          if (!options.hasOwnProperty(header)) {
+            options.headers[header] = this.headers[header];
+          }
+        }
+      }
 
       // Build a simulated request object
       // (and sanitize/marshal options along the way)
@@ -878,7 +889,7 @@
 
         method: options.method.toLowerCase() || 'get',
 
-        headers: options.headers || {},
+        headers: options.headers,
 
         data: options.params || options.data || {},
 

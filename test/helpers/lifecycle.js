@@ -73,6 +73,10 @@ module.exports = {
         io.sails.query = opts.query;
       }
 
+      if (typeof (opts.headers) != 'undefined') {
+        io.sails.headers = opts.headers;
+      }
+
       // Globalize sails app as `server`
       global.server = app;
 
