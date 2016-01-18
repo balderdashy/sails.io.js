@@ -168,8 +168,10 @@
         // (e.g. Ember does this. See https://github.com/balderdashy/sails.io.js/pull/5)
         var isSafeToDereference = ({}).hasOwnProperty.call(queue, i);
         if (isSafeToDereference) {
-          // Emit the request.
-          _emitFrom(socket, queue[i]);
+          // Get the arguments that were originally made to the "request" method
+          var requestArgs = queue[i];
+          // Call the request method again in the context of the socket, with the original args
+          socket.request.apply(socket, requestArgs);
         }
       }
 
@@ -321,6 +323,7 @@
       self.multiplex = opts.multiplex;
       self.transports = opts.transports;
       self.query = opts.query;
+      self.headers = opts.headers;
 
       // Set up "eventQueue" to hold event handlers which have not been set on the actual raw socket yet.
       self.eventQueue = {};
@@ -356,7 +359,7 @@
       self.url = self.url||io.sails.url;
       self.transports = self.transports || io.sails.transports;
       self.query = self.query || io.sails.query;
-      self.headers = self.query || io.sails.headers;
+      self.headers = self.headers || io.sails.headers;
 
       // Ensure URL has no trailing slash
       self.url = self.url ? self.url.replace(/(\/)$/, '') : undefined;
@@ -871,17 +874,23 @@
         throw new Error('Invalid callback function!\n' + usage);
       }
 
+
+      // If this socket is not connected yet, queue up this request
+      // instead of sending it.
+      // (so it can be replayed when the socket comes online.)
+      if ( ! this.isConnected() ) {
+
+        // If no queue array exists for this socket yet, create it.
+        this.requestQueue = this.requestQueue || [];
+        this.requestQueue.push([options, cb]);
+        return;
+      }
+
+      // Otherwise, our socket is connected, so continue prepping
+      // the request.
+
       // Default headers to an empty object
       options.headers = options.headers || {};
-
-      // Merge global headers in
-      if (this.headers && 'object' == typeof this.headers) {
-        for (var header in this.headers) {
-          if (!options.hasOwnProperty(header)) {
-            options.headers[header] = this.headers[header];
-          }
-        }
-      }
 
       // Build a simulated request object
       // (and sanitize/marshal options along the way)
@@ -899,19 +908,15 @@
         cb: cb
       };
 
-      // If this socket is not connected yet, queue up this request
-      // instead of sending it.
-      // (so it can be replayed when the socket comes online.)
-      if ( ! this.isConnected() ) {
-
-        // If no queue array exists for this socket yet, create it.
-        this.requestQueue = this.requestQueue || [];
-        this.requestQueue.push(requestCtx);
-        return;
+      // Merge global headers in
+      if (this.headers && 'object' == typeof this.headers) {
+        for (var header in this.headers) {
+          if (!options.headers.hasOwnProperty(header)) {
+            options.headers[header] = this.headers[header];
+          }
+        }
       }
 
-
-      // Otherwise, our socket is ok!
       // Send the request.
       _emitFrom(this, requestCtx);
     };
