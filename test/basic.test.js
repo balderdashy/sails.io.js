@@ -35,15 +35,16 @@ var EXPECTED_RESPONSES = {
     statusCode: 501
   },
   'get /headers': {
-    'req.headers.x-test-header-one': 'foo',
-    'req.headers.x-test-header-two': 'bar',
+    req: 'headers.x-test-header-one',
+    body: 'foo',
   },
   'get /headersOverride': {
-    'req.headers.x-test-header-one': 'baz',
-    'req.headers.x-test-header-two': 'bar',
+    req: 'headers.x-test-header-one',
+    body: 'baz',
   },
   'get /headersRemove': {
-    'req.headers.x-test-header-two': 'bar',
+    req: 'headers.x-test-header-one',
+    body: undefined
   }
 
 

@@ -28,7 +28,7 @@ module.exports = function setupRoutes (expectedResponses) {
   return function configuredFn () {
     _.each(expectedResponses, function (expectedResponse, routeAddress) {
       sails.router.bind(routeAddress, function (req, res) {
-        // console.log('\n------ calling res.send(%s, "%s")', expectedResponse.statusCode || 200, expectedResponse.body);
+        // console.log('\n------ calling res.send(%s, "%s")', expectedResponse.statusCode || 200, expectedResponse.req && _dotToObject(req, expectedResponse.req) || expectedResponse.body);
         return res.send(expectedResponse.statusCode || 200, expectedResponse.req && _dotToObject(req, expectedResponse.req) || expectedResponse.body);
       });
     });
