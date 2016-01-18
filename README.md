@@ -131,6 +131,21 @@ setTimeout(function (){
 </script>
 ```
 
+###### Set global headers to be used with each socket request
+
+Set a `x-csrf-token` header to be sent with every request made using `io.socket.*` methods:
+
+```html
+<script type="text/javascript" src="./path/to/bower_components/sails.io.js"></script>
+<script type="text/javascript">
+io.sails.headers = {
+  "x-csrf-token": someToken,
+};
+// This POST request will now include the x-csrf-token header
+io.socket.post("/foo", someData, someCallback);
+</script>
+```
+
 > Note that the `io.sails` config functions as the default for all connected sockets, but it can be overridden on a socket-by-socket basis by passing in an object to `io.sails.connect(opts)`
 
 ###### Change the `transports` used to connect to the server
