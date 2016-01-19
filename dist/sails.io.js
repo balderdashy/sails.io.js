@@ -344,12 +344,9 @@ if(typeof define=="function"&&typeof define.amd=="object"&&define.amd){define(fu
       self.query = opts.query;
       // Global headers that will be sent with every io.socket request
       self.headers = opts.headers;
-      // Headers that will be sent with the initial request to /socket.io
-      if (typeof module === 'object' && typeof module.exports !== 'undefined') {
-        self.initialConnectionHeaders = opts.initialConnectionHeaders;
-      } else if (opts.initialConnectionHeaders) {
-        console.warn("initialConnectionHeaders option available in Node.js only!");
-      }
+      // Headers that will be sent with the initial request to /socket.io (Node.js only)
+      self.initialConnectionHeaders = opts.initialConnectionHeaders;
+
       // Set up "eventQueue" to hold event handlers which have not been set on the actual raw socket yet.
       self.eventQueue = {};
 
@@ -386,8 +383,11 @@ if(typeof define=="function"&&typeof define.amd=="object"&&define.amd){define(fu
       self.query = self.query || io.sails.query;
       // Global headers that will be sent with every io.socket request
       self.headers = self.headers || io.sails.headers;
-      // Headers that will be sent with the initial request to /socket.io
-      self.extraHeaders = self.initialConnectionHeaders || {};
+      // Headers that will be sent with the initial request to /socket.io (Node.js only)
+      self.extraHeaders = self.initialConnectionHeaders || io.sails.initialConnectionHeaders || {};
+      if (!(typeof module === 'object' && typeof module.exports !== 'undefined')) {
+        console.warn("initialConnectionHeaders option available in Node.js only!");
+      }
 
       // Ensure URL has no trailing slash
       self.url = self.url ? self.url.replace(/(\/)$/, '') : undefined;
