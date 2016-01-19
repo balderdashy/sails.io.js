@@ -71,15 +71,10 @@ if(typeof define=="function"&&typeof define.amd=="object"&&define.amd){define(fu
   // Current version of this SDK (sailsDK?!?!) and other metadata
   // that will be sent along w/ the initial connection request.
   var SDK_INFO = {
-    version: '0.11.0', // TODO: pull this automatically from package.json during build.
+    version: '0.13.0', // TODO: pull this automatically from package.json during build.
     platform: typeof module === 'undefined' ? 'browser' : 'node',
     language: 'javascript'
   };
-  SDK_INFO.versionString =
-    CONNECTION_METADATA_PARAMS.version + '=' + SDK_INFO.version + '&' +
-    CONNECTION_METADATA_PARAMS.platform + '=' + SDK_INFO.platform + '&' +
-    CONNECTION_METADATA_PARAMS.language + '=' + SDK_INFO.language;
-
 
   // In case you're wrapping the socket.io client to prevent pollution of the
   // global namespace, you can pass in your own `io` to replace the global one.
@@ -388,10 +383,10 @@ if(typeof define=="function"&&typeof define.amd=="object"&&define.amd){define(fu
       // Ensure URL has no trailing slash
       self.url = self.url ? self.url.replace(/(\/)$/, '') : undefined;
 
-      // Mix the current SDK version into the query string in
-      // the connection request to the server:
-      if (typeof self.query !== 'string') self.query = SDK_INFO.versionString;
-      else self.query += '&' + SDK_INFO.versionString;
+      // Add the SDK version info to the "extra headers" that get sent with the initial handshake
+      for (var sdkInfoKey in SDK_INFO) {
+        self.extraHeaders['__sails_io_sdk_'+sdkInfoKey] = SDK_INFO[sdkInfoKey];
+      }
 
       // Determine whether this is a cross-origin socket by examining the
       // hostname and port on the `window.location` object.
