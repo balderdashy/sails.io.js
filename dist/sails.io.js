@@ -75,6 +75,11 @@ if(typeof define=="function"&&typeof define.amd=="object"&&define.amd){define(fu
     platform: typeof module === 'undefined' ? 'browser' : 'node',
     language: 'javascript'
   };
+  SDK_INFO.versionString =
+    CONNECTION_METADATA_PARAMS.version + '=' + SDK_INFO.version + '&' +
+    CONNECTION_METADATA_PARAMS.platform + '=' + SDK_INFO.platform + '&' +
+    CONNECTION_METADATA_PARAMS.language + '=' + SDK_INFO.language;
+
 
   // In case you're wrapping the socket.io client to prevent pollution of the
   // global namespace, you can pass in your own `io` to replace the global one.
@@ -340,7 +345,11 @@ if(typeof define=="function"&&typeof define.amd=="object"&&define.amd){define(fu
       // Global headers that will be sent with every io.socket request
       self.headers = opts.headers;
       // Headers that will be sent with the initial request to /socket.io
-      self.initialConnectionHeaders = opts.initialConnectionHeaders;
+      if (typeof module === 'object' && typeof module.exports !== 'undefined') {
+        self.initialConnectionHeaders = opts.initialConnectionHeaders;
+      } else if (opts.initialConnectionHeaders) {
+        console.warn("initialConnectionHeaders option available in Node.js only!");
+      }
       // Set up "eventQueue" to hold event handlers which have not been set on the actual raw socket yet.
       self.eventQueue = {};
 
@@ -378,15 +387,15 @@ if(typeof define=="function"&&typeof define.amd=="object"&&define.amd){define(fu
       // Global headers that will be sent with every io.socket request
       self.headers = self.headers || io.sails.headers;
       // Headers that will be sent with the initial request to /socket.io
-      self.extraHeaders = self.initialConnectionHeaders || io.sails.initialConnectionHeaders || {};
+      self.extraHeaders = self.initialConnectionHeaders || {};
 
       // Ensure URL has no trailing slash
       self.url = self.url ? self.url.replace(/(\/)$/, '') : undefined;
 
-      // Add the SDK version info to the "extra headers" that get sent with the initial handshake
-      for (var sdkInfoKey in SDK_INFO) {
-        self.extraHeaders['__sails_io_sdk_'+sdkInfoKey] = SDK_INFO[sdkInfoKey];
-      }
+      // Mix the current SDK version into the query string in
+      // the connection request to the server:
+      if (typeof self.query !== 'string') self.query = SDK_INFO.versionString;
+      else self.query += '&' + SDK_INFO.versionString;
 
       // Determine whether this is a cross-origin socket by examining the
       // hostname and port on the `window.location` object.
