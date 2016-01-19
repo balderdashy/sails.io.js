@@ -323,8 +323,10 @@
       self.multiplex = opts.multiplex;
       self.transports = opts.transports;
       self.query = opts.query;
+      // Global headers that will be sent with every io.socket request
       self.headers = opts.headers;
-
+      // Headers that will be sent with the initial request to /socket.io
+      self.initialConnectionHeaders = opts.initialConnectionHeaders;
       // Set up "eventQueue" to hold event handlers which have not been set on the actual raw socket yet.
       self.eventQueue = {};
 
@@ -359,7 +361,10 @@
       self.url = self.url||io.sails.url;
       self.transports = self.transports || io.sails.transports;
       self.query = self.query || io.sails.query;
+      // Global headers that will be sent with every io.socket request
       self.headers = self.headers || io.sails.headers;
+      // Headers that will be sent with the initial request to /socket.io
+      self.extraHeaders = self.initialConnectionHeaders || io.sails.initialConnectionHeaders || {};
 
       // Ensure URL has no trailing slash
       self.url = self.url ? self.url.replace(/(\/)$/, '') : undefined;
