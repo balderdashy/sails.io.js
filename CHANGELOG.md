@@ -1,10 +1,10 @@
 # sails.io.js changelog
 
-### 0.13.4
+### 0.13.3
 
 * [UPGRADE] Use socket.io-client version 1.4.4
 
-### 0.13.0 - 0.13.3 
+### 0.13.0 - 0.13.2
 
 * These versions were experimental for use while finishing development of Sails 0.12, and should not be used.
 
