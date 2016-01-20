@@ -135,6 +135,30 @@ setTimeout(function (){
 </script>
 ```
 
+###### Send custom headers with socket handshake using `initialConnectionHeaders`
+
+Disable session support for all connecting sockets
+
+```html
+<script type="text/javascript" src="./path/to/bower_components/sails.io.js"></script>
+<script type="text/javascript">
+io.sails.initialConnectionHeaders = {nosession: true};
+</script>
+```
+
+Disable session support on a per-socket basis
+
+```html
+<script type="text/javascript" src="./path/to/bower_components/sails.io.js"></script>
+<script type="text/javascript">
+io.sails.autoConnect = false;
+// socket 1 will have session disabled
+var socket1 = io.sails.connect('http://localhost', {initialConnectionHeaders: {nosession: true}});
+// socket 2 will have session enabled
+var socket2 = io.sails.connect('http://localhost');
+</script>
+```
+
 ###### Set global headers to be used with each socket request
 
 Set a `x-csrf-token` header to be sent with every request made using `io.socket.*` methods:
