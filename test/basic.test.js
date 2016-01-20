@@ -138,4 +138,73 @@ describe('io.socket', function () {
     
   });
 
+  describe('Sessions', function() {
+    before(function(done) {
+      lifecycle.setup(function(err) {
+        if (err) {return done(err);}
+        sails.router.bind("/count", function (req, res) {
+          var count;
+          if (!req.session) {return res.send("NOSESSION");}
+          count  = req.session.count || 1;
+          req.session.count = count + 1;
+          return res.send(200, count);
+        });
+        return done();
+      });
+    });
+    after(lifecycle.teardown);
+
+    it('should connect automatically', function (cb) {
+      io.socket.on('connect', cb);
+    });
+
+    describe('once connected, socket', function () {
+
+      it('should be able to send two requests and have them use the same session', function (done) {
+        io.socket.get('/count', function (body, jwr) {
+          assert.equal(body, 1);
+          io.socket.get('/count', function (body, jwr) {
+            assert.equal(body, 2);
+            return done();
+          });
+        });
+      });
+
+    });
+  });
+
+  describe('With initialConnectionHeaders option set to {nosession: true}', function() {
+    before(function(done) {
+      lifecycle.setup({initialConnectionHeaders: {nosession: true}}, function(err) {
+        if (err) {return done(err);}
+        sails.router.bind("/count", function (req, res) {
+          var count;
+          if (!req.session) {return res.send("NOSESSION");}
+          count  = req.session.count || 1;
+          req.session.count = count + 1;
+          return res.send(200, count);
+        });
+        return done();
+      });
+    });
+    after(lifecycle.teardown);
+
+    it('should connect automatically', function (cb) {
+      io.socket.on('connect', cb);
+    });
+
+    describe('once connected, socket', function () {
+
+      it('should be able to send two requests and have them not connect to a session', function (done) {
+        io.socket.get('/count', function (body, jwr) {
+          assert.equal(body, "NOSESSION");
+          io.socket.get('/count', function (body, jwr) {
+            assert.equal(body, "NOSESSION");
+            return done();
+          });
+        });
+      });
+
+    });
+  });
 });

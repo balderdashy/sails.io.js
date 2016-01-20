@@ -77,6 +77,10 @@ module.exports = {
         io.sails.headers = opts.headers;
       }
 
+      if (typeof (opts.initialConnectionHeaders) != 'undefined') {
+        io.sails.initialConnectionHeaders = opts.initialConnectionHeaders;
+      }
+
       // Globalize sails app as `server`
       global.server = app;
 
