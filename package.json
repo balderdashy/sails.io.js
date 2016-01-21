@@ -24,7 +24,9 @@
     "socket.io-client": "~1.4.0"
   },
   "scripts": {
-    "test": "node ./node_modules/mocha/bin/mocha -b --reporter spec --timeout 10000"
+    "test": "node ./node_modules/mocha/bin/mocha -b --reporter spec --timeout 10000",
+    "prepublish": "grunt publish && npm test",
+    "postpublish": "cd dist && npm publish"
   },
   "repository": {
     "type": "git",
