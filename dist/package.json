@@ -1,0 +1,16 @@
+{
+  "name": "sails.io.js-dist",
+  "version": "0.13.3",
+  "description": "Distribution version of sails.io.js for browsers, including bundled socket.io-client",
+  "main": "sails.io.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/balderdashy/sails.io.js.git"
+  },
+  "author": "Mike McNeil <@mikermcneil> (http://balderdash.co/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/balderdashy/sails.io.js/issues"
+  },
+  "homepage": "https://github.com/balderdashy/sails.io.js"
+}
