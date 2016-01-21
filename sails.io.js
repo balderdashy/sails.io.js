@@ -356,6 +356,8 @@
     SailsSocket.prototype._connect = function (){
       var self = this;
 
+      self.isConnecting = true;
+
       // Apply `io.sails` config as defaults
       // (now that at least one tick has elapsed)
       self.useCORSRouteToGetCookie = self.useCORSRouteToGetCookie||io.sails.useCORSRouteToGetCookie;
@@ -479,6 +481,7 @@
         var mikealsReq = require('request');
         mikealsReq.get(xOriginCookieURL, function(err, httpResponse, body) {
           if (err) {
+            self.isConnecting = false;
             consolog(
               'Failed to connect socket (failed to get cookie)',
               'Error:', err
@@ -503,7 +506,7 @@
          *  successfully.
          */
         self.on('connect', function socketConnected() {
-
+          self.isConnecting = false;
           consolog.noPrefix(
             '\n' +
             '\n' +
@@ -557,7 +560,7 @@
         // (usually because of a failed authorization, which is in turn
         // usually due to a missing or invalid cookie)
         self.on('error', function failedToConnect(err) {
-
+          self.isConnecting = false;
           // TODO:
           // handle failed connections due to failed authorization
           // in a smarter way (probably can listen for a different event)
@@ -582,6 +585,20 @@
 
     };
 
+    /**
+     * Reconnect the underlying socket.
+     *
+     * @api public
+     */
+    SailsSocket.prototype.reconnect = function (){
+      if (this.isConnecting) {
+        throw new Error('Cannot connect- socket is already connecting');
+      }
+      if (this.isConnected()) {
+        throw new Error('Cannot connect- socket is already connected');
+      }
+      return this._connect();
+    };
 
     /**
      * Disconnect the underlying socket.
