@@ -1003,6 +1003,14 @@
      * @return {Socket}
      */
     io.sails.connect = function(url, opts) {
+
+      // Make URL optional
+      if ('object' == typeof url) {
+        opts = url;
+        url = null;
+      }
+
+      // Default opts to empty object
       opts = opts || {};
 
       // If explicit connection url is specified, save it to options
