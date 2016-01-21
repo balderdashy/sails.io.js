@@ -45,7 +45,7 @@ module.exports = {
       }
     },function (err) {
       if (err) return cb(err);
-      
+
       // Instantiate socket client.
       io = sailsIO(io);
       // Set some options.
@@ -88,7 +88,7 @@ module.exports = {
       global.io = io;
       return cb(err);
     });
-    
+
   },
 
 
@@ -104,14 +104,14 @@ module.exports = {
     if (!global.io || !io.socket || !io.socket.isConnected()) {
       return done();
     }
-    
+
     // Disconnect socket
     io.socket.disconnect();
     setTimeout(function ensureDisconnect () {
-      
+
       // Ensure socket is actually disconnected
       var isActuallyDisconnected = (io.socket.isConnected() === false);
-      
+
       // Tear down sails server
       global.server.lower(function (){
 
@@ -120,7 +120,7 @@ module.exports = {
         delete global.io;
         return done();
       });
-      
+
     }, 0);
   }
 };

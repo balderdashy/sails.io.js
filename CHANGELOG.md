@@ -1,5 +1,10 @@
 # sails.io.js changelog
 
+### 0.13.4
+
+* [BUGFIX] Made URL argument to `io.socket.connect` optional, as documented
+* [ENHANCEMENT] Added public `.reconnect()` method to SailsSocket
+
 ### 0.13.3
 
 * [UPGRADE] Use socket.io-client version 1.4.4
@@ -8,7 +13,7 @@
 
 * These versions were experimental for use while finishing development of Sails 0.12, and should not be used.
 
-### 0.12.6 
+### 0.12.6
 
 * [BUGFIX] Revert change where sails.io.js SDK info was sent in handshake via headers instead of querystring--handshake headers only work in Node.js implementations, _not_ in the browser.
 
