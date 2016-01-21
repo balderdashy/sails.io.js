@@ -623,7 +623,8 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
      * @api public
      */
     SailsSocket.prototype.disconnect = function (){
-      if (!this._raw) {
+      this.isConnecting = false;
+      if (!this.isConnected()) {
         throw new Error('Cannot disconnect- socket is already disconnected');
       }
       return this._raw.disconnect();

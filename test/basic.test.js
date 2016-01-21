@@ -134,8 +134,10 @@ describe('io.socket', function () {
       it('should get an error if `.reconnect()` is called', function () {
         try {
           socket.reconnect();
-          assert(false);
-        } catch (e) {}
+        } catch (e) {
+          return;
+        }
+        assert(false);
       });
 
       it('should disconnect if `.disconnect()` is called', function () {
@@ -146,8 +148,10 @@ describe('io.socket', function () {
       it('should get an error if `.disconnect()` is called again', function () {
         try {
           socket.disconnect();
-          assert(false);
-        } catch (e) {}
+        } catch (e) {
+          return;
+        }
+        assert(false);
       });
 
       it('should be able to send a GET request and NOT receive any response', function(cb) {
