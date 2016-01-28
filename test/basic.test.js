@@ -131,6 +131,15 @@ describe('io.socket', function () {
         });
       });
 
+      it('should get an error if an attempt is made to change `socket.url`', function () {
+        try {
+          socket.url = "http://example.com";
+        } catch (e) {
+          return;
+        }
+        assert(false);
+      });
+
       it('should get an error if `.reconnect()` is called', function () {
         try {
           socket.reconnect();
@@ -158,6 +167,10 @@ describe('io.socket', function () {
         fnHolder.fn = function() {assert(false);};
         socket.get('/headers', queuedRequestCb);
         setTimeout(cb, 100);
+      });
+
+      it('should not get an error if an attempt is made to change `socket.url`', function () {
+        socket.url = "http://127.0.0.1:1577";
       });
 
       it('should be reconnect and receive the response from the queued request', function(cb) {

@@ -317,7 +317,33 @@
       var self = this;
       opts = opts||{};
 
-      // Absorb opts
+      // Set up connection options so that they can only be changed when socket is disconnected.
+      var _opts = {};
+      [
+        'useCORSRouteToGetCookie',
+        'url',
+        'multiplex',
+        'transports',
+        'query',
+        'initialConnectionHeaders'
+      ].forEach(function(option) {
+        Object.defineProperty(self, option, {
+          get: function() {
+            if (option == 'url') {
+              return _opts[option] || (self._raw && self._raw.io && self._raw.io.uri);
+            }
+            return _opts[option];
+          },
+          set: function(value) {
+            if (self.isConnected() && io.sails.strict !== false && value != _opts[option]) {
+              throw new Error('Cannot change value of `' + option + '` while socket is connected.');
+            }
+            _opts[option] = value;
+          }
+        });
+      });
+
+      // Absorb opts into SailsSocket instance
       self.useCORSRouteToGetCookie = opts.useCORSRouteToGetCookie;
       self.url = opts.url;
       self.multiplex = opts.multiplex;
@@ -515,7 +541,7 @@
             // '\n'+
              '  |>    Now connected to Sails.' + '\n' +
             '\\___/   For help, see: http://bit.ly/1DmTvgK' + '\n' +
-             '        (using '+io.sails.sdk.platform+' SDK @v'+io.sails.sdk.version+')'+ '\n' +
+             '        (using sails.io.js '+io.sails.sdk.platform+' SDK @v'+io.sails.sdk.version+')'+ '\n' +
             '\n'+
             '\n'+
             // '\n'+
