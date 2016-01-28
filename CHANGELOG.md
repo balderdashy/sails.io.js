@@ -2,6 +2,7 @@
 
 ### 0.13.4
 
+* [ENHANCEMENT] Don't allow certain SailsSocket properties to be changed while the socket is connected.  This ensures that the properties always reflect the correct state of a connected socket.
 * [BUGFIX] Made URL argument to `io.socket.connect` optional, as documented
 * [ENHANCEMENT] Added public `.reconnect()` method to SailsSocket
 
