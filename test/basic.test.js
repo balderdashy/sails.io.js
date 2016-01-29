@@ -45,8 +45,10 @@ var EXPECTED_RESPONSES = {
   'get /headersRemove': {
     req: 'headers.x-test-header-one',
     body: undefined
-  }
-
+  },
+  'delete /hello': { body: 'deleted!'},
+  'post /hello': { body: 'posted!'},
+  'put /hello': { body: 'putted!'}
 
 };
 var setupRoutes = _setupRoutes(EXPECTED_RESPONSES);
@@ -68,6 +70,27 @@ describe('io.socket', function () {
       it('should be able to send a GET request and receive the expected response', function (cb) {
         io.socket.get('/hello', function (body, jwr) {
           assertResponse('get /hello', arguments);
+          return cb();
+        });
+      });
+
+      it('should be able to send a DELETE request and receive the expected response', function (cb) {
+        io.socket.delete('/hello', function (body, jwr) {
+          assertResponse('delete /hello', arguments);
+          return cb();
+        });
+      });
+
+      it('should be able to send a POST request and receive the expected response', function (cb) {
+        io.socket.post('/hello', function (body, jwr) {
+          assertResponse('post /hello', arguments);
+          return cb();
+        });
+      });
+
+      it('should be able to send a PUT request and receive the expected response', function (cb) {
+        io.socket.put('/hello', function (body, jwr) {
+          assertResponse('put /hello', arguments);
           return cb();
         });
       });
