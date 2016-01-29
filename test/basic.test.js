@@ -306,4 +306,41 @@ describe('io.socket', function () {
 
     });
   });
+
+  describe.only('With path set to `/socketsarefun` in Sails and in io.sails.path', function() {
+    before(function(done) {
+      lifecycle.setup({path: '/socketsarefun'}, done);
+    });
+    before(setupRoutes);
+    after(lifecycle.teardown);
+
+    it('should connect automatically', function (cb) {
+      io.socket.on('connect', cb);
+    });
+
+    describe('once connected, socket', function () {
+
+      it('should be able to send a GET request and receive the expected response', function (cb) {
+        io.socket.get('/hello', function (body, jwr) {
+          assertResponse('get /hello', arguments);
+          return cb();
+        });
+      });
+
+      it('should receive JSON as a POJO, not a string', function (cb) {
+        io.socket.get('/someJSON', function (body, jwr) {
+          assertResponse('get /someJSON', arguments);
+          return cb();
+        });
+      });
+
+      it('should receive a valid jwr response object as its second argument, with the correct error code', function (cb) {
+        io.socket.get('/someError', function (body, jwr) {
+          assertResponse('get /someError', arguments);
+          return cb();
+        });
+      });
+
+    });
+  });
 });

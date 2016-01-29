@@ -41,7 +41,8 @@ module.exports = {
       port: TEST_SERVER_PORT,
       sockets: {
         authorization: false,
-        transports: opts.transports
+        transports: opts.transports,
+        path: opts.path
       }
     },function (err) {
       if (err) return cb(err);
@@ -79,6 +80,10 @@ module.exports = {
 
       if (typeof (opts.initialConnectionHeaders) != 'undefined') {
         io.sails.initialConnectionHeaders = opts.initialConnectionHeaders;
+      }
+
+      if (typeof (opts.path) != 'undefined') {
+        io.sails.path = opts.path;
       }
 
       // Globalize sails app as `server`
