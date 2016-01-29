@@ -342,6 +342,7 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
         'multiplex',
         'transports',
         'query',
+        'path',
         'initialConnectionHeaders'
       ].forEach(function(option) {
         Object.defineProperty(self, option, {
@@ -366,6 +367,7 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
       self.multiplex = opts.multiplex;
       self.transports = opts.transports;
       self.query = opts.query;
+      self.path = opts.path;
       // Global headers that will be sent with every io.socket request
       self.headers = opts.headers;
       // Headers that will be sent with the initial request to /socket.io (Node.js only)
