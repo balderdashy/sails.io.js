@@ -769,7 +769,7 @@
      *
      * @api public
      * @param {String} url    ::    destination URL
-     * @param {Object} params ::    parameters to send with the request [optional]
+     * @param {Object} data   ::    parameters to send with the request [optional]
      * @param {Function} cb   ::    callback function to call when finished [optional]
      */
 
@@ -797,7 +797,7 @@
      *
      * @api public
      * @param {String} url    ::    destination URL
-     * @param {Object} params ::    parameters to send with the request [optional]
+     * @param {Object} data   ::    parameters to send with the request [optional]
      * @param {Function} cb   ::    callback function to call when finished [optional]
      */
 
@@ -825,7 +825,7 @@
      *
      * @api public
      * @param {String} url    ::    destination URL
-     * @param {Object} params ::    parameters to send with the request [optional]
+     * @param {Object} data   ::    parameters to send with the request [optional]
      * @param {Function} cb   ::    callback function to call when finished [optional]
      */
 
@@ -853,7 +853,7 @@
      *
      * @api public
      * @param {String} url    ::    destination URL
-     * @param {Object} params ::    parameters to send with the request [optional]
+     * @param {Object} data   ::    parameters to send with the request [optional]
      * @param {Function} cb   ::    callback function to call when finished [optional]
      */
 
