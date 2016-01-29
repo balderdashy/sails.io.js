@@ -397,6 +397,7 @@
       if (!(typeof module === 'object' && typeof module.exports !== 'undefined')) {
         console.warn("initialConnectionHeaders option available in Node.js only!");
       }
+      self.path = self.path || io.sails.path;
 
       // Ensure URL has no trailing slash
       self.url = self.url ? self.url.replace(/(\/)$/, '') : undefined;
