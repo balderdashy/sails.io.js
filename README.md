@@ -203,6 +203,18 @@ define(['path/to/socketIOClient', 'path/to/sailsIOClient'], function(socketIOCli
 ```
 
 
+###### Muting console.log messages
+
+Sails.io.js console.log messages are automatically muted in production environments.  You can set the environment manually via `io.sails.environment`:
+
+```html
+<script type="text/javascript" src="./path/to/bower_components/sails.io.js"></script>
+<script type="text/javascript">
+  io.sails.environment = 'production';
+</script>
+```
+
+If not specified manually, sails.io.js will assume the `development` environment unless it is loaded from a URL that ends in `*.min.js` or `#production`, e.g. `production.min.js` or `scripts.js#production`.
 
 ========================================
 
