@@ -94,100 +94,130 @@ describe('io.socket', function () {
   });
 
   describe('With autoconnect: false', function() {
-    before(function(done) {
-      lifecycle.setup({
-        autoconnect: false,
-      }, done);
-    });
-    before(setupRoutes);
-    after(lifecycle.teardown);
 
-    describe('creating a new socket with io.sails.connect(url, opts)', function(done) {
+    describe('with default Sails server options', function() {
 
-      var socket;
-      var fnHolder = {fn: null};
-      var queuedRequestCb = function(data, jwr) {
-        return fnHolder.fn(data, jwr);
-      };
+      before(function(done) {
+        lifecycle.setup({
+          autoconnect: false,
+        }, done);
+      });
+      before(setupRoutes);
+      after(lifecycle.teardown);
 
-      before(function(done){
-        socket = io.sails.connect("http://localhost:1577",{
-          headers: {
-            'x-test-header-one': 'foo',
-            'x-test-header-two': 'bar',
-          }
+      describe('creating a new socket with io.sails.connect(url, opts)', function(done) {
+
+        var socket;
+        var fnHolder = {fn: null};
+        var queuedRequestCb = function(data, jwr) {
+          return fnHolder.fn(data, jwr);
+        };
+
+        before(function(done){
+          socket = io.sails.connect("http://localhost:1577",{
+            headers: {
+              'x-test-header-one': 'foo',
+              'x-test-header-two': 'bar',
+            }
+          });
+          socket.on('connect', done);
         });
+
+        it('should connect the socket to the server', function() {
+          assert(socket.isConnected());
+        });
+
+        it('should be able to send a GET request and receive the expected response', function (cb) {
+          socket.get('/headers', function (body, jwr) {
+            assertResponse('get /headers', arguments);
+            return cb();
+          });
+        });
+
+        it('should get an error if an attempt is made to change `socket.url`', function () {
+          try {
+            socket.url = "http://example.com";
+          } catch (e) {
+            return;
+          }
+          assert(false);
+        });
+
+        it('should get an error if `.reconnect()` is called', function () {
+          try {
+            socket.reconnect();
+          } catch (e) {
+            return;
+          }
+          assert(false);
+        });
+
+        it('should disconnect if `.disconnect()` is called', function () {
+          socket.disconnect();
+          assert(!socket.isConnected());
+        });
+
+        it('should get an error if `.disconnect()` is called again', function () {
+          try {
+            socket.disconnect();
+          } catch (e) {
+            return;
+          }
+          assert(false);
+        });
+
+        it('should be able to send a GET request and NOT receive any response', function(cb) {
+          fnHolder.fn = function() {assert(false);};
+          socket.get('/headers', queuedRequestCb);
+          setTimeout(cb, 100);
+        });
+
+        it('should not get an error if an attempt is made to change `socket.url`', function () {
+          socket.url = "http://127.0.0.1:1577";
+        });
+
+        it('should be reconnect and receive the response from the queued request', function(cb) {
+          fnHolder.fn = function(data, jwr) {assertResponse('get /headers', arguments); return cb();};
+          socket.reconnect();
+        });
+
+      });
+
+      it('should be able to create and connect new socket with io.sails.connect(opts)', function(done) {
+        var socket = io.sails.connect({url: "http://localhost:1577"});
         socket.on('connect', done);
       });
 
-      it('should connect the socket to the server', function() {
-        assert(socket.isConnected());
+      it('should be able to create and connect new socket with io.sails.connect(url)', function(done) {
+        var socket = io.sails.connect("http://localhost:1577");
+        socket.on('connect', done);
+      });
+
+    });
+
+    describe('With path set to `/socketsarefun` in Sails and in io.sails.path', function() {
+
+      before(function(done) {
+        lifecycle.setup({
+          autoconnect: false,
+          path: '/socketsarefun'
+        }, done);
+      });
+      before(setupRoutes);
+      after(lifecycle.teardown);
+
+      it('should be able to create and connect new socket with io.sails.connect(opts)', function(done) {
+        var socket = io.sails.connect({url: "http://localhost:1577"});
+        socket.on('connect', done);
       });
 
       it('should be able to send a GET request and receive the expected response', function (cb) {
-        socket.get('/headers', function (body, jwr) {
-          assertResponse('get /headers', arguments);
+        io.socket.get('/hello', function (body, jwr) {
+          assertResponse('get /hello', arguments);
           return cb();
         });
       });
 
-      it('should get an error if an attempt is made to change `socket.url`', function () {
-        try {
-          socket.url = "http://example.com";
-        } catch (e) {
-          return;
-        }
-        assert(false);
-      });
-
-      it('should get an error if `.reconnect()` is called', function () {
-        try {
-          socket.reconnect();
-        } catch (e) {
-          return;
-        }
-        assert(false);
-      });
-
-      it('should disconnect if `.disconnect()` is called', function () {
-        socket.disconnect();
-        assert(!socket.isConnected());
-      });
-
-      it('should get an error if `.disconnect()` is called again', function () {
-        try {
-          socket.disconnect();
-        } catch (e) {
-          return;
-        }
-        assert(false);
-      });
-
-      it('should be able to send a GET request and NOT receive any response', function(cb) {
-        fnHolder.fn = function() {assert(false);};
-        socket.get('/headers', queuedRequestCb);
-        setTimeout(cb, 100);
-      });
-
-      it('should not get an error if an attempt is made to change `socket.url`', function () {
-        socket.url = "http://127.0.0.1:1577";
-      });
-
-      it('should be reconnect and receive the response from the queued request', function(cb) {
-        fnHolder.fn = function(data, jwr) {assertResponse('get /headers', arguments); return cb();};
-        socket.reconnect();
-      });
-
-    });
-
-    it('should be able to create and connect new socket with io.sails.connect(opts)', function(done) {
-      var socket = io.sails.connect({url: "http://localhost:1577"});
-      socket.on('connect', done);
-    });
-
-    it('should be able to create and connect new socket with io.sails.connect(url)', function(done) {
-      var socket = io.sails.connect("http://localhost:1577");
-      socket.on('connect', done);
     });
 
   });
