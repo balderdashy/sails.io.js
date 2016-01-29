@@ -307,7 +307,7 @@ describe('io.socket', function () {
     });
   });
 
-  describe.only('With path set to `/socketsarefun` in Sails and in io.sails.path', function() {
+  describe('With path set to `/socketsarefun` in Sails and in io.sails.path', function() {
     before(function(done) {
       lifecycle.setup({path: '/socketsarefun'}, done);
     });
