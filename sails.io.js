@@ -937,6 +937,7 @@
       }
       else if (options.data) {
         options.params = options.data;
+        delete options.data;
       }
 
 
