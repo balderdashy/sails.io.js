@@ -388,6 +388,7 @@
       // (now that at least one tick has elapsed)
       self.useCORSRouteToGetCookie = self.useCORSRouteToGetCookie||io.sails.useCORSRouteToGetCookie;
       self.url = self.url||io.sails.url;
+      self.path = self.path||io.sails.path||'/socket.io';
       self.transports = self.transports || io.sails.transports;
       self.query = self.query || io.sails.query;
       // Global headers that will be sent with every io.socket request
