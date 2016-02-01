@@ -176,7 +176,7 @@
       }
 
       // Now empty the queue to remove it as a source of additional complexity.
-      queue = null;
+      socket.requestQueue = null;
     }
 
 
@@ -678,11 +678,8 @@
       // Bind a one-time function to run the request queue
       // when the self._raw connects.
       if ( !self.isConnected() ) {
-        var alreadyRanRequestQueue = false;
         self._raw.on('connect', function whenRawSocketConnects() {
-          if (alreadyRanRequestQueue) return;
           runRequestQueue(self);
-          alreadyRanRequestQueue = true;
         });
       }
       // Or run it immediately if self._raw is already connected
