@@ -919,13 +919,24 @@
         throw new Error('Invalid `method` provided (should be a string like "post" or "put")\n' + usage);
       }
       if (options.headers && typeof options.headers !== 'object') {
-        throw new Error('Invalid `headers` provided (should be an object with string values)\n' + usage);
+        throw new Error('Invalid `headers` provided (should be a dictionary with string values)\n' + usage);
       }
       if (options.params && typeof options.params !== 'object') {
-        throw new Error('Invalid `params` provided (should be an object with string values)\n' + usage);
+        throw new Error('Invalid `params` provided (should be a dictionary with JSON-serializable values)\n' + usage);
+      }
+      if (options.data && typeof options.data !== 'object') {
+        throw new Error('Invalid `data` provided (should be a dictionary with JSON-serializable values)\n' + usage);
       }
       if (cb && typeof cb !== 'function') {
         throw new Error('Invalid callback function!\n' + usage);
+      }
+      
+      // Accept either `params` or `data` for backwards compatibility (but not both!)
+      if (options.data && options.params) {
+        throw new Error('Cannot specify both `params` and `data`!  They are aliases of each other.\n' + usage);
+      }
+      else if (options.data) {
+        options.params = options.data;
       }
 
 
