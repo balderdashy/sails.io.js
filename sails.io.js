@@ -588,6 +588,9 @@
         });
 
         self.on('reconnect', function(transport, numAttempts) {
+          if (!self.isConnecting) {
+            self.on('connect', runRequestQueue.bind(self, self));
+          }
           var msSinceConnectionLost = ((new Date()).getTime() - self.connectionLostTimestamp);
           var numSecsOffline = (msSinceConnectionLost / 1000);
           consolog(
@@ -693,12 +696,7 @@
       // Bind a one-time function to run the request queue
       // when the self._raw connects.
       if ( !self.isConnected() ) {
-        var alreadyRanRequestQueue = false;
-        self._raw.on('connect', function whenRawSocketConnects() {
-          if (alreadyRanRequestQueue) return;
-          runRequestQueue(self);
-          alreadyRanRequestQueue = true;
-        });
+        self._raw.once('connect', runRequestQueue.bind(self, self));
       }
       // Or run it immediately if self._raw is already connected
       else {
