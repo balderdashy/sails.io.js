@@ -1103,7 +1103,7 @@
     setTimeout(function() {
 
       // If autoConnect is disabled, delete the eager socket (io.socket) and bail out.
-      if (!io.sails.autoConnect) {
+      if (io.sails.autoConnect === false || io.sails.autoconnect === false) {
         delete io.socket;
         return;
       }
