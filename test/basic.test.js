@@ -220,9 +220,10 @@ describe('io.socket', function () {
 
     describe('With path set to `/socketsarefun` in Sails and in io.sails.path', function() {
 
+      var socket;
       before(function(done) {
         lifecycle.setup({
-          autoconnect: false,
+          autoConnect: false,
           path: '/socketsarefun'
         }, done);
       });
@@ -230,8 +231,8 @@ describe('io.socket', function () {
       after(lifecycle.teardown);
 
       it('should be able to create and connect new socket with io.sails.connect(opts)', function(done) {
-        var socket = io.sails.connect({url: "http://localhost:1577"});
-        socket.on('connect', done);
+        io.socket = io.sails.connect({url: "http://localhost:1577"});
+        io.socket.on('connect', done);
       });
 
       it('should be able to send a GET request and receive the expected response', function (cb) {
