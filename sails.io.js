@@ -298,6 +298,22 @@
     // ```
 
 
+    var SOCKET_OPTIONS = [
+      'useCORSRouteToGetCookie',
+      'url',
+      'multiplex',
+      'transports',
+      'query',
+      'path',
+      'headers',
+      'initialConnectionHeaders',
+      'reconnection',
+      'reconnectionAttempts',
+      'reconnectionDelay',
+      'reconnectionDelayMax',
+      'randomizationFactor',
+      'timeout'
+    ];
 
     /**
      * SailsSocket
@@ -319,14 +335,9 @@
 
       // Set up connection options so that they can only be changed when socket is disconnected.
       var _opts = {};
-      [
-        'useCORSRouteToGetCookie',
-        'url',
-        'multiplex',
-        'transports',
-        'query',
-        'initialConnectionHeaders'
-      ].forEach(function(option) {
+      SOCKET_OPTIONS.forEach(function(option) {
+        // Okay to change global headers while socket is connected
+        if (option == 'headers') {return;}
         Object.defineProperty(self, option, {
           get: function() {
             if (option == 'url') {
@@ -335,6 +346,7 @@
             return _opts[option];
           },
           set: function(value) {
+            // Don't allow value to be changed while socket is connected
             if (self.isConnected() && io.sails.strict !== false && value != _opts[option]) {
               throw new Error('Cannot change value of `' + option + '` while socket is connected.');
             }
@@ -344,15 +356,11 @@
       });
 
       // Absorb opts into SailsSocket instance
-      self.useCORSRouteToGetCookie = opts.useCORSRouteToGetCookie;
-      self.url = opts.url;
-      self.multiplex = opts.multiplex;
-      self.transports = opts.transports;
-      self.query = opts.query;
-      // Global headers that will be sent with every io.socket request
-      self.headers = opts.headers;
-      // Headers that will be sent with the initial request to /socket.io (Node.js only)
-      self.initialConnectionHeaders = opts.initialConnectionHeaders;
+      // See https://sailsjs.org/reference/websockets/sails.io.js/SailsSocket/properties.md
+      // for description of options
+      SOCKET_OPTIONS.forEach(function(option) {
+        self[option] = opts[option];
+      });
 
       // Set up "eventQueue" to hold event handlers which have not been set on the actual raw socket yet.
       self.eventQueue = {};
@@ -386,18 +394,20 @@
 
       // Apply `io.sails` config as defaults
       // (now that at least one tick has elapsed)
-      self.useCORSRouteToGetCookie = self.useCORSRouteToGetCookie||io.sails.useCORSRouteToGetCookie;
-      self.url = self.url||io.sails.url;
-      self.transports = self.transports || io.sails.transports;
-      self.query = self.query || io.sails.query;
-      // Global headers that will be sent with every io.socket request
-      self.headers = self.headers || io.sails.headers;
+      // See https://sailsjs.org/reference/websockets/sails.io.js/SailsSocket/properties.md
+      // for description of options and default values
+      SOCKET_OPTIONS.forEach(function(option) {
+        if ('undefined' == typeof self[option]) {
+          self[option] = io.sails[option];
+        }
+      });
+
       // Headers that will be sent with the initial request to /socket.io (Node.js only)
-      self.extraHeaders = self.initialConnectionHeaders || io.sails.initialConnectionHeaders || {};
-      if (!(typeof module === 'object' && typeof module.exports !== 'undefined')) {
+      self.extraHeaders = self.initialConnectionHeaders || {};
+
+      if (!(typeof module === 'object' && typeof module.exports !== 'undefined') && self.initialConnectionHeaders) {
         console.warn("initialConnectionHeaders option available in Node.js only!");
       }
-      self.path = self.path || io.sails.path;
 
       // Ensure URL has no trailing slash
       self.url = self.url ? self.url.replace(/(\/)$/, '') : undefined;
