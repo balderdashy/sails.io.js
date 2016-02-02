@@ -350,6 +350,11 @@
             if (self.isConnected() && io.sails.strict !== false && value != _opts[option]) {
               throw new Error('Cannot change value of `' + option + '` while socket is connected.');
             }
+            // If socket is attempting to reconnect, stop it.
+            if (self._raw && self._raw.io && self._raw.io.reconnecting && !self._raw.io.skipReconnect) {
+              self._raw.io.skipReconnect = true;
+              consolog("Stopping reconnect; use .reconnect() to connect socket after changing options.");
+            }
             _opts[option] = value;
           }
         });
