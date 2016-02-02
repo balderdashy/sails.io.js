@@ -52,7 +52,7 @@
   // Current version of this SDK (sailsDK?!?!) and other metadata
   // that will be sent along w/ the initial connection request.
   var SDK_INFO = {
-    version: '0.13.4', // <-- pulled automatically from package.json, do not change!
+    version: '0.13.5', // <-- pulled automatically from package.json, do not change!
     platform: typeof module === 'undefined' ? 'browser' : 'node',
     language: 'javascript'
   };
