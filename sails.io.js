@@ -176,7 +176,7 @@
       }
 
       // Now empty the queue to remove it as a source of additional complexity.
-      queue = null;
+      socket.requestQueue = null;
     }
 
 
