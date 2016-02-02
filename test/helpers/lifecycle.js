@@ -53,6 +53,8 @@ module.exports = {
       io.sails.url = opts.url || 'http://localhost:'+TEST_SERVER_PORT;
       // Disable the sails.io.js client's logger
       io.sails.environment = opts.environment || 'production';
+      // Don't automatically reconnect after being disconnected
+      io.sails.reconnection = false;
 
       if (typeof (opts.multiplex) != 'undefined') {
         io.sails.multiplex = opts.multiplex;
@@ -84,6 +86,10 @@ module.exports = {
 
       if (typeof (opts.path) != 'undefined') {
         io.sails.path = opts.path;
+      }
+
+      if (typeof (opts.reconnection) != 'undefined') {
+        io.sails.reconnection = opts.reconnection;
       }
 
       // Globalize sails app as `server`
