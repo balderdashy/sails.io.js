@@ -1,5 +1,11 @@
 # sails.io.js changelog
 
+### 0.13.5
+
+* [BUGFIX] Fixed replaying of request queue on disconnect/reconnect [d8fb158](https://github.com/balderdashy/sails.io.js/commit/d8fb1585e7671922b499b5fac4a706edc5f810fa)
+* [ENHANCEMENT] Added new connection options `path`, `reconnection`, `reconnectionAttempts`, `reconnectionDelay`, `reconnectionDelayMax`, `randomizationFactor`, `timeout` [535d5a3](https://github.com/balderdashy/sails.io.js/commit/535d5a36e4034489500c5f8bc6306ade868c38b6)
+* [ENHANCEMENT] Allow both `data` and `params` to be used in calls to `socket.request()` [6f28ec](https://github.com/balderdashy/sails.io.js/commit/6f28ec9a456b5826f8580a2f398c2b7dc08aa5f2)
+
 ### 0.13.4
 
 * [ENHANCEMENT] Don't allow certain SailsSocket properties to be changed while the socket is connected.  This ensures that the properties always reflect the correct state of a connected socket.
