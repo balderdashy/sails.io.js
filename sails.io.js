@@ -1,3 +1,21 @@
+//////////////////////////////////////////////////////////////////////////////////////
+ //                                                                                //
+ //  ███████╗ █████╗ ██╗██╗     ███████╗   ██╗ ██████╗         ██╗███████╗         //
+ //  ██╔════╝██╔══██╗██║██║     ██╔════╝   ██║██╔═══██╗        ██║██╔════╝         //
+ //  ███████╗███████║██║██║     ███████╗   ██║██║   ██║        ██║███████╗         //
+ //  ╚════██║██╔══██║██║██║     ╚════██║   ██║██║   ██║   ██   ██║╚════██║         //
+ //  ███████║██║  ██║██║███████╗███████║██╗██║╚██████╔╝██╗╚█████╔╝███████║         //
+ //  ╚══════╝╚═╝  ╚═╝╚═╝╚══════╝╚══════╝╚═╝╚═╝ ╚═════╝ ╚═╝ ╚════╝ ╚══════╝         //
+ //                                                                                //
+ //   ╦╔═╗╦  ╦╔═╗╔═╗╔═╗╦═╗╦╔═╗╔╦╗  ╔═╗╦  ╦╔═╗╔╗╔╔╦╗  ╔═╗╔╦╗╦╔═                     //
+ //   ║╠═╣╚╗╔╝╠═╣╚═╗║  ╠╦╝║╠═╝ ║   ║  ║  ║║╣ ║║║ ║   ╚═╗ ║║╠╩╗                     //
+ //  ╚╝╩ ╩ ╚╝ ╩ ╩╚═╝╚═╝╩╚═╩╩   ╩   ╚═╝╩═╝╩╚═╝╝╚╝ ╩   ╚═╝═╩╝╩ ╩                     //
+ //  ┌─┐┌─┐┬─┐  ┌┐┌┌─┐┌┬┐┌─┐  ┬┌─┐  ┌─┐┌┐┌┌┬┐  ┌┬┐┬ ┬┌─┐  ┌┐ ┬─┐┌─┐┬ ┬┌─┐┌─┐┬─┐    //
+ //  ├┤ │ │├┬┘  ││││ │ ││├┤   │└─┐  ├─┤│││ ││   │ ├─┤├┤   ├┴┐├┬┘│ ││││└─┐├┤ ├┬┘    //
+ //  └  └─┘┴└─  ┘└┘└─┘─┴┘└─┘o└┘└─┘  ┴ ┴┘└┘─┴┘   ┴ ┴ ┴└─┘  └─┘┴└─└─┘└┴┘└─┘└─┘┴└─    //
+ //                                                                                //
+//////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * sails.io.js
  * ------------------------------------------------------------------------
@@ -97,9 +115,19 @@
    */
   var SDK_INFO = {
     version: '0.13.5', // <-- pulled automatically from package.json, do not change!
-    platform: typeof module === 'undefined' ? 'browser' : 'node',
-    language: 'javascript'
+    language: 'javascript',
+    platform: (function (){
+      if (typeof module === 'object' && typeof module.exports !== 'undefined') {
+        return 'node';
+      }
+      else {
+        return 'browser';
+      }
+    })()
   };
+
+  // Build `versionString` (a querystring snippet) by
+  // combining SDK_INFO and CONNECTION_METADATA_PARAMS.
   SDK_INFO.versionString =
     CONNECTION_METADATA_PARAMS.version + '=' + SDK_INFO.version + '&' +
     CONNECTION_METADATA_PARAMS.platform + '=' + SDK_INFO.platform + '&' +
@@ -230,12 +258,25 @@
 
 
 
+
   // Grab a reference to the global socket.io client (if one is available).
+  // This is used via closure below to determine which `io` to use when the
+  // socket.io client instance (`io`) is augmented to become the Sails client
+  // SDK instance (still `io`).
   var _existingGlobalSocketIO = (typeof io !== 'undefined') ? io : undefined;
 
 
 
 
+  //////////////////////////////////////////////////////////////
+  /////
+  ///// NOW FOR BUNCHES OF:
+  /////  - PRIVATE FUNCTION DEFINITIONS
+  /////  - CONSTRUCTORS
+  /////  - AND METHODS
+  /////
+  //////////////////////////////////////////////////////////////
+  //
 
 
 
@@ -279,25 +320,30 @@
     }
 
 
-    // If the socket.io client is not available, none of this will work.
+    // If a socket.io client (`io`) is not available, none of this will work.
     if (!io) {
       // If node:
-      if (typeof module === 'object' && typeof module.exports !== 'undefined') {
+      if (SDK_INFO.platform === 'node') {
         throw new Error('No socket.io client available.  When requiring `sails.io.js` from Node.js, a socket.io client (`io`) must be passed in.  For example:\n```\nvar io = require(\'sails.io.js\')( require(\'socket.io-client\') )\n```\n(see https://github.com/balderdashy/sails.io.js/tree/master/test for examples)');
       }
-      // If browser:
+      // Otherwise, this is a web browser:
       else {
         throw new Error('The Sails socket SDK depends on the socket.io client, but the socket.io global (`io`) was not available when `sails.io.js` loaded.  Normally, the socket.io client code is bundled with sails.io.js, so something is a little off.  Please check to be sure this version of `sails.io.js` has the minified Socket.io client at the top of the file.');
       }
     }
 
-
-
-    //////////////////////////////////////////////////////////////
-    /////                              ///////////////////////////
-    ///// PRIVATE METHODS/CONSTRUCTORS ///////////////////////////
-    /////                              ///////////////////////////
-    //////////////////////////////////////////////////////////////
+    // If the chosen socket.io client (`io`) has ALREADY BEEN AUGMENTED by this SDK,
+    // (i.e. if it already has a `.sails` property) then throw an error.
+    if (io.sails) {
+      // If node:
+      if (SDK_INFO.platform === 'node') {
+        throw new Error('The provided socket.io client (`io`) has already been augmented into a Sails socket SDK instance (it has `io.sails`).');
+      }
+      // Otherwise, this is a web browser:
+      else {
+        throw new Error('The socket.io client (`io`) has already been augmented into a Sails socket SDK instance.  Usually, this means you are bringing `sails.io.js` onto the page more than once.');
+      }
+    }
 
 
     /**
@@ -628,8 +674,11 @@
       // Headers that will be sent with the initial request to /socket.io (Node.js only)
       self.extraHeaders = self.initialConnectionHeaders || {};
 
-      if (!(typeof module === 'object' && typeof module.exports !== 'undefined') && self.initialConnectionHeaders) {
-        console.warn('initialConnectionHeaders option available in Node.js only!');
+      // Log a warning if non-Node.js platform attempts to use `initialConnectionHeaders`
+      if (self.initialConnectionHeaders && SDK_INFO.platform !== 'node') {
+        if (typeof console === 'object' && typeof console.warn === 'function') {
+          console.warn('initialConnectionHeaders option available in Node.js only!');
+        }
       }
 
       // Ensure URL has no trailing slash
@@ -1401,6 +1450,10 @@
     return io;
   } //</SailsIOClient>
 
+  //
+  /////////////////////////////////////////////////////////////////////////////////
+  ///// </bunches of private function definitions, constructors, and methods>
+  /////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -1415,7 +1468,7 @@
 
 
   // Add CommonJS support to allow this client SDK to be used from Node.js.
-  if (typeof module === 'object' && typeof module.exports !== 'undefined') {
+  if (SDK_INFO.platform === 'node') {
     module.exports = SailsIOClient;
   }
   // Add AMD support, registering this client SDK as an anonymous module.
