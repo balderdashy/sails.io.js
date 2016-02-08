@@ -150,19 +150,17 @@
     }
 
 
-    // NOT CURRENTLY SUPPORTED:
-    // ------------------------------------------------------------
+    // OTHER `io.sails` OPTIONS NOT CURRENTLY SUPPORTED VIA HTML ATTRIBUTES:
+    // --------------------------------------------------------------------------------
     // url         | ((string))     | _In browser, the URL of the page that loaded the sails.io.js script. In Node.js, no default._
     // transports  | ((array))      | `['polling', 'websocket']`
     //
     // useCORSRouteToGetCookie | ((boolean)) | `true`
     // query       | ((string))     | `''`
     // initialConnectionHeaders  | ((dictionary)) | `{}`
-    // ------------------------------------------------------------
+    // --------------------------------------------------------------------------------
 
   }
-  console.log('urlThisScriptWasFetchedFrom', urlThisScriptWasFetchedFrom);
-  console.log('scriptTagConfig', scriptTagConfig);
 
 
 
@@ -1170,7 +1168,6 @@
         io.sails[htmlAttrName] = scriptTagConfig[htmlAttrName];
       }
     });
-    console.log('io.sails', io.sails);
 
 
 
