@@ -462,7 +462,7 @@
             // If socket is attempting to reconnect, stop it.
             if (self._raw && self._raw.io && self._raw.io.reconnecting && !self._raw.io.skipReconnect) {
               self._raw.io.skipReconnect = true;
-              consolog("Stopping reconnect; use .reconnect() to connect socket after changing options.");
+              consolog('Stopping reconnect; use .reconnect() to connect socket after changing options.');
             }
             _opts[option] = value;
           }
@@ -520,7 +520,7 @@
       self.extraHeaders = self.initialConnectionHeaders || {};
 
       if (!(typeof module === 'object' && typeof module.exports !== 'undefined') && self.initialConnectionHeaders) {
-        console.warn("initialConnectionHeaders option available in Node.js only!");
+        console.warn('initialConnectionHeaders option available in Node.js only!');
       }
 
       // Ensure URL has no trailing slash
