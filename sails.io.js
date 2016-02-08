@@ -24,7 +24,46 @@
 
 (function() {
 
-// Save the URL that this script was fetched from, and any other config provided
+
+  /**
+   * Constant containing the names of all available options
+   * for individual sockets.
+   *
+   * @type {Array}
+   */
+  var SOCKET_OPTIONS = [
+    'useCORSRouteToGetCookie',
+    'url',
+    'multiplex',
+    'transports',
+    'query',
+    'path',
+    'headers',
+    'initialConnectionHeaders',
+    'reconnection',
+    'reconnectionAttempts',
+    'reconnectionDelay',
+    'reconnectionDelayMax',
+    'randomizationFactor',
+    'timeout'
+  ];
+
+
+  /**
+   * Constant containing the names of properties on `io.sails` which
+   * may be configured using HTML attributes on the script tag which
+   * loaded this file.
+   *
+   * @type {Array}
+   */
+  var CONFIGURABLE_VIA_HTML_ATTR = [
+    'autoConnect',
+    'environment',
+    'headers'
+  ];
+
+
+  // Save the URL that this script was fetched from, and any other config provided
   // as HTML attributes on the script tag.  This is used below.
   // (skip this if this SDK is being used outside of the DOM, i.e. in a Node process)
   var thisScriptTag = (function() {
@@ -55,7 +94,7 @@
     // environment | ((string))     | `'development'`
     // headers     | ((dictionary)) | `{}`
     // ------------------------------------------------------------
-    ['autoConnect', 'environment', 'headers'].forEach(function (htmlAttrName){
+    CONFIGURABLE_VIA_HTML_ATTR.forEach(function (htmlAttrName){
       scriptTagConfig = (function (scriptTagConfig, htmlAttrName) {
         scriptTagConfig[htmlAttrName] = (function (htmlAttrVal){
           // The HTML attribute value should always be a string or `null`.
@@ -122,10 +161,10 @@
     // ------------------------------------------------------------
 
   }
-  // console.log('urlThisScriptWasFetchedFrom', urlThisScriptWasFetchedFrom);
-  // console.log('scriptTagConfig', scriptTagConfig);
-  
-  
+  console.log('urlThisScriptWasFetchedFrom', urlThisScriptWasFetchedFrom);
+  console.log('scriptTagConfig', scriptTagConfig);
+
+
 
   // Constants
   var CONNECTION_METADATA_PARAMS = {
@@ -163,14 +202,14 @@
 
   function SailsIOClient(io) {
 
-    // Prefer the passed-in `io` instance, but also use the global one if we've got it.
+    // Prefer the passed-in `io` instance, but fall back to the global one if we've got it.
     if (!io) {
       io = _io;
     }
 
 
     // If the socket.io client is not available, none of this will work.
-    if (!io) throw new Error('`sails.io.js` requires a socket.io client, but `io` was not passed in.');
+    if (!io) throw new Error('`sails.io.js` requires a socket.io client, but `io` was not passed in or available as a global.');
 
 
 
@@ -383,22 +422,7 @@
     // ```
 
 
-    var SOCKET_OPTIONS = [
-      'useCORSRouteToGetCookie',
-      'url',
-      'multiplex',
-      'transports',
-      'query',
-      'path',
-      'headers',
-      'initialConnectionHeaders',
-      'reconnection',
-      'reconnectionAttempts',
-      'reconnectionDelay',
-      'reconnectionDelayMax',
-      'randomizationFactor',
-      'timeout'
-    ];
+
 
     /**
      * SailsSocket
@@ -1028,7 +1052,7 @@
       if (cb && typeof cb !== 'function') {
         throw new Error('Invalid callback function!\n' + usage);
       }
-      
+
       // Accept either `params` or `data` for backwards compatibility (but not both!)
       if (options.data && options.params) {
         throw new Error('Cannot specify both `params` and `data`!  They are aliases of each other.\n' + usage);
@@ -1103,7 +1127,15 @@
 
 
     // Set a `sails` object that may be used for configuration before the
-    // first socket connects (i.e. to prevent auto-connect)
+    // first socket connects (i.e. to allow auto-connect behavior to be
+    // prevented by setting `io.sails.autoConnect` in an inline script
+    // directly after the script tag which loaded this file).
+    //
+    //////////////////////////////////////////////////////////////////////////////
+    // Note that the new HTML attribute configuration style may eventually
+    // completely replace this original approach-- it is easier to reason
+    // about, and also it would allow us to remove timeout below.
+    //////////////////////////////////////////////////////////////////////////////
     io.sails = {
 
       // Whether to automatically connect a socket and save it as `io.socket`.
@@ -1130,6 +1162,18 @@
 
 
 
+    // Now fold in config provided as HTML attributes on the script tag:
+    // (note that if `io.sails.*` is changed after this script, those changes
+    //  will still take precedence)
+    CONFIGURABLE_VIA_HTML_ATTR.forEach(function (htmlAttrName){
+      if (typeof scriptTagConfig[htmlAttrName] !== 'undefined') {
+        io.sails[htmlAttrName] = scriptTagConfig[htmlAttrName];
+      }
+    });
+    console.log('io.sails', io.sails);
+
+
+
     /**
      * Add `io.sails.connect` function as a wrapper for the built-in `io()` aka `io.connect()`
      * method, returning a SailsSocket. This special function respects the configured io.sails
@@ -1143,7 +1187,7 @@
     io.sails.connect = function(url, opts) {
 
       // Make URL optional
-      if ('object' == typeof url) {
+      if ('object' === typeof url) {
         opts = url;
         url = null;
       }
