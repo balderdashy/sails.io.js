@@ -24,23 +24,35 @@
 
 (function() {
 
-  // Save the URL that this script was fetched from for use below.
+  // Save the URL that this script was fetched from, and any other config provided
+  // as HTML attributes on the script tag.  This is used below.
   // (skip this if this SDK is being used outside of the DOM, i.e. in a Node process)
-  var urlThisScriptWasFetchedFrom = (function() {
+  var thisScriptTag = (function() {
     if (
       typeof window !== 'object' ||
       typeof window.document !== 'object' ||
       typeof window.document.getElementsByTagName !== 'function'
     ) {
-      return '';
+      return null;
     }
 
     // Return the URL of the last script loaded (i.e. this one)
     // (this must run before nextTick; see http://stackoverflow.com/a/2976714/486547)
     var allScriptsCurrentlyInDOM = window.document.getElementsByTagName('script');
-    var thisScript = allScriptsCurrentlyInDOM[allScriptsCurrentlyInDOM.length - 1];
-    return thisScript.src;
+    return allScriptsCurrentlyInDOM[allScriptsCurrentlyInDOM.length - 1];
   })();
+  
+  // If available, parse client-side sails.io.js configuration from the script tag,
+  // as well as grabbing hold of the URL from whence it was fetched.
+  var urlThisScriptWasFetchedFrom = '';
+  var scriptTagConfig = {};
+  if (thisScriptTag) {
+    urlThisScriptWasFetchedFrom = thisScriptTag.src;
+    // Now parse client-side configuration from the script tag.
+    scriptTagConfig.headers = thisScriptTag.getAttribute('headers');
+    // TODO: actually finish implementing this-- still a lot to figure out
+  }
+  
 
   // Constants
   var CONNECTION_METADATA_PARAMS = {
