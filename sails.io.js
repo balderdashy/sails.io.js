@@ -25,6 +25,15 @@
 (function() {
 
 
+  //   ██████╗ ██████╗ ███╗   ██╗███████╗████████╗ █████╗ ███╗   ██╗████████╗███████╗
+  //  ██╔════╝██╔═══██╗████╗  ██║██╔════╝╚══██╔══╝██╔══██╗████╗  ██║╚══██╔══╝██╔════╝
+  //  ██║     ██║   ██║██╔██╗ ██║███████╗   ██║   ███████║██╔██╗ ██║   ██║   ███████╗
+  //  ██║     ██║   ██║██║╚██╗██║╚════██║   ██║   ██╔══██║██║╚██╗██║   ██║   ╚════██║
+  //  ╚██████╗╚██████╔╝██║ ╚████║███████║   ██║   ██║  ██║██║ ╚████║   ██║   ███████║
+  //   ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
+  //
+
+
   /**
    * Constant containing the names of all available options
    * for individual sockets.
@@ -55,12 +64,72 @@
    * loaded this file.
    *
    * @type {Array}
+   *
+   * (this is unused if loading from node.js)
    */
   var CONFIGURABLE_VIA_HTML_ATTR = [
     'autoConnect',
     'environment',
     'headers'
   ];
+
+
+
+
+  /**
+   * Constant containing the names of querystring
+   * parameters sent when connecting any SailsSocket.
+   *
+   * @type {Dictionary}
+   */
+  var CONNECTION_METADATA_PARAMS = {
+    version: '__sails_io_sdk_version',
+    platform: '__sails_io_sdk_platform',
+    language: '__sails_io_sdk_language'
+  };
+
+
+  /**
+   * Constant containing metadata about the platform, language, and
+   * current version of this SDK.
+   *
+   * @type {Dictionary}
+   */
+  var SDK_INFO = {
+    version: '0.13.5', // <-- pulled automatically from package.json, do not change!
+    platform: typeof module === 'undefined' ? 'browser' : 'node',
+    language: 'javascript'
+  };
+  SDK_INFO.versionString =
+    CONNECTION_METADATA_PARAMS.version + '=' + SDK_INFO.version + '&' +
+    CONNECTION_METADATA_PARAMS.platform + '=' + SDK_INFO.platform + '&' +
+    CONNECTION_METADATA_PARAMS.language + '=' + SDK_INFO.language;
+
+
+
+
+
+  //   ██████╗ ██████╗  █████╗ ██████╗     ██╗ ██████╗    ███████╗ █████╗ ██╗██╗     ███████╗
+  //  ██╔════╝ ██╔══██╗██╔══██╗██╔══██╗    ██║██╔═══██╗   ██╔════╝██╔══██╗██║██║     ██╔════╝ ▄ ██╗▄
+  //  ██║  ███╗██████╔╝███████║██████╔╝    ██║██║   ██║   ███████╗███████║██║██║     ███████╗  ████╗
+  //  ██║   ██║██╔══██╗██╔══██║██╔══██╗    ██║██║   ██║   ╚════██║██╔══██║██║██║     ╚════██║ ▀╚██╔▀
+  //  ╚██████╔╝██║  ██║██║  ██║██████╔╝    ██║╚██████╔╝██╗███████║██║  ██║██║███████╗███████║██╗╚═╝
+  //   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝     ╚═╝ ╚═════╝ ╚═╝╚══════╝╚═╝  ╚═╝╚═╝╚══════╝╚══════╝╚═╝
+  //
+  //  ███████╗██████╗  ██████╗ ███╗   ███╗      ██╗███████╗ ██████╗██████╗ ██╗██████╗ ████████╗██╗
+  //  ██╔════╝██╔══██╗██╔═══██╗████╗ ████║     ██╔╝██╔════╝██╔════╝██╔══██╗██║██╔══██╗╚══██╔══╝╚██╗
+  //  █████╗  ██████╔╝██║   ██║██╔████╔██║    ██╔╝ ███████╗██║     ██████╔╝██║██████╔╝   ██║    ╚██╗
+  //  ██╔══╝  ██╔══██╗██║   ██║██║╚██╔╝██║    ╚██╗ ╚════██║██║     ██╔══██╗██║██╔═══╝    ██║    ██╔╝
+  //  ██║     ██║  ██║╚██████╔╝██║ ╚═╝ ██║     ╚██╗███████║╚██████╗██║  ██║██║██║        ██║   ██╔╝
+  //  ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝      ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝╚═╝        ╚═╝   ╚═╝
+  //
+  //  ██╗  ██╗████████╗███╗   ███╗██╗          █████╗ ████████╗████████╗██████╗ ███████╗
+  //  ██║  ██║╚══██╔══╝████╗ ████║██║         ██╔══██╗╚══██╔══╝╚══██╔══╝██╔══██╗██╔════╝
+  //  ███████║   ██║   ██╔████╔██║██║         ███████║   ██║      ██║   ██████╔╝███████╗
+  //  ██╔══██║   ██║   ██║╚██╔╝██║██║         ██╔══██║   ██║      ██║   ██╔══██╗╚════██║
+  //  ██║  ██║   ██║   ██║ ╚═╝ ██║███████╗    ██║  ██║   ██║      ██║   ██║  ██║███████║
+  //  ╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝╚══════╝    ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚═╝  ╚═╝╚══════╝
+  //
 
 
   // Save the URL that this script was fetched from, and any other config provided
@@ -159,35 +228,14 @@
     // query       | ((string))     | `''`
     // initialConnectionHeaders  | ((dictionary)) | `{}`
     // --------------------------------------------------------------------------------
-
   }
 
-
-
-  // Constants
-  var CONNECTION_METADATA_PARAMS = {
-    version: '__sails_io_sdk_version',
-    platform: '__sails_io_sdk_platform',
-    language: '__sails_io_sdk_language'
-  };
-
-  // Current version of this SDK (sailsDK?!?!) and other metadata
-  // that will be sent along w/ the initial connection request.
-  var SDK_INFO = {
-    version: '0.13.5', // <-- pulled automatically from package.json, do not change!
-    platform: typeof module === 'undefined' ? 'browser' : 'node',
-    language: 'javascript'
-  };
-  SDK_INFO.versionString =
-    CONNECTION_METADATA_PARAMS.version + '=' + SDK_INFO.version + '&' +
-    CONNECTION_METADATA_PARAMS.platform + '=' + SDK_INFO.platform + '&' +
-    CONNECTION_METADATA_PARAMS.language + '=' + SDK_INFO.language;
 
 
   // In case you're wrapping the socket.io client to prevent pollution of the
   // global namespace, you can pass in your own `io` to replace the global one.
   // But we still grab access to the global one if it's available here:
-  var _io = (typeof io !== 'undefined') ? io : null;
+  var _existingGlobalSocketIO = (typeof io !== 'undefined') ? io : null;
 
   /**
    * Augment the `io` object passed in with methods for talking and listening
@@ -202,12 +250,21 @@
 
     // Prefer the passed-in `io` instance, but fall back to the global one if we've got it.
     if (!io) {
-      io = _io;
+      io = _existingGlobalSocketIO;
     }
 
 
     // If the socket.io client is not available, none of this will work.
-    if (!io) throw new Error('`sails.io.js` requires a socket.io client, but `io` was not passed in or available as a global.');
+    if (!io) {
+      // If node:
+      if (typeof module === 'object' && typeof module.exports !== 'undefined') {
+        throw new Error('No socket.io client available.  When requiring `sails.io.js` from Node.js, a socket.io client (`io`) must be passed in.  For example:\n```\nvar io = require(\'sails.io.js\')( require(\'socket.io-client\') )\n```\n(see https://github.com/balderdashy/sails.io.js/tree/master/test for examples)');
+      }
+      // If browser:
+      else {
+        throw new Error('The Sails socket SDK depends on the socket.io client, but the socket.io global (`io`) was not available when `sails.io.js` loaded.  Normally, the socket.io client code is bundled with sails.io.js, so something is a little off.  Please check to be sure this version of `sails.io.js` has the minified Socket.io client at the top of the file.');
+      }
+    }
 
 
 
@@ -1241,7 +1298,7 @@
 
     // Return the `io` object.
     return io;
-  }
+  } //</SailsIOClient>
 
 
   // Add CommonJS support to allow this client SDK to be used from Node.js.
