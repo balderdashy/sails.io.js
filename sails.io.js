@@ -24,7 +24,7 @@
 
 (function() {
 
-  // Save the URL that this script was fetched from, and any other config provided
+// Save the URL that this script was fetched from, and any other config provided
   // as HTML attributes on the script tag.  This is used below.
   // (skip this if this SDK is being used outside of the DOM, i.e. in a Node process)
   var thisScriptTag = (function() {
@@ -41,51 +41,89 @@
     var allScriptsCurrentlyInDOM = window.document.getElementsByTagName('script');
     return allScriptsCurrentlyInDOM[allScriptsCurrentlyInDOM.length - 1];
   })();
-  
+
   // If available, parse client-side sails.io.js configuration from the script tag,
   // as well as grabbing hold of the URL from whence it was fetched.
   var urlThisScriptWasFetchedFrom = '';
   var scriptTagConfig = {};
   if (thisScriptTag) {
     urlThisScriptWasFetchedFrom = thisScriptTag.src;
-    
+
     // Now parse the most common client-side configuration settings from the script tag. (experimental)
     // ------------------------------------------------------------
     // autoConnect | ((boolean))    | `true`
     // environment | ((string))     | `'development'`
     // headers     | ((dictionary)) | `{}`
     // ------------------------------------------------------------
-    // Note that `null` returned from getAttribute() means that the HTML attribute
-    // was not specified, so we treat it as undefined.
-    scriptTagConfig.autoConnect = (function (htmlAttrVal){
-      if (typeof htmlAttrVal === 'string') {
-        try { htmlAttrVal = JSON.parse(htmlAttrVal); } catch (e) { }
+    ['autoConnect', 'environment', 'headers'].forEach(function (htmlAttrName){
+      scriptTagConfig = (function (scriptTagConfig, htmlAttrName) {
+        scriptTagConfig[htmlAttrName] = (function (htmlAttrVal){
+          // The HTML attribute value should always be a string or `null`.
+          // We'll try to parse it as JSON and use that, but worst case fall back
+          // to the default situation of it being a string.
+          if (typeof htmlAttrVal === 'string') {
+            try { return JSON.parse(htmlAttrVal); } catch (e) { return htmlAttrVal; }
+          }
+          // If `null` was returned from getAttribute(), it means that the HTML attribute
+          // was not specified, so we treat it as undefined (which will cause the property
+          // to be removed below)
+          else if (htmlAttrVal === null) {
+            return undefined;
+          }
+          // Any other contingency shouldn't be possible:
+          // - if no quotes are used in the HTML attribute, it still comes in as a string.
+          // - if no RHS is provided for the attribute, it still comes in as "" (empty string)
+          else throw new Error('sails.io.js :: Unexpected/invalid script tag configuration for `'+htmlAttrName+'`: `'+htmlAttrVal+'` (a `'+typeof htmlAttrVal+'`). Should be a string.');
+        })(thisScriptTag.getAttribute(htmlAttrName));
+        if (scriptTagConfig[htmlAttrName] === undefined){ delete scriptTagConfig[htmlAttrName]; }
+        return scriptTagConfig;
+      })(scriptTagConfig, htmlAttrName);
+    });
+
+    // Now that they've been parsed, do an extremely lean version of
+    // logical type validation/coercion of provided values.
+    //////////////////////////////////////////////////////////////////
+
+    // `autoConnect`
+    if (typeof scriptTagConfig.autoConnect !== 'undefined') {
+      if (scriptTagConfig.autoConnect === '') {
+        // Special case for empty string.  It means `true` (see above).
+        scriptTagConfig.autoConnect = true;
       }
-    })(thisScriptTag.getAttribute('autoConnect'));
-    if (scriptTagConfig.autoConnect === null){ delete scriptTagConfig.autoConnect; }
-    
-    // scriptTagConfig.environment = thisScriptTag.getAttribute('environment');
-    // if (scriptTagConfig.environment === null){ delete scriptTagConfig.environment; }
-    // TODO
-    
-    // scriptTagConfig.headers = thisScriptTag.getAttribute('headers');
-    // if (scriptTagConfig.headers === null){ delete scriptTagConfig.headers; }
-    // TODO
-    
-    
+      else if (typeof scriptTagConfig.autoConnect !== 'boolean') {
+        throw new Error('sails.io.js :: Unexpected/invalid configuration for `autoConnect` provided in script tag: `'+scriptTagConfig.autoConnect+'` (a `'+typeof scriptTagConfig.autoConnect+'`). Should be a boolean.');
+      }
+    }
+
+    // `environment`
+    if (typeof scriptTagConfig.environment !== 'undefined') {
+      if (typeof scriptTagConfig.environment !== 'string') {
+        throw new Error('sails.io.js :: Unexpected/invalid configuration for `environment` provided in script tag: `'+scriptTagConfig.environment+'` (a `'+typeof scriptTagConfig.environment+'`). Should be a string.');
+      }
+    }
+
+
+    // `headers`
+    if (typeof scriptTagConfig.headers !== 'undefined') {
+      if (typeof scriptTagConfig.headers !== 'object' || Array.isArray(scriptTagConfig.headers)) {
+        throw new Error('sails.io.js :: Unexpected/invalid configuration for `headers` provided in script tag: `'+scriptTagConfig.headers+'` (a `'+typeof scriptTagConfig.headers+'`). Should be a JSON-compatible dictionary (i.e. `{}`).  Don\'t forget those double quotes (""), even on key names!  Use single quotes (\'\') to wrap the HTML attribute value; e.g. `headers=\'{"X-Auth": "foo"}\'`');
+      }
+    }
+
+
     // NOT CURRENTLY SUPPORTED:
     // ------------------------------------------------------------
     // url         | ((string))     | _In browser, the URL of the page that loaded the sails.io.js script. In Node.js, no default._
     // transports  | ((array))      | `['polling', 'websocket']`
     //
     // useCORSRouteToGetCookie | ((boolean)) | `true`
-    // query       | ((string))     | `''` 
+    // query       | ((string))     | `''`
     // initialConnectionHeaders  | ((dictionary)) | `{}`
     // ------------------------------------------------------------
-    
+
   }
-  console.log('urlThisScriptWasFetchedFrom', urlThisScriptWasFetchedFrom);
-  console.log('scriptTagConfig', scriptTagConfig);
+  // console.log('urlThisScriptWasFetchedFrom', urlThisScriptWasFetchedFrom);
+  // console.log('scriptTagConfig', scriptTagConfig);
   
   
 
