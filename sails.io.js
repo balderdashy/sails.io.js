@@ -1249,11 +1249,11 @@
     module.exports = SailsIOClient;
     return SailsIOClient;
   }
+  // Add AMD support, registering this client SDK as an anonymous module.
   else if (typeof define === 'function' && define.amd) {
-      // AMD. Register as an anonymous module.
-      define([], function() {
-        return SailsIOClient;
-      });
+    define([], function() {
+      return SailsIOClient;
+    });
   }
   else {
     // Otherwise, try to instantiate the client:
