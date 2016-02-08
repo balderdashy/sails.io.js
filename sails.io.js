@@ -108,13 +108,19 @@
 
 
 
-
-  //   ██████╗ ██████╗  █████╗ ██████╗     ██╗ ██████╗    ███████╗ █████╗ ██╗██╗     ███████╗
-  //  ██╔════╝ ██╔══██╗██╔══██╗██╔══██╗    ██║██╔═══██╗   ██╔════╝██╔══██╗██║██║     ██╔════╝ ▄ ██╗▄
-  //  ██║  ███╗██████╔╝███████║██████╔╝    ██║██║   ██║   ███████╗███████║██║██║     ███████╗  ████╗
-  //  ██║   ██║██╔══██╗██╔══██║██╔══██╗    ██║██║   ██║   ╚════██║██╔══██║██║██║     ╚════██║ ▀╚██╔▀
-  //  ╚██████╔╝██║  ██║██║  ██║██████╔╝    ██║╚██████╔╝██╗███████║██║  ██║██║███████╗███████║██╗╚═╝
-  //   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝     ╚═╝ ╚═════╝ ╚═╝╚══════╝╚═╝  ╚═╝╚═╝╚══════╝╚══════╝╚═╝
+  //   █████╗ ██████╗ ███████╗ ██████╗ ██████╗ ██████╗     ██╗  ██╗████████╗███╗   ███╗██╗
+  //  ██╔══██╗██╔══██╗██╔════╝██╔═══██╗██╔══██╗██╔══██╗    ██║  ██║╚══██╔══╝████╗ ████║██║
+  //  ███████║██████╔╝███████╗██║   ██║██████╔╝██████╔╝    ███████║   ██║   ██╔████╔██║██║
+  //  ██╔══██║██╔══██╗╚════██║██║   ██║██╔══██╗██╔══██╗    ██╔══██║   ██║   ██║╚██╔╝██║██║
+  //  ██║  ██║██████╔╝███████║╚██████╔╝██║  ██║██████╔╝    ██║  ██║   ██║   ██║ ╚═╝ ██║███████╗
+  //  ╚═╝  ╚═╝╚═════╝ ╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝     ╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝╚══════╝
+  //
+  //   █████╗ ████████╗████████╗██████╗ ██╗██████╗ ██╗   ██╗████████╗███████╗███████╗
+  //  ██╔══██╗╚══██╔══╝╚══██╔══╝██╔══██╗██║██╔══██╗██║   ██║╚══██╔══╝██╔════╝██╔════╝
+  //  ███████║   ██║      ██║   ██████╔╝██║██████╔╝██║   ██║   ██║   █████╗  ███████╗
+  //  ██╔══██║   ██║      ██║   ██╔══██╗██║██╔══██╗██║   ██║   ██║   ██╔══╝  ╚════██║
+  //  ██║  ██║   ██║      ██║   ██║  ██║██║██████╔╝╚██████╔╝   ██║   ███████╗███████║
+  //  ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚═╝  ╚═╝╚═╝╚═════╝  ╚═════╝    ╚═╝   ╚══════╝╚══════╝
   //
   //  ███████╗██████╗  ██████╗ ███╗   ███╗      ██╗███████╗ ██████╗██████╗ ██╗██████╗ ████████╗██╗
   //  ██╔════╝██╔══██╗██╔═══██╗████╗ ████║     ██╔╝██╔════╝██╔════╝██╔══██╗██║██╔══██╗╚══██╔══╝╚██╗
@@ -123,14 +129,6 @@
   //  ██║     ██║  ██║╚██████╔╝██║ ╚═╝ ██║     ╚██╗███████║╚██████╗██║  ██║██║██║        ██║   ██╔╝
   //  ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝      ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝╚═╝        ╚═╝   ╚═╝
   //
-  //  ██╗  ██╗████████╗███╗   ███╗██╗          █████╗ ████████╗████████╗██████╗ ███████╗
-  //  ██║  ██║╚══██╔══╝████╗ ████║██║         ██╔══██╗╚══██╔══╝╚══██╔══╝██╔══██╗██╔════╝
-  //  ███████║   ██║   ██╔████╔██║██║         ███████║   ██║      ██║   ██████╔╝███████╗
-  //  ██╔══██║   ██║   ██║╚██╔╝██║██║         ██╔══██║   ██║      ██║   ██╔══██╗╚════██║
-  //  ██║  ██║   ██║   ██║ ╚═╝ ██║███████╗    ██║  ██║   ██║      ██║   ██║  ██║███████║
-  //  ╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝╚══════╝    ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚═╝  ╚═╝╚══════╝
-  //
-
 
   // Save the URL that this script was fetched from, and any other config provided
   // as HTML attributes on the script tag.  This is used below.
@@ -232,24 +230,51 @@
 
 
 
-  // In case you're wrapping the socket.io client to prevent pollution of the
-  // global namespace, you can pass in your own `io` to replace the global one.
-  // But we still grab access to the global one if it's available here:
-  var _existingGlobalSocketIO = (typeof io !== 'undefined') ? io : null;
+  // Grab a reference to the global socket.io client (if one is available).
+  var _existingGlobalSocketIO = (typeof io !== 'undefined') ? io : undefined;
+
+
+
+
+
+
+
+  //  ███████╗ █████╗ ██╗██╗     ███████╗      ██╗ ██████╗        ██████╗██╗     ██╗███████╗███╗   ██╗████████╗
+  //  ██╔════╝██╔══██╗██║██║     ██╔════╝      ██║██╔═══██╗      ██╔════╝██║     ██║██╔════╝████╗  ██║╚══██╔══╝
+  //  ███████╗███████║██║██║     ███████╗█████╗██║██║   ██║█████╗██║     ██║     ██║█████╗  ██╔██╗ ██║   ██║
+  //  ╚════██║██╔══██║██║██║     ╚════██║╚════╝██║██║   ██║╚════╝██║     ██║     ██║██╔══╝  ██║╚██╗██║   ██║
+  //  ███████║██║  ██║██║███████╗███████║      ██║╚██████╔╝      ╚██████╗███████╗██║███████╗██║ ╚████║   ██║
+  //  ╚══════╝╚═╝  ╚═╝╚═╝╚══════╝╚══════╝      ╚═╝ ╚═════╝        ╚═════╝╚══════╝╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝
+  //
 
   /**
-   * Augment the `io` object passed in with methods for talking and listening
-   * to one or more Sails backend(s).  Automatically connects a socket and
-   * exposes it on `io.socket`.  If a socket tries to make requests before it
-   * is connected, the sails.io.js client will queue it up.
+   * SailsIOClient()
+   *
+   * Augment the provided Socket.io client object (`io`) with methods for
+   * talking and listening to one or more Sails backend(s).  If no `io` was
+   * provided (i.e. in a browser setting), then attempt to use the global.
+   *
+   * This absorbs implicit `io.sails` configuration, sets a timer for
+   * automatically connecting a socket (if `io.sails.autoConnect` is enabled)
+   * and returns the augmented `io`.
+   *
+   * Note:
+   * The automatically-connected socket is exposed as `io.socket`.  If this
+   * socket attempts to bind event listeners or send requests before it is
+   * connected, it will be queued up and replayed when the connection is
+   * successfully opened.
    *
    * @param {SocketIO} io
+   * @returns {SailsIOClient} [also called `io`]
    */
 
-  function SailsIOClient(io) {
+  function SailsIOClient(_providedSocketIO) {
+
+    // First, determine which `io` we're augmenting.
+    var io;
 
     // Prefer the passed-in `io` instance, but fall back to the global one if we've got it.
-    if (!io) {
+    if (!_providedSocketIO) {
       io = _existingGlobalSocketIO;
     }
 
@@ -314,7 +339,7 @@
           .bind(console)
           .apply(this, args);
       };
-    }
+    }//</LoggerFactory>
 
     // Create a private logger instance
     var consolog = LoggerFactory();
@@ -389,6 +414,22 @@
 
 
 
+
+    //       ██╗███████╗ ██████╗ ███╗   ██╗      ██╗    ██╗███████╗██████╗ ███████╗ ██████╗  ██████╗██╗  ██╗███████╗████████╗
+    //       ██║██╔════╝██╔═══██╗████╗  ██║      ██║    ██║██╔════╝██╔══██╗██╔════╝██╔═══██╗██╔════╝██║ ██╔╝██╔════╝╚══██╔══╝
+    //       ██║███████╗██║   ██║██╔██╗ ██║█████╗██║ █╗ ██║█████╗  ██████╔╝███████╗██║   ██║██║     █████╔╝ █████╗     ██║
+    //  ██   ██║╚════██║██║   ██║██║╚██╗██║╚════╝██║███╗██║██╔══╝  ██╔══██╗╚════██║██║   ██║██║     ██╔═██╗ ██╔══╝     ██║
+    //  ╚█████╔╝███████║╚██████╔╝██║ ╚████║      ╚███╔███╔╝███████╗██████╔╝███████║╚██████╔╝╚██████╗██║  ██╗███████╗   ██║
+    //   ╚════╝ ╚══════╝ ╚═════╝ ╚═╝  ╚═══╝       ╚══╝╚══╝ ╚══════╝╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝
+    //
+    //  ██████╗ ███████╗███████╗██████╗  ██████╗ ███╗   ██╗███████╗███████╗     ██╗     ██╗██╗    ██╗██████╗ ██╗
+    //  ██╔══██╗██╔════╝██╔════╝██╔══██╗██╔═══██╗████╗  ██║██╔════╝██╔════╝    ██╔╝     ██║██║    ██║██╔══██╗╚██╗
+    //  ██████╔╝█████╗  ███████╗██████╔╝██║   ██║██╔██╗ ██║███████╗█████╗      ██║      ██║██║ █╗ ██║██████╔╝ ██║
+    //  ██╔══██╗██╔══╝  ╚════██║██╔═══╝ ██║   ██║██║╚██╗██║╚════██║██╔══╝      ██║ ██   ██║██║███╗██║██╔══██╗ ██║
+    //  ██║  ██║███████╗███████║██║     ╚██████╔╝██║ ╚████║███████║███████╗    ╚██╗╚█████╔╝╚███╔███╔╝██║  ██║██╔╝
+    //  ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝      ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚══════╝     ╚═╝ ╚════╝  ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝
+    //
+
     /**
      * The JWR (JSON WebSocket Response) received from a Sails server.
      *
@@ -428,6 +469,16 @@
     };
 
 
+
+
+    //          ███████╗███╗   ███╗██╗████████╗███████╗██████╗  ██████╗ ███╗   ███╗ ██╗██╗
+    //          ██╔════╝████╗ ████║██║╚══██╔══╝██╔════╝██╔══██╗██╔═══██╗████╗ ████║██╔╝╚██╗
+    //          █████╗  ██╔████╔██║██║   ██║   █████╗  ██████╔╝██║   ██║██╔████╔██║██║  ██║
+    //          ██╔══╝  ██║╚██╔╝██║██║   ██║   ██╔══╝  ██╔══██╗██║   ██║██║╚██╔╝██║██║  ██║
+    //  ███████╗███████╗██║ ╚═╝ ██║██║   ██║   ██║     ██║  ██║╚██████╔╝██║ ╚═╝ ██║╚██╗██╔╝
+    //  ╚══════╝╚══════╝╚═╝     ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝ ╚═╝╚═╝
+    //
+
     /**
      * @api private
      * @param  {SailsSocket} socket  [description]
@@ -458,26 +509,19 @@
       });
     }
 
-    //////////////////////////////////////////////////////////////
-    ///// </PRIVATE METHODS/CONSTRUCTORS> ////////////////////////
-    //////////////////////////////////////////////////////////////
 
 
 
-    // Version note:
+
+
+
+    //  ███████╗ █████╗ ██╗██╗     ███████╗███████╗ ██████╗  ██████╗██╗  ██╗███████╗████████╗
+    //  ██╔════╝██╔══██╗██║██║     ██╔════╝██╔════╝██╔═══██╗██╔════╝██║ ██╔╝██╔════╝╚══██╔══╝
+    //  ███████╗███████║██║██║     ███████╗███████╗██║   ██║██║     █████╔╝ █████╗     ██║
+    //  ╚════██║██╔══██║██║██║     ╚════██║╚════██║██║   ██║██║     ██╔═██╗ ██╔══╝     ██║
+    //  ███████║██║  ██║██║███████╗███████║███████║╚██████╔╝╚██████╗██║  ██╗███████╗   ██║
+    //  ╚══════╝╚═╝  ╚═╝╚═╝╚══════╝╚══════╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝
     //
-    // `io.SocketNamespace.prototype` doesn't exist in sio 1.0.
-    //
-    // Rather than adding methods to the prototype for the Socket instance that is returned
-    // when the browser connects with `io.connect()`, we create our own constructor, `SailsSocket`.
-    // This makes our solution more future-proof and helps us work better w/ the Socket.io team
-    // when changes are rolled out in the future.  To get a `SailsSocket`, you can run:
-    // ```
-    // io.sails.connect();
-    // ```
-
-
-
 
     /**
      * SailsSocket
@@ -491,8 +535,16 @@
      * WHICH SERVER to talk to yet, etc.  It is also used by `io.socket` for your convenience.
      *
      * @constructor
+     * @api private
+     *
+     * ----------------------------------------------------------------------
+     * Note: This constructor should not be used directly. To obtain a `SailsSocket`
+     * instance of your very own, run:
+     * ```
+     * var mySocket = io.sails.connect();
+     * ```
+     * ----------------------------------------------------------------------
      */
-
     function SailsSocket (opts){
       var self = this;
       opts = opts||{};
@@ -548,11 +600,13 @@
       // However, note that the `console.log`s called before and after connection
       // are still forced to rely on our existing heuristics (to disable, tack #production
       // onto the URL used to fetch this file.)
-    }
+    }//</SailsSocket>
 
 
     /**
-     * Start connecting this socket.
+     * `SailsSocket.prototype._connect()`
+     *
+     * Begin connecting this socket to the server.
      *
      * @api private
      */
@@ -1181,16 +1235,26 @@
 
 
 
-    // Set a `sails` object that may be used for configuration before the
+
+
+
+
+    //  ██╗ ██████╗    ███████╗ █████╗ ██╗██╗     ███████╗
+    //  ██║██╔═══██╗   ██╔════╝██╔══██╗██║██║     ██╔════╝
+    //  ██║██║   ██║   ███████╗███████║██║██║     ███████╗
+    //  ██║██║   ██║   ╚════██║██╔══██║██║██║     ╚════██║
+    //  ██║╚██████╔╝██╗███████║██║  ██║██║███████╗███████║
+    //  ╚═╝ ╚═════╝ ╚═╝╚══════╝╚═╝  ╚═╝╚═╝╚══════╝╚══════╝
+    //
+    // Set an `io.sails` object that may be used for configuration before the
     // first socket connects (i.e. to allow auto-connect behavior to be
     // prevented by setting `io.sails.autoConnect` in an inline script
     // directly after the script tag which loaded this file).
-    //
-    //////////////////////////////////////////////////////////////////////////////
-    // Note that the new HTML attribute configuration style may eventually
-    // completely replace this original approach-- it is easier to reason
-    // about, and also it would allow us to remove timeout below.
-    //////////////////////////////////////////////////////////////////////////////
+
+
+    //  ┌─┐┌─┐┌┬┐  ┬ ┬┌─┐  ╔╦╗╔═╗╔═╗╔═╗╦ ╦╦ ╔╦╗╔═╗  ┌─┐┌─┐┬─┐  ┬┌─┐ ┌─┐┌─┐┬┬  ┌─┐
+    //  └─┐├┤  │   │ │├─┘   ║║║╣ ╠╣ ╠═╣║ ║║  ║ ╚═╗  ├┤ │ │├┬┘  ││ │ └─┐├─┤││  └─┐
+    //  └─┘└─┘ ┴   └─┘┴    ═╩╝╚═╝╚  ╩ ╩╚═╝╩═╝╩ ╚═╝  └  └─┘┴└─  ┴└─┘o└─┘┴ ┴┴┴─┘└─┘
     io.sails = {
 
       // Whether to automatically connect a socket and save it as `io.socket`.
@@ -1217,6 +1281,16 @@
 
 
 
+    //  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌┬┐  ┬┌─┐ ┌─┐┌─┐┬┬  ┌─┐  ┌┬┐┌─┐┌─┐┌─┐┬ ┬┬ ┌┬┐┌─┐
+    //  ├┤ ┌┴┬┘ │ ├┤ │││ ││  ││ │ └─┐├─┤││  └─┐   ││├┤ ├┤ ├─┤│ ││  │ └─┐
+    //  └─┘┴ └─ ┴ └─┘┘└┘─┴┘  ┴└─┘o└─┘┴ ┴┴┴─┘└─┘  ─┴┘└─┘└  ┴ ┴└─┘┴─┘┴ └─┘
+    //  ┬ ┬┬┌┬┐┬ ┬  ┌┬┐┬ ┬┌─┐  ╦ ╦╔╦╗╔╦╗╦    ╔═╗╔╦╗╔╦╗╦═╗╦╔╗ ╦ ╦╔╦╗╔═╗╔═╗
+    //  ││││ │ ├─┤   │ ├─┤├┤   ╠═╣ ║ ║║║║    ╠═╣ ║  ║ ╠╦╝║╠╩╗║ ║ ║ ║╣ ╚═╗
+    //  └┴┘┴ ┴ ┴ ┴   ┴ ┴ ┴└─┘  ╩ ╩ ╩ ╩ ╩╩═╝  ╩ ╩ ╩  ╩ ╩╚═╩╚═╝╚═╝ ╩ ╚═╝╚═╝
+    //  ┌─┐┬─┐┌─┐┌┬┐  ┌┬┐┬ ┬┌─┐  ┌─┐┌─┐┬─┐┬┌─┐┌┬┐  ┌┬┐┌─┐┌─┐
+    //  ├┤ ├┬┘│ ││││   │ ├─┤├┤   └─┐│  ├┬┘│├─┘ │    │ ├─┤│ ┬
+    //  └  ┴└─└─┘┴ ┴   ┴ ┴ ┴└─┘  └─┘└─┘┴└─┴┴   ┴    ┴ ┴ ┴└─┘
+    //
     // Now fold in config provided as HTML attributes on the script tag:
     // (note that if `io.sails.*` is changed after this script, those changes
     //  will still take precedence)
@@ -1225,8 +1299,19 @@
         io.sails[htmlAttrName] = scriptTagConfig[htmlAttrName];
       }
     });
+    //////////////////////////////////////////////////////////////////////////////
+    // Note that the new HTML attribute configuration style may eventually
+    // completely replace the original approach of setting `io.sails` properties,
+    // since the new strategy is easier to reason about.  Also, it would allow us
+    // to remove the timeout below someday.
+    //////////////////////////////////////////////////////////////////////////////
 
 
+
+
+    //  ┬┌─┐ ┌─┐┌─┐┬┬  ┌─┐ ╔═╗╔═╗╔╗╔╔╗╔╔═╗╔═╗╔╦╗  /  \
+    //  ││ │ └─┐├─┤││  └─┐ ║  ║ ║║║║║║║║╣ ║   ║  /   /
+    //  ┴└─┘o└─┘┴ ┴┴┴─┘└─┘o╚═╝╚═╝╝╚╝╝╚╝╚═╝╚═╝ ╩  \  /
 
     /**
      * Add `io.sails.connect` function as a wrapper for the built-in `io()` aka `io.connect()`
@@ -1260,6 +1345,16 @@
 
 
 
+
+
+
+    //  ██╗ ██████╗    ███████╗ ██████╗  ██████╗██╗  ██╗███████╗████████╗
+    //  ██║██╔═══██╗   ██╔════╝██╔═══██╗██╔════╝██║ ██╔╝██╔════╝╚══██╔══╝
+    //  ██║██║   ██║   ███████╗██║   ██║██║     █████╔╝ █████╗     ██║
+    //  ██║██║   ██║   ╚════██║██║   ██║██║     ██╔═██╗ ██╔══╝     ██║
+    //  ██║╚██████╔╝██╗███████║╚██████╔╝╚██████╗██║  ██╗███████╗   ██║
+    //  ╚═╝ ╚═════╝ ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝
+    //
     // io.socket
     //
     // The eager instance of Socket which will automatically try to connect
@@ -1271,13 +1366,19 @@
 
 
     // Build `io.socket` so it exists
-    // (this does not start the connection process)
+    // (note that this DOES NOT start the connection process)
     io.socket = new SailsSocket();
-
-    // In the mean time, this eager socket will be queue events bound by the user
+    //
+    // This socket is not connected yet, and has not even _started_ connecting.
+    //
+    // But in the mean time, this eager socket will be queue events bound by the user
     // before the first cycle of the event loop (using `.on()`), which will later
     // be rebound on the raw underlying socket.
 
+
+    //  ┌─┐┌─┐┌┬┐  ┌─┐┬ ┬┌┬┐┌─┐   ┌─┐┌─┐┌┐┌┌┐┌┌─┐┌─┐┌┬┐  ┌┬┐┬┌┬┐┌─┐┬─┐
+    //  └─┐├┤  │   ├─┤│ │ │ │ │───│  │ │││││││├┤ │   │    │ ││││├┤ ├┬┘
+    //  └─┘└─┘ ┴   ┴ ┴└─┘ ┴ └─┘   └─┘└─┘┘└┘┘└┘└─┘└─┘ ┴    ┴ ┴┴ ┴└─┘┴└─
     // If configured to do so, start auto-connecting after the first cycle of the event loop
     // has completed (to allow time for this behavior to be configured/disabled
     // by specifying properties on `io.sails`)
@@ -1301,10 +1402,21 @@
   } //</SailsIOClient>
 
 
+
+
+
+  //  ███████╗██╗  ██╗██████╗  ██████╗ ███████╗███████╗    ███████╗██████╗ ██╗  ██╗
+  //  ██╔════╝╚██╗██╔╝██╔══██╗██╔═══██╗██╔════╝██╔════╝    ██╔════╝██╔══██╗██║ ██╔╝
+  //  █████╗   ╚███╔╝ ██████╔╝██║   ██║███████╗█████╗      ███████╗██║  ██║█████╔╝
+  //  ██╔══╝   ██╔██╗ ██╔═══╝ ██║   ██║╚════██║██╔══╝      ╚════██║██║  ██║██╔═██╗
+  //  ███████╗██╔╝ ██╗██║     ╚██████╔╝███████║███████╗    ███████║██████╔╝██║  ██╗
+  //  ╚══════╝╚═╝  ╚═╝╚═╝      ╚═════╝ ╚══════╝╚══════╝    ╚══════╝╚═════╝ ╚═╝  ╚═╝
+  //
+
+
   // Add CommonJS support to allow this client SDK to be used from Node.js.
   if (typeof module === 'object' && typeof module.exports !== 'undefined') {
     module.exports = SailsIOClient;
-    return SailsIOClient;
   }
   // Add AMD support, registering this client SDK as an anonymous module.
   else if (typeof define === 'function' && define.amd) {
@@ -1313,10 +1425,13 @@
     });
   }
   else {
-    // Otherwise, try to instantiate the client:
-    // In case you're wrapping the socket.io client to prevent pollution of the
-    // global namespace, you can replace the global `io` with your own `io` here:
-    return SailsIOClient();
+    // Otherwise, try to instantiate the client using the global `io`:
+    SailsIOClient();
+
+    // Note:
+    // If you are modifying this file manually to wrap an existing socket.io client
+    // (e.g. to prevent pollution of the global namespace), you can replace the global
+    // `io` with your own `io` instance above.
   }
 
 })();
