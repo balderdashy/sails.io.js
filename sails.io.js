@@ -312,19 +312,24 @@
   function SailsIOClient(_providedSocketIO) {
 
     // First, determine which `io` we're augmenting.
+    //
+    // Prefer the passed-in `io` instance, but fall back to the
+    // global one if we've got it.
     var io;
-
-    // Prefer the passed-in `io` instance, but fall back to the global one if we've got it.
-    if (!_providedSocketIO) {
+    if (_providedSocketIO) {
+      io = _providedSocketIO;
+    }
+    else {
       io = _existingGlobalSocketIO;
     }
+    // (note that for readability, we deliberately do not short circuit or use the tertiary operator above)
 
 
     // If a socket.io client (`io`) is not available, none of this will work.
     if (!io) {
       // If node:
       if (SDK_INFO.platform === 'node') {
-        throw new Error('No socket.io client available.  When requiring `sails.io.js` from Node.js, a socket.io client (`io`) must be passed in.  For example:\n```\nvar io = require(\'sails.io.js\')( require(\'socket.io-client\') )\n```\n(see https://github.com/balderdashy/sails.io.js/tree/master/test for examples)');
+        throw new Error('No socket.io client available.  When requiring `sails.io.js` from Node.js, a socket.io client (`io`) must be passed in; e.g.:\n```\nvar io = require(\'sails.io.js\')( require(\'socket.io-client\') )\n```\n(see https://github.com/balderdashy/sails.io.js/tree/master/test for more examples)');
       }
       // Otherwise, this is a web browser:
       else {
