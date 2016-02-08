@@ -48,10 +48,45 @@
   var scriptTagConfig = {};
   if (thisScriptTag) {
     urlThisScriptWasFetchedFrom = thisScriptTag.src;
-    // Now parse client-side configuration from the script tag.
-    scriptTagConfig.headers = thisScriptTag.getAttribute('headers');
-    // TODO: actually finish implementing this-- still a lot to figure out
+    
+    // Now parse the most common client-side configuration settings from the script tag. (experimental)
+    // ------------------------------------------------------------
+    // autoConnect | ((boolean))    | `true`
+    // environment | ((string))     | `'development'`
+    // headers     | ((dictionary)) | `{}`
+    // ------------------------------------------------------------
+    // Note that `null` returned from getAttribute() means that the HTML attribute
+    // was not specified, so we treat it as undefined.
+    scriptTagConfig.autoConnect = (function (htmlAttrVal){
+      if (typeof htmlAttrVal === 'string') {
+        try { htmlAttrVal = JSON.parse(htmlAttrVal); } catch (e) { }
+      }
+    })(thisScriptTag.getAttribute('autoConnect'));
+    if (scriptTagConfig.autoConnect === null){ delete scriptTagConfig.autoConnect; }
+    
+    // scriptTagConfig.environment = thisScriptTag.getAttribute('environment');
+    // if (scriptTagConfig.environment === null){ delete scriptTagConfig.environment; }
+    // TODO
+    
+    // scriptTagConfig.headers = thisScriptTag.getAttribute('headers');
+    // if (scriptTagConfig.headers === null){ delete scriptTagConfig.headers; }
+    // TODO
+    
+    
+    // NOT CURRENTLY SUPPORTED:
+    // ------------------------------------------------------------
+    // url         | ((string))     | _In browser, the URL of the page that loaded the sails.io.js script. In Node.js, no default._
+    // transports  | ((array))      | `['polling', 'websocket']`
+    //
+    // useCORSRouteToGetCookie | ((boolean)) | `true`
+    // query       | ((string))     | `''` 
+    // initialConnectionHeaders  | ((dictionary)) | `{}`
+    // ------------------------------------------------------------
+    
   }
+  console.log('urlThisScriptWasFetchedFrom', urlThisScriptWasFetchedFrom);
+  console.log('scriptTagConfig', scriptTagConfig);
+  
   
 
   // Constants
