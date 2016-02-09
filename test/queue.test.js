@@ -22,11 +22,11 @@ describe('queueing :: ', function() {
 
     before(function() {
 
-      var socketIOClient = require('socket.io-client');
       // Instantiate a sails.io.js client and configure the url.
-      io = sailsIO(socketIOClient);
+      var io = _getFreshClient();
       io.sails.url = 'http://localhost:'+TEST_SERVER_PORT;
       io.sails.autoConnect = false;
+      io.sails.reconnection = true;
       // Disable logger in sails.io.js client
       io.sails.environment = 'production';
       socket = io.sails.connect();
