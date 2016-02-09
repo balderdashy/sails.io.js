@@ -1,5 +1,9 @@
 # sails.io.js changelog
 
+### 0.13.6
+
+* [ENHANCEMENT] Allow specifying some `io.sails` properties via HTML attributes (`autoConnect`, `url`, `headers and `environment`)
+
 ### 0.13.5
 
 * [BUGFIX] Fixed replaying of request queue on disconnect/reconnect [d8fb158](https://github.com/balderdashy/sails.io.js/commit/d8fb1585e7671922b499b5fac4a706edc5f810fa)
