@@ -15,6 +15,24 @@
 message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blob");c.encodePacket=function(a,c,f,h){"function"==typeof c&&(h=c,c=!1),"function"==typeof f&&(h=f,f=null);var i=void 0===a.data?void 0:a.data.buffer||a.data;if(b.ArrayBuffer&&i instanceof ArrayBuffer)return e(a,c,h);if(u&&i instanceof b.Blob)return g(a,c,h);if(i&&i.base64)return d(a,h);var j=r[a.type];return void 0!==a.data&&(j+=f?n.encode(String(a.data)):String(a.data)),h(""+j)},c.encodeBase64Packet=function(a,d){var e="b"+c.packets[a.type];if(u&&a.data instanceof b.Blob){var f=new FileReader;return f.onload=function(){var a=f.result.split(",")[1];d(e+a)},f.readAsDataURL(a.data)}var g;try{g=String.fromCharCode.apply(null,new Uint8Array(a.data))}catch(h){for(var i=new Uint8Array(a.data),j=new Array(i.length),k=0;k<i.length;k++)j[k]=i[k];g=String.fromCharCode.apply(null,j)}return e+=b.btoa(g),d(e)},c.decodePacket=function(a,b,d){if("string"==typeof a||void 0===a){if("b"==a.charAt(0))return c.decodeBase64Packet(a.substr(1),b);if(d)try{a=n.decode(a)}catch(e){return t}var f=a.charAt(0);return Number(f)==f&&s[f]?a.length>1?{type:s[f],data:a.substring(1)}:{type:s[f]}:t}var g=new Uint8Array(a),f=g[0],h=k(a,1);return u&&"blob"===b&&(h=new u([h])),{type:s[f],data:h}},c.decodeBase64Packet=function(a,c){var d=s[a.charAt(0)];if(!b.ArrayBuffer)return{type:d,data:{base64:!0,data:a.substr(1)}};var e=l.decode(a.substr(1));return"blob"===c&&u&&(e=new u([e])),{type:d,data:e}},c.encodePayload=function(a,b,d){function e(a){return a.length+":"+a}function f(a,d){c.encodePacket(a,g?b:!1,!0,function(a){d(null,e(a))})}"function"==typeof b&&(d=b,b=null);var g=j(a);return b&&g?u&&!q?c.encodePayloadAsBlob(a,d):c.encodePayloadAsArrayBuffer(a,d):a.length?void h(a,f,function(a,b){return d(b.join(""))}):d("0:")},c.decodePayload=function(a,b,d){if("string"!=typeof a)return c.decodePayloadAsBinary(a,b,d);"function"==typeof b&&(d=b,b=null);var e;if(""==a)return d(t,0,1);for(var f,g,h="",i=0,j=a.length;j>i;i++){var k=a.charAt(i);if(":"!=k)h+=k;else{if(""==h||h!=(f=Number(h)))return d(t,0,1);if(g=a.substr(i+1,f),h!=g.length)return d(t,0,1);if(g.length){if(e=c.decodePacket(g,b,!0),t.type==e.type&&t.data==e.data)return d(t,0,1);var l=d(e,i+f,j);if(!1===l)return}i+=f,h=""}}return""!=h?d(t,0,1):void 0},c.encodePayloadAsArrayBuffer=function(a,b){function d(a,b){c.encodePacket(a,!0,!0,function(a){return b(null,a)})}return a.length?void h(a,d,function(a,c){var d=c.reduce(function(a,b){var c;return c="string"==typeof b?b.length:b.byteLength,a+c.toString().length+c+2},0),e=new Uint8Array(d),f=0;return c.forEach(function(a){var b="string"==typeof a,c=a;if(b){for(var d=new Uint8Array(a.length),g=0;g<a.length;g++)d[g]=a.charCodeAt(g);c=d.buffer}b?e[f++]=0:e[f++]=1;for(var h=c.byteLength.toString(),g=0;g<h.length;g++)e[f++]=parseInt(h[g]);e[f++]=255;for(var d=new Uint8Array(c),g=0;g<d.length;g++)e[f++]=d[g]}),b(e.buffer)}):b(new ArrayBuffer(0))},c.encodePayloadAsBlob=function(a,b){function d(a,b){c.encodePacket(a,!0,!0,function(a){var c=new Uint8Array(1);if(c[0]=1,"string"==typeof a){for(var d=new Uint8Array(a.length),e=0;e<a.length;e++)d[e]=a.charCodeAt(e);a=d.buffer,c[0]=0}for(var f=a instanceof ArrayBuffer?a.byteLength:a.size,g=f.toString(),h=new Uint8Array(g.length+1),e=0;e<g.length;e++)h[e]=parseInt(g[e]);if(h[g.length]=255,u){var i=new u([c.buffer,h.buffer,a]);b(null,i)}})}h(a,d,function(a,c){return b(new u(c))})},c.decodePayloadAsBinary=function(a,b,d){"function"==typeof b&&(d=b,b=null);for(var e=a,f=[],g=!1;e.byteLength>0;){for(var h=new Uint8Array(e),i=0===h[0],j="",l=1;255!=h[l];l++){if(j.length>310){g=!0;break}j+=h[l]}if(g)return d(t,0,1);e=k(e,2+j.length),j=parseInt(j);var m=k(e,0,j);if(i)try{m=String.fromCharCode.apply(null,new Uint8Array(m))}catch(n){var o=new Uint8Array(m);m="";for(var l=0;l<o.length;l++)m+=String.fromCharCode(o[l])}f.push(m),e=k(e,j)}var p=f.length;f.forEach(function(a,e){d(c.decodePacket(a,b,!0),e,p)})}}).call(this,"undefined"!=typeof self?self:"undefined"!=typeof window?window:"undefined"!=typeof global?global:{})},{"./keys":20,after:11,"arraybuffer.slice":12,"base64-arraybuffer":13,blob:14,"has-binary":21,utf8:29}],20:[function(a,b,c){b.exports=Object.keys||function(a){var b=[],c=Object.prototype.hasOwnProperty;for(var d in a)c.call(a,d)&&b.push(d);return b}},{}],21:[function(a,b,c){(function(c){function d(a){function b(a){if(!a)return!1;if(c.Buffer&&c.Buffer.isBuffer(a)||c.ArrayBuffer&&a instanceof ArrayBuffer||c.Blob&&a instanceof Blob||c.File&&a instanceof File)return!0;if(e(a)){for(var d=0;d<a.length;d++)if(b(a[d]))return!0}else if(a&&"object"==typeof a){a.toJSON&&(a=a.toJSON());for(var f in a)if(Object.prototype.hasOwnProperty.call(a,f)&&b(a[f]))return!0}return!1}return b(a)}var e=a("isarray");b.exports=d}).call(this,"undefined"!=typeof self?self:"undefined"!=typeof window?window:"undefined"!=typeof global?global:{})},{isarray:24}],22:[function(a,b,c){try{b.exports="undefined"!=typeof XMLHttpRequest&&"withCredentials"in new XMLHttpRequest}catch(d){b.exports=!1}},{}],23:[function(a,b,c){var d=[].indexOf;b.exports=function(a,b){if(d)return a.indexOf(b);for(var c=0;c<a.length;++c)if(a[c]===b)return c;return-1}},{}],24:[function(a,b,c){b.exports=Array.isArray||function(a){return"[object Array]"==Object.prototype.toString.call(a)}},{}],25:[function(a,b,c){function d(a){if(a=""+a,!(a.length>1e4)){var b=/^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(a);if(b){var c=parseFloat(b[1]),d=(b[2]||"ms").toLowerCase();switch(d){case"years":case"year":case"yrs":case"yr":case"y":return c*l;case"days":case"day":case"d":return c*k;case"hours":case"hour":case"hrs":case"hr":case"h":return c*j;case"minutes":case"minute":case"mins":case"min":case"m":return c*i;case"seconds":case"second":case"secs":case"sec":case"s":return c*h;case"milliseconds":case"millisecond":case"msecs":case"msec":case"ms":return c}}}}function e(a){return a>=k?Math.round(a/k)+"d":a>=j?Math.round(a/j)+"h":a>=i?Math.round(a/i)+"m":a>=h?Math.round(a/h)+"s":a+"ms"}function f(a){return g(a,k,"day")||g(a,j,"hour")||g(a,i,"minute")||g(a,h,"second")||a+" ms"}function g(a,b,c){return b>a?void 0:1.5*b>a?Math.floor(a/b)+" "+c:Math.ceil(a/b)+" "+c+"s"}var h=1e3,i=60*h,j=60*i,k=24*j,l=365.25*k;b.exports=function(a,b){return b=b||{},"string"==typeof a?d(a):b["long"]?f(a):e(a)}},{}],26:[function(a,b,c){(function(a){var c=/^[\],:{}\s]*$/,d=/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,e=/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,f=/(?:^|:|,)(?:\s*\[)+/g,g=/^\s+/,h=/\s+$/;b.exports=function(b){return"string"==typeof b&&b?(b=b.replace(g,"").replace(h,""),a.JSON&&JSON.parse?JSON.parse(b):c.test(b.replace(d,"@").replace(e,"]").replace(f,""))?new Function("return "+b)():void 0):null}}).call(this,"undefined"!=typeof self?self:"undefined"!=typeof window?window:"undefined"!=typeof global?global:{})},{}],27:[function(a,b,c){c.encode=function(a){var b="";for(var c in a)a.hasOwnProperty(c)&&(b.length&&(b+="&"),b+=encodeURIComponent(c)+"="+encodeURIComponent(a[c]));return b},c.decode=function(a){for(var b={},c=a.split("&"),d=0,e=c.length;e>d;d++){var f=c[d].split("=");b[decodeURIComponent(f[0])]=decodeURIComponent(f[1])}return b}},{}],28:[function(a,b,c){var d=/^(?:(?![^:@]+:[^:@\/]*@)(http|https|ws|wss):\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?((?:[a-f0-9]{0,4}:){2,7}[a-f0-9]{0,4}|[^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/,e=["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"];b.exports=function(a){var b=a,c=a.indexOf("["),f=a.indexOf("]");-1!=c&&-1!=f&&(a=a.substring(0,c)+a.substring(c,f).replace(/:/g,";")+a.substring(f,a.length));for(var g=d.exec(a||""),h={},i=14;i--;)h[e[i]]=g[i]||"";return-1!=c&&-1!=f&&(h.source=b,h.host=h.host.substring(1,h.host.length-1).replace(/;/g,":"),h.authority=h.authority.replace("[","").replace("]","").replace(/;/g,":"),h.ipv6uri=!0),h}},{}],29:[function(b,c,d){(function(b){!function(e){function f(a){for(var b,c,d=[],e=0,f=a.length;f>e;)b=a.charCodeAt(e++),b>=55296&&56319>=b&&f>e?(c=a.charCodeAt(e++),56320==(64512&c)?d.push(((1023&b)<<10)+(1023&c)+65536):(d.push(b),e--)):d.push(b);return d}function g(a){for(var b,c=a.length,d=-1,e="";++d<c;)b=a[d],b>65535&&(b-=65536,e+=u(b>>>10&1023|55296),b=56320|1023&b),e+=u(b);return e}function h(a){if(a>=55296&&57343>=a)throw Error("Lone surrogate U+"+a.toString(16).toUpperCase()+" is not a scalar value")}function i(a,b){return u(a>>b&63|128)}function j(a){if(0==(4294967168&a))return u(a);var b="";return 0==(4294965248&a)?b=u(a>>6&31|192):0==(4294901760&a)?(h(a),b=u(a>>12&15|224),b+=i(a,6)):0==(4292870144&a)&&(b=u(a>>18&7|240),b+=i(a,12),b+=i(a,6)),b+=u(63&a|128)}function k(a){for(var b,c=f(a),d=c.length,e=-1,g="";++e<d;)b=c[e],g+=j(b);return g}function l(){if(t>=s)throw Error("Invalid byte index");var a=255&r[t];if(t++,128==(192&a))return 63&a;throw Error("Invalid continuation byte")}function m(){var a,b,c,d,e;if(t>s)throw Error("Invalid byte index");if(t==s)return!1;if(a=255&r[t],t++,0==(128&a))return a;if(192==(224&a)){var b=l();if(e=(31&a)<<6|b,e>=128)return e;throw Error("Invalid continuation byte")}if(224==(240&a)){if(b=l(),c=l(),e=(15&a)<<12|b<<6|c,e>=2048)return h(e),e;throw Error("Invalid continuation byte")}if(240==(248&a)&&(b=l(),c=l(),d=l(),e=(15&a)<<18|b<<12|c<<6|d,e>=65536&&1114111>=e))return e;throw Error("Invalid UTF-8 detected")}function n(a){r=f(a),s=r.length,t=0;for(var b,c=[];(b=m())!==!1;)c.push(b);return g(c)}var o="object"==typeof d&&d,p="object"==typeof c&&c&&c.exports==o&&c,q="object"==typeof b&&b;(q.global===q||q.window===q)&&(e=q);var r,s,t,u=String.fromCharCode,v={version:"2.0.0",encode:k,decode:n};if("function"==typeof a&&"object"==typeof a.amd&&a.amd)a(function(){return v});else if(o&&!o.nodeType)if(p)p.exports=v;else{var w={},x=w.hasOwnProperty;for(var y in v)x.call(v,y)&&(o[y]=v[y])}else e.utf8=v}(this)}).call(this,"undefined"!=typeof self?self:"undefined"!=typeof window?window:"undefined"!=typeof global?global:{})},{}],30:[function(a,b,c){"use strict";function d(a){var b="";do b=h[a%i]+b,a=Math.floor(a/i);while(a>0);return b}function e(a){var b=0;for(l=0;l<a.length;l++)b=b*i+j[a.charAt(l)];return b}function f(){var a=d(+new Date);return a!==g?(k=0,g=a):a+"."+d(k++)}for(var g,h="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_".split(""),i=64,j={},k=0,l=0;i>l;l++)j[h[l]]=l;f.encode=d,f.decode=e,b.exports=f},{}],31:[function(a,b,c){function d(a,b){"object"==typeof a&&(b=a,a=void 0),b=b||{};var c,d=e(a),f=d.source,j=d.id,k=d.path,l=i[j]&&k in i[j].nsps,m=b.forceNew||b["force new connection"]||!1===b.multiplex||l;return m?(h("ignoring socket cache for %s",f),c=g(f,b)):(i[j]||(h("new io instance for %s",f),i[j]=g(f,b)),c=i[j]),c.socket(d.path)}var e=a("./url"),f=a("socket.io-parser"),g=a("./manager"),h=a("debug")("socket.io-client");b.exports=c=d;var i=c.managers={};c.protocol=f.protocol,c.connect=d,c.Manager=a("./manager"),c.Socket=a("./socket")},{"./manager":32,"./socket":34,"./url":35,debug:39,"socket.io-parser":47}],32:[function(a,b,c){function d(a,b){return this instanceof d?(a&&"object"==typeof a&&(b=a,a=void 0),b=b||{},b.path=b.path||"/socket.io",this.nsps={},this.subs=[],this.opts=b,this.reconnection(b.reconnection!==!1),this.reconnectionAttempts(b.reconnectionAttempts||1/0),this.reconnectionDelay(b.reconnectionDelay||1e3),this.reconnectionDelayMax(b.reconnectionDelayMax||5e3),this.randomizationFactor(b.randomizationFactor||.5),this.backoff=new m({min:this.reconnectionDelay(),max:this.reconnectionDelayMax(),jitter:this.randomizationFactor()}),this.timeout(null==b.timeout?2e4:b.timeout),this.readyState="closed",this.uri=a,this.connecting=[],this.lastPing=null,this.encoding=!1,this.packetBuffer=[],this.encoder=new h.Encoder,this.decoder=new h.Decoder,this.autoConnect=b.autoConnect!==!1,void(this.autoConnect&&this.open())):new d(a,b)}var e=a("engine.io-client"),f=a("./socket"),g=a("component-emitter"),h=a("socket.io-parser"),i=a("./on"),j=a("component-bind"),k=a("debug")("socket.io-client:manager"),l=a("indexof"),m=a("backo2"),n=Object.prototype.hasOwnProperty;b.exports=d,d.prototype.emitAll=function(){this.emit.apply(this,arguments);for(var a in this.nsps)n.call(this.nsps,a)&&this.nsps[a].emit.apply(this.nsps[a],arguments)},d.prototype.updateSocketIds=function(){for(var a in this.nsps)n.call(this.nsps,a)&&(this.nsps[a].id=this.engine.id)},g(d.prototype),d.prototype.reconnection=function(a){return arguments.length?(this._reconnection=!!a,this):this._reconnection},d.prototype.reconnectionAttempts=function(a){return arguments.length?(this._reconnectionAttempts=a,this):this._reconnectionAttempts},d.prototype.reconnectionDelay=function(a){return arguments.length?(this._reconnectionDelay=a,this.backoff&&this.backoff.setMin(a),this):this._reconnectionDelay},d.prototype.randomizationFactor=function(a){return arguments.length?(this._randomizationFactor=a,this.backoff&&this.backoff.setJitter(a),this):this._randomizationFactor},d.prototype.reconnectionDelayMax=function(a){return arguments.length?(this._reconnectionDelayMax=a,this.backoff&&this.backoff.setMax(a),this):this._reconnectionDelayMax},d.prototype.timeout=function(a){return arguments.length?(this._timeout=a,this):this._timeout},d.prototype.maybeReconnectOnOpen=function(){!this.reconnecting&&this._reconnection&&0===this.backoff.attempts&&this.reconnect()},d.prototype.open=d.prototype.connect=function(a){if(k("readyState %s",this.readyState),~this.readyState.indexOf("open"))return this;k("opening %s",this.uri),this.engine=e(this.uri,this.opts);var b=this.engine,c=this;this.readyState="opening",this.skipReconnect=!1;var d=i(b,"open",function(){c.onopen(),a&&a()}),f=i(b,"error",function(b){if(k("connect_error"),c.cleanup(),c.readyState="closed",c.emitAll("connect_error",b),a){var d=new Error("Connection error");d.data=b,a(d)}else c.maybeReconnectOnOpen()});if(!1!==this._timeout){var g=this._timeout;k("connect attempt will timeout after %d",g);var h=setTimeout(function(){k("connect attempt timed out after %d",g),d.destroy(),b.close(),b.emit("error","timeout"),c.emitAll("connect_timeout",g)},g);this.subs.push({destroy:function(){clearTimeout(h)}})}return this.subs.push(d),this.subs.push(f),this},d.prototype.onopen=function(){k("open"),this.cleanup(),this.readyState="open",this.emit("open");var a=this.engine;this.subs.push(i(a,"data",j(this,"ondata"))),this.subs.push(i(a,"ping",j(this,"onping"))),this.subs.push(i(a,"pong",j(this,"onpong"))),this.subs.push(i(a,"error",j(this,"onerror"))),this.subs.push(i(a,"close",j(this,"onclose"))),this.subs.push(i(this.decoder,"decoded",j(this,"ondecoded")))},d.prototype.onping=function(){this.lastPing=new Date,this.emitAll("ping")},d.prototype.onpong=function(){this.emitAll("pong",new Date-this.lastPing)},d.prototype.ondata=function(a){this.decoder.add(a)},d.prototype.ondecoded=function(a){this.emit("packet",a)},d.prototype.onerror=function(a){k("error",a),this.emitAll("error",a)},d.prototype.socket=function(a){function b(){~l(d.connecting,c)||d.connecting.push(c)}var c=this.nsps[a];if(!c){c=new f(this,a),this.nsps[a]=c;var d=this;c.on("connecting",b),c.on("connect",function(){c.id=d.engine.id}),this.autoConnect&&b()}return c},d.prototype.destroy=function(a){var b=l(this.connecting,a);~b&&this.connecting.splice(b,1),this.connecting.length||this.close()},d.prototype.packet=function(a){k("writing packet %j",a);var b=this;b.encoding?b.packetBuffer.push(a):(b.encoding=!0,this.encoder.encode(a,function(c){for(var d=0;d<c.length;d++)b.engine.write(c[d],a.options);b.encoding=!1,b.processPacketQueue()}))},d.prototype.processPacketQueue=function(){if(this.packetBuffer.length>0&&!this.encoding){var a=this.packetBuffer.shift();this.packet(a)}},d.prototype.cleanup=function(){k("cleanup");for(var a;a=this.subs.shift();)a.destroy();this.packetBuffer=[],this.encoding=!1,this.lastPing=null,this.decoder.destroy()},d.prototype.close=d.prototype.disconnect=function(){k("disconnect"),this.skipReconnect=!0,this.reconnecting=!1,"opening"==this.readyState&&this.cleanup(),this.backoff.reset(),this.readyState="closed",this.engine&&this.engine.close()},d.prototype.onclose=function(a){k("onclose"),this.cleanup(),this.backoff.reset(),this.readyState="closed",this.emit("close",a),this._reconnection&&!this.skipReconnect&&this.reconnect()},d.prototype.reconnect=function(){if(this.reconnecting||this.skipReconnect)return this;var a=this;if(this.backoff.attempts>=this._reconnectionAttempts)k("reconnect failed"),this.backoff.reset(),this.emitAll("reconnect_failed"),this.reconnecting=!1;else{var b=this.backoff.duration();k("will wait %dms before reconnect attempt",b),this.reconnecting=!0;var c=setTimeout(function(){a.skipReconnect||(k("attempting reconnect"),a.emitAll("reconnect_attempt",a.backoff.attempts),a.emitAll("reconnecting",a.backoff.attempts),a.skipReconnect||a.open(function(b){b?(k("reconnect attempt error"),a.reconnecting=!1,a.reconnect(),a.emitAll("reconnect_error",b.data)):(k("reconnect success"),a.onreconnect())}))},b);this.subs.push({destroy:function(){clearTimeout(c)}})}},d.prototype.onreconnect=function(){var a=this.backoff.attempts;this.reconnecting=!1,this.backoff.reset(),this.updateSocketIds(),this.emitAll("reconnect",a)}},{"./on":33,"./socket":34,backo2:36,"component-bind":37,"component-emitter":38,debug:39,"engine.io-client":1,indexof:42,"socket.io-parser":47}],33:[function(a,b,c){function d(a,b,c){return a.on(b,c),{destroy:function(){a.removeListener(b,c)}}}b.exports=d},{}],34:[function(a,b,c){function d(a,b){this.io=a,this.nsp=b,this.json=this,this.ids=0,this.acks={},this.receiveBuffer=[],this.sendBuffer=[],this.connected=!1,this.disconnected=!0,this.io.autoConnect&&this.open()}var e=a("socket.io-parser"),f=a("component-emitter"),g=a("to-array"),h=a("./on"),i=a("component-bind"),j=a("debug")("socket.io-client:socket"),k=a("has-binary");b.exports=c=d;var l={connect:1,connect_error:1,connect_timeout:1,connecting:1,disconnect:1,error:1,reconnect:1,reconnect_attempt:1,reconnect_failed:1,reconnect_error:1,reconnecting:1,ping:1,pong:1},m=f.prototype.emit;f(d.prototype),d.prototype.subEvents=function(){if(!this.subs){var a=this.io;this.subs=[h(a,"open",i(this,"onopen")),h(a,"packet",i(this,"onpacket")),h(a,"close",i(this,"onclose"))]}},d.prototype.open=d.prototype.connect=function(){return this.connected?this:(this.subEvents(),this.io.open(),"open"==this.io.readyState&&this.onopen(),this.emit("connecting"),this)},d.prototype.send=function(){var a=g(arguments);return a.unshift("message"),this.emit.apply(this,a),this},d.prototype.emit=function(a){if(l.hasOwnProperty(a))return m.apply(this,arguments),this;var b=g(arguments),c=e.EVENT;k(b)&&(c=e.BINARY_EVENT);var d={type:c,data:b};return d.options={},d.options.compress=!this.flags||!1!==this.flags.compress,"function"==typeof b[b.length-1]&&(j("emitting packet with ack id %d",this.ids),this.acks[this.ids]=b.pop(),d.id=this.ids++),this.connected?this.packet(d):this.sendBuffer.push(d),delete this.flags,this},d.prototype.packet=function(a){a.nsp=this.nsp,this.io.packet(a)},d.prototype.onopen=function(){j("transport is open - connecting"),"/"!=this.nsp&&this.packet({type:e.CONNECT})},d.prototype.onclose=function(a){j("close (%s)",a),this.connected=!1,this.disconnected=!0,delete this.id,this.emit("disconnect",a)},d.prototype.onpacket=function(a){if(a.nsp==this.nsp)switch(a.type){case e.CONNECT:this.onconnect();break;case e.EVENT:this.onevent(a);break;case e.BINARY_EVENT:this.onevent(a);break;case e.ACK:this.onack(a);break;case e.BINARY_ACK:this.onack(a);break;case e.DISCONNECT:this.ondisconnect();break;case e.ERROR:this.emit("error",a.data)}},d.prototype.onevent=function(a){var b=a.data||[];j("emitting event %j",b),null!=a.id&&(j("attaching ack callback to event"),b.push(this.ack(a.id))),this.connected?m.apply(this,b):this.receiveBuffer.push(b)},d.prototype.ack=function(a){var b=this,c=!1;return function(){if(!c){c=!0;var d=g(arguments);j("sending ack %j",d);var f=k(d)?e.BINARY_ACK:e.ACK;b.packet({type:f,id:a,data:d})}}},d.prototype.onack=function(a){var b=this.acks[a.id];"function"==typeof b?(j("calling ack %s with %j",a.id,a.data),b.apply(this,a.data),delete this.acks[a.id]):j("bad ack %s",a.id)},d.prototype.onconnect=function(){this.connected=!0,this.disconnected=!1,this.emit("connect"),this.emitBuffered()},d.prototype.emitBuffered=function(){var a;for(a=0;a<this.receiveBuffer.length;a++)m.apply(this,this.receiveBuffer[a]);for(this.receiveBuffer=[],a=0;a<this.sendBuffer.length;a++)this.packet(this.sendBuffer[a]);this.sendBuffer=[]},d.prototype.ondisconnect=function(){j("server disconnect (%s)",this.nsp),this.destroy(),this.onclose("io server disconnect")},d.prototype.destroy=function(){if(this.subs){for(var a=0;a<this.subs.length;a++)this.subs[a].destroy();this.subs=null}this.io.destroy(this)},d.prototype.close=d.prototype.disconnect=function(){return this.connected&&(j("performing disconnect (%s)",this.nsp),this.packet({type:e.DISCONNECT})),this.destroy(),this.connected&&this.onclose("io client disconnect"),this},d.prototype.compress=function(a){return this.flags=this.flags||{},this.flags.compress=a,this}},{"./on":33,"component-bind":37,"component-emitter":38,debug:39,"has-binary":41,"socket.io-parser":47,"to-array":51}],35:[function(a,b,c){(function(c){function d(a,b){var d=a,b=b||c.location;null==a&&(a=b.protocol+"//"+b.host),"string"==typeof a&&("/"==a.charAt(0)&&(a="/"==a.charAt(1)?b.protocol+a:b.host+a),/^(https?|wss?):\/\//.test(a)||(f("protocol-less url %s",a),a="undefined"!=typeof b?b.protocol+"//"+a:"https://"+a),f("parse %s",a),d=e(a)),d.port||(/^(http|ws)$/.test(d.protocol)?d.port="80":/^(http|ws)s$/.test(d.protocol)&&(d.port="443")),d.path=d.path||"/";var g=-1!==d.host.indexOf(":"),h=g?"["+d.host+"]":d.host;return d.id=d.protocol+"://"+h+":"+d.port,d.href=d.protocol+"://"+h+(b&&b.port==d.port?"":":"+d.port),d}var e=a("parseuri"),f=a("debug")("socket.io-client:url");b.exports=d}).call(this,"undefined"!=typeof self?self:"undefined"!=typeof window?window:"undefined"!=typeof global?global:{})},{debug:39,parseuri:45}],36:[function(a,b,c){function d(a){a=a||{},this.ms=a.min||100,this.max=a.max||1e4,this.factor=a.factor||2,this.jitter=a.jitter>0&&a.jitter<=1?a.jitter:0,this.attempts=0}b.exports=d,d.prototype.duration=function(){var a=this.ms*Math.pow(this.factor,this.attempts++);if(this.jitter){var b=Math.random(),c=Math.floor(b*this.jitter*a);a=0==(1&Math.floor(10*b))?a-c:a+c}return 0|Math.min(a,this.max)},d.prototype.reset=function(){this.attempts=0},d.prototype.setMin=function(a){this.ms=a},d.prototype.setMax=function(a){this.max=a},d.prototype.setJitter=function(a){this.jitter=a}},{}],37:[function(a,b,c){var d=[].slice;b.exports=function(a,b){if("string"==typeof b&&(b=a[b]),"function"!=typeof b)throw new Error("bind() requires a function");var c=d.call(arguments,2);return function(){return b.apply(a,c.concat(d.call(arguments)))}}},{}],38:[function(a,b,c){function d(a){return a?e(a):void 0}function e(a){for(var b in d.prototype)a[b]=d.prototype[b];return a}b.exports=d,d.prototype.on=d.prototype.addEventListener=function(a,b){return this._callbacks=this._callbacks||{},(this._callbacks["$"+a]=this._callbacks["$"+a]||[]).push(b),this},d.prototype.once=function(a,b){function c(){this.off(a,c),b.apply(this,arguments)}return c.fn=b,this.on(a,c),this},d.prototype.off=d.prototype.removeListener=d.prototype.removeAllListeners=d.prototype.removeEventListener=function(a,b){if(this._callbacks=this._callbacks||{},0==arguments.length)return this._callbacks={},this;var c=this._callbacks["$"+a];if(!c)return this;if(1==arguments.length)return delete this._callbacks["$"+a],this;for(var d,e=0;e<c.length;e++)if(d=c[e],d===b||d.fn===b){c.splice(e,1);break}return this},d.prototype.emit=function(a){this._callbacks=this._callbacks||{};var b=[].slice.call(arguments,1),c=this._callbacks["$"+a];if(c){c=c.slice(0);for(var d=0,e=c.length;e>d;++d)c[d].apply(this,b)}return this},d.prototype.listeners=function(a){return this._callbacks=this._callbacks||{},this._callbacks["$"+a]||[]},d.prototype.hasListeners=function(a){return!!this.listeners(a).length}},{}],39:[function(a,b,c){arguments[4][17][0].apply(c,arguments)},{"./debug":40,dup:17}],40:[function(a,b,c){arguments[4][18][0].apply(c,arguments)},{dup:18,ms:44}],41:[function(a,b,c){(function(c){function d(a){function b(a){if(!a)return!1;if(c.Buffer&&c.Buffer.isBuffer&&c.Buffer.isBuffer(a)||c.ArrayBuffer&&a instanceof ArrayBuffer||c.Blob&&a instanceof Blob||c.File&&a instanceof File)return!0;if(e(a)){for(var d=0;d<a.length;d++)if(b(a[d]))return!0}else if(a&&"object"==typeof a){a.toJSON&&"function"==typeof a.toJSON&&(a=a.toJSON());for(var f in a)if(Object.prototype.hasOwnProperty.call(a,f)&&b(a[f]))return!0}return!1}return b(a)}var e=a("isarray");b.exports=d}).call(this,"undefined"!=typeof self?self:"undefined"!=typeof window?window:"undefined"!=typeof global?global:{})},{isarray:43}],42:[function(a,b,c){arguments[4][23][0].apply(c,arguments)},{dup:23}],43:[function(a,b,c){arguments[4][24][0].apply(c,arguments)},{dup:24}],44:[function(a,b,c){arguments[4][25][0].apply(c,arguments)},{dup:25}],45:[function(a,b,c){arguments[4][28][0].apply(c,arguments)},{dup:28}],46:[function(a,b,c){(function(b){var d=a("isarray"),e=a("./is-buffer");c.deconstructPacket=function(a){function b(a){if(!a)return a;if(e(a)){var f={_placeholder:!0,num:c.length};return c.push(a),f}if(d(a)){for(var g=new Array(a.length),h=0;h<a.length;h++)g[h]=b(a[h]);return g}if("object"==typeof a&&!(a instanceof Date)){var g={};for(var i in a)g[i]=b(a[i]);return g}return a}var c=[],f=a.data,g=a;return g.data=b(f),g.attachments=c.length,{packet:g,buffers:c}},c.reconstructPacket=function(a,b){function c(a){if(a&&a._placeholder){var e=b[a.num];return e}if(d(a)){for(var f=0;f<a.length;f++)a[f]=c(a[f]);return a}if(a&&"object"==typeof a){for(var g in a)a[g]=c(a[g]);return a}return a}return a.data=c(a.data),a.attachments=void 0,a},c.removeBlobs=function(a,c){function f(a,i,j){if(!a)return a;if(b.Blob&&a instanceof Blob||b.File&&a instanceof File){g++;var k=new FileReader;k.onload=function(){j?j[i]=this.result:h=this.result,--g||c(h)},k.readAsArrayBuffer(a)}else if(d(a))for(var l=0;l<a.length;l++)f(a[l],l,a);else if(a&&"object"==typeof a&&!e(a))for(var m in a)f(a[m],m,a)}var g=0,h=a;f(h),g||c(h)}}).call(this,"undefined"!=typeof self?self:"undefined"!=typeof window?window:"undefined"!=typeof global?global:{})},{"./is-buffer":48,isarray:43}],47:[function(a,b,c){function d(){}function e(a){var b="",d=!1;return b+=a.type,(c.BINARY_EVENT==a.type||c.BINARY_ACK==a.type)&&(b+=a.attachments,b+="-"),a.nsp&&"/"!=a.nsp&&(d=!0,b+=a.nsp),null!=a.id&&(d&&(b+=",",d=!1),b+=a.id),null!=a.data&&(d&&(b+=","),b+=l.stringify(a.data)),k("encoded %j as %s",a,b),b}function f(a,b){function c(a){var c=n.deconstructPacket(a),d=e(c.packet),f=c.buffers;f.unshift(d),b(f)}n.removeBlobs(a,c)}function g(){this.reconstructor=null}function h(a){var b={},d=0;if(b.type=Number(a.charAt(0)),null==c.types[b.type])return j();if(c.BINARY_EVENT==b.type||c.BINARY_ACK==b.type){for(var e="";"-"!=a.charAt(++d)&&(e+=a.charAt(d),d!=a.length););if(e!=Number(e)||"-"!=a.charAt(d))throw new Error("Illegal attachments");b.attachments=Number(e)}if("/"==a.charAt(d+1))for(b.nsp="";++d;){var f=a.charAt(d);if(","==f)break;if(b.nsp+=f,d==a.length)break}else b.nsp="/";var g=a.charAt(d+1);if(""!==g&&Number(g)==g){for(b.id="";++d;){var f=a.charAt(d);if(null==f||Number(f)!=f){--d;break}if(b.id+=a.charAt(d),d==a.length)break}b.id=Number(b.id)}if(a.charAt(++d))try{b.data=l.parse(a.substr(d))}catch(h){return j()}return k("decoded %s as %j",a,b),b}function i(a){this.reconPack=a,this.buffers=[]}function j(a){return{type:c.ERROR,data:"parser error"}}var k=a("debug")("socket.io-parser"),l=a("json3"),m=(a("isarray"),a("component-emitter")),n=a("./binary"),o=a("./is-buffer");c.protocol=4,c.types=["CONNECT","DISCONNECT","EVENT","BINARY_EVENT","ACK","BINARY_ACK","ERROR"],c.CONNECT=0,c.DISCONNECT=1,c.EVENT=2,c.ACK=3,c.ERROR=4,c.BINARY_EVENT=5,c.BINARY_ACK=6,c.Encoder=d,c.Decoder=g,d.prototype.encode=function(a,b){if(k("encoding packet %j",a),c.BINARY_EVENT==a.type||c.BINARY_ACK==a.type)f(a,b);else{var d=e(a);b([d])}},m(g.prototype),g.prototype.add=function(a){var b;if("string"==typeof a)b=h(a),c.BINARY_EVENT==b.type||c.BINARY_ACK==b.type?(this.reconstructor=new i(b),0===this.reconstructor.reconPack.attachments&&this.emit("decoded",b)):this.emit("decoded",b);else{if(!o(a)&&!a.base64)throw new Error("Unknown type: "+a);if(!this.reconstructor)throw new Error("got binary data when not reconstructing a packet");b=this.reconstructor.takeBinaryData(a),b&&(this.reconstructor=null,this.emit("decoded",b))}},g.prototype.destroy=function(){this.reconstructor&&this.reconstructor.finishedReconstruction()},i.prototype.takeBinaryData=function(a){if(this.buffers.push(a),this.buffers.length==this.reconPack.attachments){var b=n.reconstructPacket(this.reconPack,this.buffers);return this.finishedReconstruction(),b}return null},i.prototype.finishedReconstruction=function(){this.reconPack=null,this.buffers=[]}},{"./binary":46,"./is-buffer":48,"component-emitter":49,debug:39,isarray:43,json3:50}],48:[function(a,b,c){(function(a){function c(b){return a.Buffer&&a.Buffer.isBuffer(b)||a.ArrayBuffer&&b instanceof ArrayBuffer}b.exports=c}).call(this,"undefined"!=typeof self?self:"undefined"!=typeof window?window:"undefined"!=typeof global?global:{})},{}],49:[function(a,b,c){arguments[4][15][0].apply(c,arguments)},{dup:15}],50:[function(b,c,d){(function(b){(function(){function e(a,b){function c(a){if(c[a]!==q)return c[a];var e;if("bug-string-char-index"==a)e="a"!="a"[0];else if("json"==a)e=c("json-stringify")&&c("json-parse");else{var g,h='{"a":[1,true,false,null,"\\u0000\\b\\n\\f\\r\\t"]}';if("json-stringify"==a){var i=b.stringify,k="function"==typeof i&&t;if(k){(g=function(){return 1}).toJSON=g;try{k="0"===i(0)&&"0"===i(new d)&&'""'==i(new f)&&i(s)===q&&i(q)===q&&i()===q&&"1"===i(g)&&"[1]"==i([g])&&"[null]"==i([q])&&"null"==i(null)&&"[null,null,null]"==i([q,s,null])&&i({a:[g,!0,!1,null,"\x00\b\n\f\r	"]})==h&&"1"===i(null,g)&&"[\n 1,\n 2\n]"==i([1,2],null,1)&&'"-271821-04-20T00:00:00.000Z"'==i(new j(-864e13))&&'"+275760-09-13T00:00:00.000Z"'==i(new j(864e13))&&'"-000001-01-01T00:00:00.000Z"'==i(new j(-621987552e5))&&'"1969-12-31T23:59:59.999Z"'==i(new j(-1))}catch(l){k=!1}}e=k}if("json-parse"==a){var m=b.parse;if("function"==typeof m)try{if(0===m("0")&&!m(!1)){g=m(h);var n=5==g.a.length&&1===g.a[0];if(n){try{n=!m('"	"')}catch(l){}if(n)try{n=1!==m("01")}catch(l){}if(n)try{n=1!==m("1.")}catch(l){}}}}catch(l){n=!1}e=n}}return c[a]=!!e}a||(a=i.Object()),b||(b=i.Object());var d=a.Number||i.Number,f=a.String||i.String,h=a.Object||i.Object,j=a.Date||i.Date,k=a.SyntaxError||i.SyntaxError,l=a.TypeError||i.TypeError,m=a.Math||i.Math,n=a.JSON||i.JSON;"object"==typeof n&&n&&(b.stringify=n.stringify,b.parse=n.parse);var o,p,q,r=h.prototype,s=r.toString,t=new j(-0xc782b5b800cec);try{t=-109252==t.getUTCFullYear()&&0===t.getUTCMonth()&&1===t.getUTCDate()&&10==t.getUTCHours()&&37==t.getUTCMinutes()&&6==t.getUTCSeconds()&&708==t.getUTCMilliseconds()}catch(u){}if(!c("json")){var v="[object Function]",w="[object Date]",x="[object Number]",y="[object String]",z="[object Array]",A="[object Boolean]",B=c("bug-string-char-index");if(!t)var C=m.floor,D=[0,31,59,90,120,151,181,212,243,273,304,334],E=function(a,b){return D[b]+365*(a-1970)+C((a-1969+(b=+(b>1)))/4)-C((a-1901+b)/100)+C((a-1601+b)/400)};if((o=r.hasOwnProperty)||(o=function(a){var b,c={};return(c.__proto__=null,c.__proto__={toString:1},c).toString!=s?o=function(a){var b=this.__proto__,c=a in(this.__proto__=null,this);return this.__proto__=b,c}:(b=c.constructor,o=function(a){var c=(this.constructor||b).prototype;return a in this&&!(a in c&&this[a]===c[a])}),c=null,o.call(this,a)}),p=function(a,b){var c,d,e,f=0;(c=function(){this.valueOf=0;
 }).prototype.valueOf=0,d=new c;for(e in d)o.call(d,e)&&f++;return c=d=null,f?p=2==f?function(a,b){var c,d={},e=s.call(a)==v;for(c in a)e&&"prototype"==c||o.call(d,c)||!(d[c]=1)||!o.call(a,c)||b(c)}:function(a,b){var c,d,e=s.call(a)==v;for(c in a)e&&"prototype"==c||!o.call(a,c)||(d="constructor"===c)||b(c);(d||o.call(a,c="constructor"))&&b(c)}:(d=["valueOf","toString","toLocaleString","propertyIsEnumerable","isPrototypeOf","hasOwnProperty","constructor"],p=function(a,b){var c,e,f=s.call(a)==v,h=!f&&"function"!=typeof a.constructor&&g[typeof a.hasOwnProperty]&&a.hasOwnProperty||o;for(c in a)f&&"prototype"==c||!h.call(a,c)||b(c);for(e=d.length;c=d[--e];h.call(a,c)&&b(c));}),p(a,b)},!c("json-stringify")){var F={92:"\\\\",34:'\\"',8:"\\b",12:"\\f",10:"\\n",13:"\\r",9:"\\t"},G="000000",H=function(a,b){return(G+(b||0)).slice(-a)},I="\\u00",J=function(a){for(var b='"',c=0,d=a.length,e=!B||d>10,f=e&&(B?a.split(""):a);d>c;c++){var g=a.charCodeAt(c);switch(g){case 8:case 9:case 10:case 12:case 13:case 34:case 92:b+=F[g];break;default:if(32>g){b+=I+H(2,g.toString(16));break}b+=e?f[c]:a.charAt(c)}}return b+'"'},K=function(a,b,c,d,e,f,g){var h,i,j,k,m,n,r,t,u,v,B,D,F,G,I,L;try{h=b[a]}catch(M){}if("object"==typeof h&&h)if(i=s.call(h),i!=w||o.call(h,"toJSON"))"function"==typeof h.toJSON&&(i!=x&&i!=y&&i!=z||o.call(h,"toJSON"))&&(h=h.toJSON(a));else if(h>-1/0&&1/0>h){if(E){for(m=C(h/864e5),j=C(m/365.2425)+1970-1;E(j+1,0)<=m;j++);for(k=C((m-E(j,0))/30.42);E(j,k+1)<=m;k++);m=1+m-E(j,k),n=(h%864e5+864e5)%864e5,r=C(n/36e5)%24,t=C(n/6e4)%60,u=C(n/1e3)%60,v=n%1e3}else j=h.getUTCFullYear(),k=h.getUTCMonth(),m=h.getUTCDate(),r=h.getUTCHours(),t=h.getUTCMinutes(),u=h.getUTCSeconds(),v=h.getUTCMilliseconds();h=(0>=j||j>=1e4?(0>j?"-":"+")+H(6,0>j?-j:j):H(4,j))+"-"+H(2,k+1)+"-"+H(2,m)+"T"+H(2,r)+":"+H(2,t)+":"+H(2,u)+"."+H(3,v)+"Z"}else h=null;if(c&&(h=c.call(b,a,h)),null===h)return"null";if(i=s.call(h),i==A)return""+h;if(i==x)return h>-1/0&&1/0>h?""+h:"null";if(i==y)return J(""+h);if("object"==typeof h){for(G=g.length;G--;)if(g[G]===h)throw l();if(g.push(h),B=[],I=f,f+=e,i==z){for(F=0,G=h.length;G>F;F++)D=K(F,h,c,d,e,f,g),B.push(D===q?"null":D);L=B.length?e?"[\n"+f+B.join(",\n"+f)+"\n"+I+"]":"["+B.join(",")+"]":"[]"}else p(d||h,function(a){var b=K(a,h,c,d,e,f,g);b!==q&&B.push(J(a)+":"+(e?" ":"")+b)}),L=B.length?e?"{\n"+f+B.join(",\n"+f)+"\n"+I+"}":"{"+B.join(",")+"}":"{}";return g.pop(),L}};b.stringify=function(a,b,c){var d,e,f,h;if(g[typeof b]&&b)if((h=s.call(b))==v)e=b;else if(h==z){f={};for(var i,j=0,k=b.length;k>j;i=b[j++],h=s.call(i),(h==y||h==x)&&(f[i]=1));}if(c)if((h=s.call(c))==x){if((c-=c%1)>0)for(d="",c>10&&(c=10);d.length<c;d+=" ");}else h==y&&(d=c.length<=10?c:c.slice(0,10));return K("",(i={},i[""]=a,i),e,f,d,"",[])}}if(!c("json-parse")){var L,M,N=f.fromCharCode,O={92:"\\",34:'"',47:"/",98:"\b",116:"	",110:"\n",102:"\f",114:"\r"},P=function(){throw L=M=null,k()},Q=function(){for(var a,b,c,d,e,f=M,g=f.length;g>L;)switch(e=f.charCodeAt(L)){case 9:case 10:case 13:case 32:L++;break;case 123:case 125:case 91:case 93:case 58:case 44:return a=B?f.charAt(L):f[L],L++,a;case 34:for(a="@",L++;g>L;)if(e=f.charCodeAt(L),32>e)P();else if(92==e)switch(e=f.charCodeAt(++L)){case 92:case 34:case 47:case 98:case 116:case 110:case 102:case 114:a+=O[e],L++;break;case 117:for(b=++L,c=L+4;c>L;L++)e=f.charCodeAt(L),e>=48&&57>=e||e>=97&&102>=e||e>=65&&70>=e||P();a+=N("0x"+f.slice(b,L));break;default:P()}else{if(34==e)break;for(e=f.charCodeAt(L),b=L;e>=32&&92!=e&&34!=e;)e=f.charCodeAt(++L);a+=f.slice(b,L)}if(34==f.charCodeAt(L))return L++,a;P();default:if(b=L,45==e&&(d=!0,e=f.charCodeAt(++L)),e>=48&&57>=e){for(48==e&&(e=f.charCodeAt(L+1),e>=48&&57>=e)&&P(),d=!1;g>L&&(e=f.charCodeAt(L),e>=48&&57>=e);L++);if(46==f.charCodeAt(L)){for(c=++L;g>c&&(e=f.charCodeAt(c),e>=48&&57>=e);c++);c==L&&P(),L=c}if(e=f.charCodeAt(L),101==e||69==e){for(e=f.charCodeAt(++L),(43==e||45==e)&&L++,c=L;g>c&&(e=f.charCodeAt(c),e>=48&&57>=e);c++);c==L&&P(),L=c}return+f.slice(b,L)}if(d&&P(),"true"==f.slice(L,L+4))return L+=4,!0;if("false"==f.slice(L,L+5))return L+=5,!1;if("null"==f.slice(L,L+4))return L+=4,null;P()}return"$"},R=function(a){var b,c;if("$"==a&&P(),"string"==typeof a){if("@"==(B?a.charAt(0):a[0]))return a.slice(1);if("["==a){for(b=[];a=Q(),"]"!=a;c||(c=!0))c&&(","==a?(a=Q(),"]"==a&&P()):P()),","==a&&P(),b.push(R(a));return b}if("{"==a){for(b={};a=Q(),"}"!=a;c||(c=!0))c&&(","==a?(a=Q(),"}"==a&&P()):P()),(","==a||"string"!=typeof a||"@"!=(B?a.charAt(0):a[0])||":"!=Q())&&P(),b[a.slice(1)]=R(Q());return b}P()}return a},S=function(a,b,c){var d=T(a,b,c);d===q?delete a[b]:a[b]=d},T=function(a,b,c){var d,e=a[b];if("object"==typeof e&&e)if(s.call(e)==z)for(d=e.length;d--;)S(e,d,c);else p(e,function(a){S(e,a,c)});return c.call(a,b,e)};b.parse=function(a,b){var c,d;return L=0,M=""+a,c=R(Q()),"$"!=Q()&&P(),L=M=null,b&&s.call(b)==v?T((d={},d[""]=c,d),"",b):c}}}return b.runInContext=e,b}var f="function"==typeof a&&a.amd,g={"function":!0,object:!0},h=g[typeof d]&&d&&!d.nodeType&&d,i=g[typeof window]&&window||this,j=h&&g[typeof c]&&c&&!c.nodeType&&"object"==typeof b&&b;if(!j||j.global!==j&&j.window!==j&&j.self!==j||(i=j),h&&!f)e(i,h);else{var k=i.JSON,l=i.JSON3,m=!1,n=e(i,i.JSON3={noConflict:function(){return m||(m=!0,i.JSON=k,i.JSON3=l,k=l=null),n}});i.JSON={parse:n.parse,stringify:n.stringify}}f&&a(function(){return n})}).call(this)}).call(this,"undefined"!=typeof self?self:"undefined"!=typeof window?window:"undefined"!=typeof global?global:{})},{}],51:[function(a,b,c){function d(a,b){var c=[];b=b||0;for(var d=b||0;d<a.length;d++)c[d-b]=a[d];return c}b.exports=d},{}]},{},[31])(31)});;
 
+//////////////////////////////////////////////////////////////////////////////////////
+ //                                                                                //
+ //  ███████╗ █████╗ ██╗██╗     ███████╗   ██╗ ██████╗         ██╗███████╗         //
+ //  ██╔════╝██╔══██╗██║██║     ██╔════╝   ██║██╔═══██╗        ██║██╔════╝         //
+ //  ███████╗███████║██║██║     ███████╗   ██║██║   ██║        ██║███████╗         //
+ //  ╚════██║██╔══██║██║██║     ╚════██║   ██║██║   ██║   ██   ██║╚════██║         //
+ //  ███████║██║  ██║██║███████╗███████║██╗██║╚██████╔╝██╗╚█████╔╝███████║         //
+ //  ╚══════╝╚═╝  ╚═╝╚═╝╚══════╝╚══════╝╚═╝╚═╝ ╚═════╝ ╚═╝ ╚════╝ ╚══════╝         //
+ //                                                                                //
+ //   ╦╔═╗╦  ╦╔═╗╔═╗╔═╗╦═╗╦╔═╗╔╦╗  ╔═╗╦  ╦╔═╗╔╗╔╔╦╗  ╔═╗╔╦╗╦╔═                     //
+ //   ║╠═╣╚╗╔╝╠═╣╚═╗║  ╠╦╝║╠═╝ ║   ║  ║  ║║╣ ║║║ ║   ╚═╗ ║║╠╩╗                     //
+ //  ╚╝╩ ╩ ╚╝ ╩ ╩╚═╝╚═╝╩╚═╩╩   ╩   ╚═╝╩═╝╩╚═╝╝╚╝ ╩   ╚═╝═╩╝╩ ╩                     //
+ //  ┌─┐┌─┐┬─┐  ┌┐┌┌─┐┌┬┐┌─┐  ┬┌─┐  ┌─┐┌┐┌┌┬┐  ┌┬┐┬ ┬┌─┐  ┌┐ ┬─┐┌─┐┬ ┬┌─┐┌─┐┬─┐    //
+ //  ├┤ │ │├┬┘  ││││ │ ││├┤   │└─┐  ├─┤│││ ││   │ ├─┤├┤   ├┴┐├┬┘│ ││││└─┐├┤ ├┬┘    //
+ //  └  └─┘┴└─  ┘└┘└─┘─┴┘└─┘o└┘└─┘  ┴ ┴┘└┘─┴┘   ┴ ┴ ┴└─┘  └─┘┴└─└─┘└┴┘└─┘└─┘┴└─    //
+ //                                                                                //
+//////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * sails.io.js
  * ------------------------------------------------------------------------
@@ -41,76 +59,314 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
 
 (function() {
 
-  // Save the URL that this script was fetched from for use below.
-  // (skip this if this SDK is being used outside of the DOM, i.e. in a Node process)
-  var urlThisScriptWasFetchedFrom = (function() {
-    if (
-      typeof window !== 'object' ||
-      typeof window.document !== 'object' ||
-      typeof window.document.getElementsByTagName !== 'function'
-    ) {
-      return '';
-    }
 
-    // Return the URL of the last script loaded (i.e. this one)
-    // (this must run before nextTick; see http://stackoverflow.com/a/2976714/486547)
-    var allScriptsCurrentlyInDOM = window.document.getElementsByTagName('script');
-    var thisScript = allScriptsCurrentlyInDOM[allScriptsCurrentlyInDOM.length - 1];
-    return thisScript.src;
-  })();
+  //   ██████╗ ██████╗ ███╗   ██╗███████╗████████╗ █████╗ ███╗   ██╗████████╗███████╗
+  //  ██╔════╝██╔═══██╗████╗  ██║██╔════╝╚══██╔══╝██╔══██╗████╗  ██║╚══██╔══╝██╔════╝
+  //  ██║     ██║   ██║██╔██╗ ██║███████╗   ██║   ███████║██╔██╗ ██║   ██║   ███████╗
+  //  ██║     ██║   ██║██║╚██╗██║╚════██║   ██║   ██╔══██║██║╚██╗██║   ██║   ╚════██║
+  //  ╚██████╗╚██████╔╝██║ ╚████║███████║   ██║   ██║  ██║██║ ╚████║   ██║   ███████║
+  //   ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
+  //
 
-  // Constants
+
+  /**
+   * Constant containing the names of all available options
+   * for individual sockets.
+   *
+   * @type {Array}
+   */
+  var SOCKET_OPTIONS = [
+    'useCORSRouteToGetCookie',
+    'url',
+    'multiplex',
+    'transports',
+    'query',
+    'path',
+    'headers',
+    'initialConnectionHeaders',
+    'reconnection',
+    'reconnectionAttempts',
+    'reconnectionDelay',
+    'reconnectionDelayMax',
+    'randomizationFactor',
+    'timeout'
+  ];
+
+
+  /**
+   * Constant containing the names of properties on `io.sails` which
+   * may be configured using HTML attributes on the script tag which
+   * loaded this file.
+   *
+   * @type {Array}
+   *
+   * (this is unused if loading from node.js)
+   */
+  var CONFIGURABLE_VIA_HTML_ATTR = [
+    'autoConnect',
+    'environment',
+    'headers',
+    'url'
+  ];
+
+
+
+
+  /**
+   * Constant containing the names of querystring
+   * parameters sent when connecting any SailsSocket.
+   *
+   * @type {Dictionary}
+   */
   var CONNECTION_METADATA_PARAMS = {
     version: '__sails_io_sdk_version',
     platform: '__sails_io_sdk_platform',
     language: '__sails_io_sdk_language'
   };
 
-  // Current version of this SDK (sailsDK?!?!) and other metadata
-  // that will be sent along w/ the initial connection request.
+
+  /**
+   * Constant containing metadata about the platform, language, and
+   * current version of this SDK.
+   *
+   * @type {Dictionary}
+   */
   var SDK_INFO = {
     version: '0.13.5', // <-- pulled automatically from package.json, do not change!
-    platform: typeof module === 'undefined' ? 'browser' : 'node',
-    language: 'javascript'
+    language: 'javascript',
+    platform: (function (){
+      if (typeof module === 'object' && typeof module.exports !== 'undefined') {
+        return 'node';
+      }
+      else {
+        return 'browser';
+      }
+    })()
   };
+
+  // Build `versionString` (a querystring snippet) by
+  // combining SDK_INFO and CONNECTION_METADATA_PARAMS.
   SDK_INFO.versionString =
     CONNECTION_METADATA_PARAMS.version + '=' + SDK_INFO.version + '&' +
     CONNECTION_METADATA_PARAMS.platform + '=' + SDK_INFO.platform + '&' +
     CONNECTION_METADATA_PARAMS.language + '=' + SDK_INFO.language;
 
 
-  // In case you're wrapping the socket.io client to prevent pollution of the
-  // global namespace, you can pass in your own `io` to replace the global one.
-  // But we still grab access to the global one if it's available here:
-  var _io = (typeof io !== 'undefined') ? io : null;
 
-  /**
-   * Augment the `io` object passed in with methods for talking and listening
-   * to one or more Sails backend(s).  Automatically connects a socket and
-   * exposes it on `io.socket`.  If a socket tries to make requests before it
-   * is connected, the sails.io.js client will queue it up.
-   *
-   * @param {SocketIO} io
-   */
 
-  function SailsIOClient(io) {
+  //   █████╗ ██████╗ ███████╗ ██████╗ ██████╗ ██████╗     ██╗  ██╗████████╗███╗   ███╗██╗
+  //  ██╔══██╗██╔══██╗██╔════╝██╔═══██╗██╔══██╗██╔══██╗    ██║  ██║╚══██╔══╝████╗ ████║██║
+  //  ███████║██████╔╝███████╗██║   ██║██████╔╝██████╔╝    ███████║   ██║   ██╔████╔██║██║
+  //  ██╔══██║██╔══██╗╚════██║██║   ██║██╔══██╗██╔══██╗    ██╔══██║   ██║   ██║╚██╔╝██║██║
+  //  ██║  ██║██████╔╝███████║╚██████╔╝██║  ██║██████╔╝    ██║  ██║   ██║   ██║ ╚═╝ ██║███████╗
+  //  ╚═╝  ╚═╝╚═════╝ ╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝     ╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝╚══════╝
+  //
+  //   █████╗ ████████╗████████╗██████╗ ██╗██████╗ ██╗   ██╗████████╗███████╗███████╗
+  //  ██╔══██╗╚══██╔══╝╚══██╔══╝██╔══██╗██║██╔══██╗██║   ██║╚══██╔══╝██╔════╝██╔════╝
+  //  ███████║   ██║      ██║   ██████╔╝██║██████╔╝██║   ██║   ██║   █████╗  ███████╗
+  //  ██╔══██║   ██║      ██║   ██╔══██╗██║██╔══██╗██║   ██║   ██║   ██╔══╝  ╚════██║
+  //  ██║  ██║   ██║      ██║   ██║  ██║██║██████╔╝╚██████╔╝   ██║   ███████╗███████║
+  //  ╚═╝  ╚═╝   ╚═╝      ╚═╝   ╚═╝  ╚═╝╚═╝╚═════╝  ╚═════╝    ╚═╝   ╚══════╝╚══════╝
+  //
+  //  ███████╗██████╗  ██████╗ ███╗   ███╗      ██╗███████╗ ██████╗██████╗ ██╗██████╗ ████████╗██╗
+  //  ██╔════╝██╔══██╗██╔═══██╗████╗ ████║     ██╔╝██╔════╝██╔════╝██╔══██╗██║██╔══██╗╚══██╔══╝╚██╗
+  //  █████╗  ██████╔╝██║   ██║██╔████╔██║    ██╔╝ ███████╗██║     ██████╔╝██║██████╔╝   ██║    ╚██╗
+  //  ██╔══╝  ██╔══██╗██║   ██║██║╚██╔╝██║    ╚██╗ ╚════██║██║     ██╔══██╗██║██╔═══╝    ██║    ██╔╝
+  //  ██║     ██║  ██║╚██████╔╝██║ ╚═╝ ██║     ╚██╗███████║╚██████╗██║  ██║██║██║        ██║   ██╔╝
+  //  ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝      ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝╚═╝        ╚═╝   ╚═╝
+  //
 
-    // Prefer the passed-in `io` instance, but also use the global one if we've got it.
-    if (!io) {
-      io = _io;
+  // Save the URL that this script was fetched from, and any other config provided
+  // as HTML attributes on the script tag.  This is used below.
+  // (skip this if this SDK is being used outside of the DOM, i.e. in a Node process)
+  var thisScriptTag = (function() {
+    if (
+      typeof window !== 'object' ||
+      typeof window.document !== 'object' ||
+      typeof window.document.getElementsByTagName !== 'function'
+    ) {
+      return null;
+    }
+
+    // Return the URL of the last script loaded (i.e. this one)
+    // (this must run before nextTick; see http://stackoverflow.com/a/2976714/486547)
+    var allScriptsCurrentlyInDOM = window.document.getElementsByTagName('script');
+    return allScriptsCurrentlyInDOM[allScriptsCurrentlyInDOM.length - 1];
+  })();
+
+  // If available, parse client-side sails.io.js configuration from the script tag,
+  // as well as grabbing hold of the URL from whence it was fetched.
+  var urlThisScriptWasFetchedFrom = '';
+  var scriptTagConfig = {};
+  if (thisScriptTag) {
+    urlThisScriptWasFetchedFrom = thisScriptTag.src;
+
+    // Now parse the most common client-side configuration settings from the script tag. (experimental)
+    // ------------------------------------------------------------
+    // autoConnect | ((boolean))    | `true`
+    // environment | ((string))     | `'development'`
+    // headers     | ((dictionary)) | `{}`
+    // ------------------------------------------------------------
+    CONFIGURABLE_VIA_HTML_ATTR.forEach(function (htmlAttrName){
+      scriptTagConfig = (function (scriptTagConfig, htmlAttrName) {
+        scriptTagConfig[htmlAttrName] = (function (htmlAttrVal){
+          // The HTML attribute value should always be a string or `null`.
+          // We'll try to parse it as JSON and use that, but worst case fall back
+          // to the default situation of it being a string.
+          if (typeof htmlAttrVal === 'string') {
+            try { return JSON.parse(htmlAttrVal); } catch (e) { return htmlAttrVal; }
+          }
+          // If `null` was returned from getAttribute(), it means that the HTML attribute
+          // was not specified, so we treat it as undefined (which will cause the property
+          // to be removed below)
+          else if (htmlAttrVal === null) {
+            return undefined;
+          }
+          // Any other contingency shouldn't be possible:
+          // - if no quotes are used in the HTML attribute, it still comes in as a string.
+          // - if no RHS is provided for the attribute, it still comes in as "" (empty string)
+          else throw new Error('sails.io.js :: Unexpected/invalid script tag configuration for `'+htmlAttrName+'`: `'+htmlAttrVal+'` (a `'+typeof htmlAttrVal+'`). Should be a string.');
+        })(thisScriptTag.getAttribute(htmlAttrName));
+        if (scriptTagConfig[htmlAttrName] === undefined){ delete scriptTagConfig[htmlAttrName]; }
+        return scriptTagConfig;
+      })(scriptTagConfig, htmlAttrName);
+    });
+
+    // Now that they've been parsed, do an extremely lean version of
+    // logical type validation/coercion of provided values.
+    //////////////////////////////////////////////////////////////////
+
+    // `autoConnect`
+    if (typeof scriptTagConfig.autoConnect !== 'undefined') {
+      if (scriptTagConfig.autoConnect === '') {
+        // Special case for empty string.  It means `true` (see above).
+        scriptTagConfig.autoConnect = true;
+      }
+      else if (typeof scriptTagConfig.autoConnect !== 'boolean') {
+        throw new Error('sails.io.js :: Unexpected/invalid configuration for `autoConnect` provided in script tag: `'+scriptTagConfig.autoConnect+'` (a `'+typeof scriptTagConfig.autoConnect+'`). Should be a boolean.');
+      }
+    }
+
+    // `environment`
+    if (typeof scriptTagConfig.environment !== 'undefined') {
+      if (typeof scriptTagConfig.environment !== 'string') {
+        throw new Error('sails.io.js :: Unexpected/invalid configuration for `environment` provided in script tag: `'+scriptTagConfig.environment+'` (a `'+typeof scriptTagConfig.environment+'`). Should be a string.');
+      }
     }
 
 
-    // If the socket.io client is not available, none of this will work.
-    if (!io) throw new Error('`sails.io.js` requires a socket.io client, but `io` was not passed in.');
+    // `headers`
+    if (typeof scriptTagConfig.headers !== 'undefined') {
+      if (typeof scriptTagConfig.headers !== 'object' || Array.isArray(scriptTagConfig.headers)) {
+        throw new Error('sails.io.js :: Unexpected/invalid configuration for `headers` provided in script tag: `'+scriptTagConfig.headers+'` (a `'+typeof scriptTagConfig.headers+'`). Should be a JSON-compatible dictionary (i.e. `{}`).  Don\'t forget those double quotes (""), even on key names!  Use single quotes (\'\') to wrap the HTML attribute value; e.g. `headers=\'{"X-Auth": "foo"}\'`');
+      }
+    }
+
+
+    // OTHER `io.sails` OPTIONS NOT CURRENTLY SUPPORTED VIA HTML ATTRIBUTES:
+    // --------------------------------------------------------------------------------
+    // url         | ((string))     | _In browser, the URL of the page that loaded the sails.io.js script. In Node.js, no default._
+    // transports  | ((array))      | `['polling', 'websocket']`
+    //
+    // useCORSRouteToGetCookie | ((boolean)) | `true`
+    // query       | ((string))     | `''`
+    // initialConnectionHeaders  | ((dictionary)) | `{}`
+    // --------------------------------------------------------------------------------
+  }
 
 
 
-    //////////////////////////////////////////////////////////////
-    /////                              ///////////////////////////
-    ///// PRIVATE METHODS/CONSTRUCTORS ///////////////////////////
-    /////                              ///////////////////////////
-    //////////////////////////////////////////////////////////////
+
+  // Grab a reference to the global socket.io client (if one is available).
+  // This is used via closure below to determine which `io` to use when the
+  // socket.io client instance (`io`) is augmented to become the Sails client
+  // SDK instance (still `io`).
+  var _existingGlobalSocketIO = (typeof io !== 'undefined') ? io : undefined;
+
+
+
+
+  //////////////////////////////////////////////////////////////
+  /////
+  ///// NOW FOR BUNCHES OF:
+  /////  - PRIVATE FUNCTION DEFINITIONS
+  /////  - CONSTRUCTORS
+  /////  - AND METHODS
+  /////
+  //////////////////////////////////////////////////////////////
+  //
+
+
+
+  //  ███████╗ █████╗ ██╗██╗     ███████╗      ██╗ ██████╗        ██████╗██╗     ██╗███████╗███╗   ██╗████████╗
+  //  ██╔════╝██╔══██╗██║██║     ██╔════╝      ██║██╔═══██╗      ██╔════╝██║     ██║██╔════╝████╗  ██║╚══██╔══╝
+  //  ███████╗███████║██║██║     ███████╗█████╗██║██║   ██║█████╗██║     ██║     ██║█████╗  ██╔██╗ ██║   ██║
+  //  ╚════██║██╔══██║██║██║     ╚════██║╚════╝██║██║   ██║╚════╝██║     ██║     ██║██╔══╝  ██║╚██╗██║   ██║
+  //  ███████║██║  ██║██║███████╗███████║      ██║╚██████╔╝      ╚██████╗███████╗██║███████╗██║ ╚████║   ██║
+  //  ╚══════╝╚═╝  ╚═╝╚═╝╚══════╝╚══════╝      ╚═╝ ╚═════╝        ╚═════╝╚══════╝╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝
+  //
+
+  /**
+   * SailsIOClient()
+   *
+   * Augment the provided Socket.io client object (`io`) with methods for
+   * talking and listening to one or more Sails backend(s).  If no `io` was
+   * provided (i.e. in a browser setting), then attempt to use the global.
+   *
+   * This absorbs implicit `io.sails` configuration, sets a timer for
+   * automatically connecting a socket (if `io.sails.autoConnect` is enabled)
+   * and returns the augmented `io`.
+   *
+   * Note:
+   * The automatically-connected socket is exposed as `io.socket`.  If this
+   * socket attempts to bind event listeners or send requests before it is
+   * connected, it will be queued up and replayed when the connection is
+   * successfully opened.
+   *
+   * @param {SocketIO} io
+   * @returns {SailsIOClient} [also called `io`]
+   */
+
+  function SailsIOClient(_providedSocketIO) {
+
+    // First, determine which `io` we're augmenting.
+    //
+    // Prefer the passed-in `io` instance, but fall back to the
+    // global one if we've got it.
+    var io;
+    if (_providedSocketIO) {
+      io = _providedSocketIO;
+    }
+    else {
+      io = _existingGlobalSocketIO;
+    }
+    // (note that for readability, we deliberately do not short circuit or use the tertiary operator above)
+
+
+    // If a socket.io client (`io`) is not available, none of this will work.
+    if (!io) {
+      // If node:
+      if (SDK_INFO.platform === 'node') {
+        throw new Error('No socket.io client available.  When requiring `sails.io.js` from Node.js, a socket.io client (`io`) must be passed in; e.g.:\n```\nvar io = require(\'sails.io.js\')( require(\'socket.io-client\') )\n```\n(see https://github.com/balderdashy/sails.io.js/tree/master/test for more examples)');
+      }
+      // Otherwise, this is a web browser:
+      else {
+        throw new Error('The Sails socket SDK depends on the socket.io client, but the socket.io global (`io`) was not available when `sails.io.js` loaded.  Normally, the socket.io client code is bundled with sails.io.js, so something is a little off.  Please check to be sure this version of `sails.io.js` has the minified Socket.io client at the top of the file.');
+      }
+    }
+
+    // If the chosen socket.io client (`io`) has ALREADY BEEN AUGMENTED by this SDK,
+    // (i.e. if it already has a `.sails` property) then throw an error.
+    if (io.sails) {
+      // If node:
+      if (SDK_INFO.platform === 'node') {
+        throw new Error('The provided socket.io client (`io`) has already been augmented into a Sails socket SDK instance (it has `io.sails`).');
+      }
+      // Otherwise, this is a web browser:
+      else {
+        throw new Error('The socket.io client (`io`) has already been augmented into a Sails socket SDK instance.  Usually, this means you are bringing `sails.io.js` onto the page more than once.');
+      }
+    }
 
 
     /**
@@ -152,7 +408,7 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
           .bind(console)
           .apply(this, args);
       };
-    }
+    }//</LoggerFactory>
 
     // Create a private logger instance
     var consolog = LoggerFactory();
@@ -227,6 +483,22 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
 
 
 
+
+    //       ██╗███████╗ ██████╗ ███╗   ██╗      ██╗    ██╗███████╗██████╗ ███████╗ ██████╗  ██████╗██╗  ██╗███████╗████████╗
+    //       ██║██╔════╝██╔═══██╗████╗  ██║      ██║    ██║██╔════╝██╔══██╗██╔════╝██╔═══██╗██╔════╝██║ ██╔╝██╔════╝╚══██╔══╝
+    //       ██║███████╗██║   ██║██╔██╗ ██║█████╗██║ █╗ ██║█████╗  ██████╔╝███████╗██║   ██║██║     █████╔╝ █████╗     ██║
+    //  ██   ██║╚════██║██║   ██║██║╚██╗██║╚════╝██║███╗██║██╔══╝  ██╔══██╗╚════██║██║   ██║██║     ██╔═██╗ ██╔══╝     ██║
+    //  ╚█████╔╝███████║╚██████╔╝██║ ╚████║      ╚███╔███╔╝███████╗██████╔╝███████║╚██████╔╝╚██████╗██║  ██╗███████╗   ██║
+    //   ╚════╝ ╚══════╝ ╚═════╝ ╚═╝  ╚═══╝       ╚══╝╚══╝ ╚══════╝╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝
+    //
+    //  ██████╗ ███████╗███████╗██████╗  ██████╗ ███╗   ██╗███████╗███████╗     ██╗     ██╗██╗    ██╗██████╗ ██╗
+    //  ██╔══██╗██╔════╝██╔════╝██╔══██╗██╔═══██╗████╗  ██║██╔════╝██╔════╝    ██╔╝     ██║██║    ██║██╔══██╗╚██╗
+    //  ██████╔╝█████╗  ███████╗██████╔╝██║   ██║██╔██╗ ██║███████╗█████╗      ██║      ██║██║ █╗ ██║██████╔╝ ██║
+    //  ██╔══██╗██╔══╝  ╚════██║██╔═══╝ ██║   ██║██║╚██╗██║╚════██║██╔══╝      ██║ ██   ██║██║███╗██║██╔══██╗ ██║
+    //  ██║  ██║███████╗███████║██║     ╚██████╔╝██║ ╚████║███████║███████╗    ╚██╗╚█████╔╝╚███╔███╔╝██║  ██║██╔╝
+    //  ╚═╝  ╚═╝╚══════╝╚══════╝╚═╝      ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚══════╝     ╚═╝ ╚════╝  ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝
+    //
+
     /**
      * The JWR (JSON WebSocket Response) received from a Sails server.
      *
@@ -266,6 +538,16 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
     };
 
 
+
+
+    //          ███████╗███╗   ███╗██╗████████╗███████╗██████╗  ██████╗ ███╗   ███╗ ██╗██╗
+    //          ██╔════╝████╗ ████║██║╚══██╔══╝██╔════╝██╔══██╗██╔═══██╗████╗ ████║██╔╝╚██╗
+    //          █████╗  ██╔████╔██║██║   ██║   █████╗  ██████╔╝██║   ██║██╔████╔██║██║  ██║
+    //          ██╔══╝  ██║╚██╔╝██║██║   ██║   ██╔══╝  ██╔══██╗██║   ██║██║╚██╔╝██║██║  ██║
+    //  ███████╗███████╗██║ ╚═╝ ██║██║   ██║   ██║     ██║  ██║╚██████╔╝██║ ╚═╝ ██║╚██╗██╔╝
+    //  ╚══════╝╚══════╝╚═╝     ╚═╝╚═╝   ╚═╝   ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝ ╚═╝╚═╝
+    //
+
     /**
      * @api private
      * @param  {SailsSocket} socket  [description]
@@ -296,41 +578,19 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
       });
     }
 
-    //////////////////////////////////////////////////////////////
-    ///// </PRIVATE METHODS/CONSTRUCTORS> ////////////////////////
-    //////////////////////////////////////////////////////////////
 
 
 
-    // Version note:
+
+
+
+    //  ███████╗ █████╗ ██╗██╗     ███████╗███████╗ ██████╗  ██████╗██╗  ██╗███████╗████████╗
+    //  ██╔════╝██╔══██╗██║██║     ██╔════╝██╔════╝██╔═══██╗██╔════╝██║ ██╔╝██╔════╝╚══██╔══╝
+    //  ███████╗███████║██║██║     ███████╗███████╗██║   ██║██║     █████╔╝ █████╗     ██║
+    //  ╚════██║██╔══██║██║██║     ╚════██║╚════██║██║   ██║██║     ██╔═██╗ ██╔══╝     ██║
+    //  ███████║██║  ██║██║███████╗███████║███████║╚██████╔╝╚██████╗██║  ██╗███████╗   ██║
+    //  ╚══════╝╚═╝  ╚═╝╚═╝╚══════╝╚══════╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝
     //
-    // `io.SocketNamespace.prototype` doesn't exist in sio 1.0.
-    //
-    // Rather than adding methods to the prototype for the Socket instance that is returned
-    // when the browser connects with `io.connect()`, we create our own constructor, `SailsSocket`.
-    // This makes our solution more future-proof and helps us work better w/ the Socket.io team
-    // when changes are rolled out in the future.  To get a `SailsSocket`, you can run:
-    // ```
-    // io.sails.connect();
-    // ```
-
-
-    var SOCKET_OPTIONS = [
-      'useCORSRouteToGetCookie',
-      'url',
-      'multiplex',
-      'transports',
-      'query',
-      'path',
-      'headers',
-      'initialConnectionHeaders',
-      'reconnection',
-      'reconnectionAttempts',
-      'reconnectionDelay',
-      'reconnectionDelayMax',
-      'randomizationFactor',
-      'timeout'
-    ];
 
     /**
      * SailsSocket
@@ -344,8 +604,16 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
      * WHICH SERVER to talk to yet, etc.  It is also used by `io.socket` for your convenience.
      *
      * @constructor
+     * @api private
+     *
+     * ----------------------------------------------------------------------
+     * Note: This constructor should not be used directly. To obtain a `SailsSocket`
+     * instance of your very own, run:
+     * ```
+     * var mySocket = io.sails.connect();
+     * ```
+     * ----------------------------------------------------------------------
      */
-
     function SailsSocket (opts){
       var self = this;
       opts = opts||{};
@@ -370,7 +638,7 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
             // If socket is attempting to reconnect, stop it.
             if (self._raw && self._raw.io && self._raw.io.reconnecting && !self._raw.io.skipReconnect) {
               self._raw.io.skipReconnect = true;
-              consolog("Stopping reconnect; use .reconnect() to connect socket after changing options.");
+              consolog('Stopping reconnect; use .reconnect() to connect socket after changing options.');
             }
             _opts[option] = value;
           }
@@ -401,11 +669,13 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
       // However, note that the `console.log`s called before and after connection
       // are still forced to rely on our existing heuristics (to disable, tack #production
       // onto the URL used to fetch this file.)
-    }
+    }//</SailsSocket>
 
 
     /**
-     * Start connecting this socket.
+     * `SailsSocket.prototype._connect()`
+     *
+     * Begin connecting this socket to the server.
      *
      * @api private
      */
@@ -427,8 +697,11 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
       // Headers that will be sent with the initial request to /socket.io (Node.js only)
       self.extraHeaders = self.initialConnectionHeaders || {};
 
-      if (!(typeof module === 'object' && typeof module.exports !== 'undefined') && self.initialConnectionHeaders) {
-        console.warn("initialConnectionHeaders option available in Node.js only!");
+      // Log a warning if non-Node.js platform attempts to use `initialConnectionHeaders`
+      if (self.initialConnectionHeaders && SDK_INFO.platform !== 'node') {
+        if (typeof console === 'object' && typeof console.warn === 'function') {
+          console.warn('initialConnectionHeaders option available in Node.js only!');
+        }
       }
 
       // Ensure URL has no trailing slash
@@ -960,7 +1233,7 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
       if (cb && typeof cb !== 'function') {
         throw new Error('Invalid callback function!\n' + usage);
       }
-      
+
       // Accept either `params` or `data` for backwards compatibility (but not both!)
       if (options.data && options.params) {
         throw new Error('Cannot specify both `params` and `data`!  They are aliases of each other.\n' + usage);
@@ -1034,8 +1307,26 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
 
 
 
-    // Set a `sails` object that may be used for configuration before the
-    // first socket connects (i.e. to prevent auto-connect)
+
+
+
+
+    //  ██╗ ██████╗    ███████╗ █████╗ ██╗██╗     ███████╗
+    //  ██║██╔═══██╗   ██╔════╝██╔══██╗██║██║     ██╔════╝
+    //  ██║██║   ██║   ███████╗███████║██║██║     ███████╗
+    //  ██║██║   ██║   ╚════██║██╔══██║██║██║     ╚════██║
+    //  ██║╚██████╔╝██╗███████║██║  ██║██║███████╗███████║
+    //  ╚═╝ ╚═════╝ ╚═╝╚══════╝╚═╝  ╚═╝╚═╝╚══════╝╚══════╝
+    //
+    // Set an `io.sails` object that may be used for configuration before the
+    // first socket connects (i.e. to allow auto-connect behavior to be
+    // prevented by setting `io.sails.autoConnect` in an inline script
+    // directly after the script tag which loaded this file).
+
+
+    //  ┌─┐┌─┐┌┬┐  ┬ ┬┌─┐  ╔╦╗╔═╗╔═╗╔═╗╦ ╦╦ ╔╦╗╔═╗  ┌─┐┌─┐┬─┐  ┬┌─┐ ┌─┐┌─┐┬┬  ┌─┐
+    //  └─┐├┤  │   │ │├─┘   ║║║╣ ╠╣ ╠═╣║ ║║  ║ ╚═╗  ├┤ │ │├┬┘  ││ │ └─┐├─┤││  └─┐
+    //  └─┘└─┘ ┴   └─┘┴    ═╩╝╚═╝╚  ╩ ╩╚═╝╩═╝╩ ╚═╝  └  └─┘┴└─  ┴└─┘o└─┘┴ ┴┴┴─┘└─┘
     io.sails = {
 
       // Whether to automatically connect a socket and save it as `io.socket`.
@@ -1062,6 +1353,38 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
 
 
 
+    //  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌┬┐  ┬┌─┐ ┌─┐┌─┐┬┬  ┌─┐  ┌┬┐┌─┐┌─┐┌─┐┬ ┬┬ ┌┬┐┌─┐
+    //  ├┤ ┌┴┬┘ │ ├┤ │││ ││  ││ │ └─┐├─┤││  └─┐   ││├┤ ├┤ ├─┤│ ││  │ └─┐
+    //  └─┘┴ └─ ┴ └─┘┘└┘─┴┘  ┴└─┘o└─┘┴ ┴┴┴─┘└─┘  ─┴┘└─┘└  ┴ ┴└─┘┴─┘┴ └─┘
+    //  ┬ ┬┬┌┬┐┬ ┬  ┌┬┐┬ ┬┌─┐  ╦ ╦╔╦╗╔╦╗╦    ╔═╗╔╦╗╔╦╗╦═╗╦╔╗ ╦ ╦╔╦╗╔═╗╔═╗
+    //  ││││ │ ├─┤   │ ├─┤├┤   ╠═╣ ║ ║║║║    ╠═╣ ║  ║ ╠╦╝║╠╩╗║ ║ ║ ║╣ ╚═╗
+    //  └┴┘┴ ┴ ┴ ┴   ┴ ┴ ┴└─┘  ╩ ╩ ╩ ╩ ╩╩═╝  ╩ ╩ ╩  ╩ ╩╚═╩╚═╝╚═╝ ╩ ╚═╝╚═╝
+    //  ┌─┐┬─┐┌─┐┌┬┐  ┌┬┐┬ ┬┌─┐  ┌─┐┌─┐┬─┐┬┌─┐┌┬┐  ┌┬┐┌─┐┌─┐
+    //  ├┤ ├┬┘│ ││││   │ ├─┤├┤   └─┐│  ├┬┘│├─┘ │    │ ├─┤│ ┬
+    //  └  ┴└─└─┘┴ ┴   ┴ ┴ ┴└─┘  └─┘└─┘┴└─┴┴   ┴    ┴ ┴ ┴└─┘
+    //
+    // Now fold in config provided as HTML attributes on the script tag:
+    // (note that if `io.sails.*` is changed after this script, those changes
+    //  will still take precedence)
+    CONFIGURABLE_VIA_HTML_ATTR.forEach(function (htmlAttrName){
+      if (typeof scriptTagConfig[htmlAttrName] !== 'undefined') {
+        io.sails[htmlAttrName] = scriptTagConfig[htmlAttrName];
+      }
+    });
+    //////////////////////////////////////////////////////////////////////////////
+    // Note that the new HTML attribute configuration style may eventually
+    // completely replace the original approach of setting `io.sails` properties,
+    // since the new strategy is easier to reason about.  Also, it would allow us
+    // to remove the timeout below someday.
+    //////////////////////////////////////////////////////////////////////////////
+
+
+
+
+    //  ┬┌─┐ ┌─┐┌─┐┬┬  ┌─┐ ╔═╗╔═╗╔╗╔╔╗╔╔═╗╔═╗╔╦╗  /  \
+    //  ││ │ └─┐├─┤││  └─┐ ║  ║ ║║║║║║║║╣ ║   ║  /   /
+    //  ┴└─┘o└─┘┴ ┴┴┴─┘└─┘o╚═╝╚═╝╝╚╝╝╚╝╚═╝╚═╝ ╩  \  /
+
     /**
      * Add `io.sails.connect` function as a wrapper for the built-in `io()` aka `io.connect()`
      * method, returning a SailsSocket. This special function respects the configured io.sails
@@ -1075,7 +1398,7 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
     io.sails.connect = function(url, opts) {
 
       // Make URL optional
-      if ('object' == typeof url) {
+      if ('object' === typeof url) {
         opts = url;
         url = null;
       }
@@ -1094,6 +1417,16 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
 
 
 
+
+
+
+    //  ██╗ ██████╗    ███████╗ ██████╗  ██████╗██╗  ██╗███████╗████████╗
+    //  ██║██╔═══██╗   ██╔════╝██╔═══██╗██╔════╝██║ ██╔╝██╔════╝╚══██╔══╝
+    //  ██║██║   ██║   ███████╗██║   ██║██║     █████╔╝ █████╗     ██║
+    //  ██║██║   ██║   ╚════██║██║   ██║██║     ██╔═██╗ ██╔══╝     ██║
+    //  ██║╚██████╔╝██╗███████║╚██████╔╝╚██████╗██║  ██╗███████╗   ██║
+    //  ╚═╝ ╚═════╝ ╚═╝╚══════╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝   ╚═╝
+    //
     // io.socket
     //
     // The eager instance of Socket which will automatically try to connect
@@ -1105,13 +1438,19 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
 
 
     // Build `io.socket` so it exists
-    // (this does not start the connection process)
+    // (note that this DOES NOT start the connection process)
     io.socket = new SailsSocket();
-
-    // In the mean time, this eager socket will be queue events bound by the user
+    //
+    // This socket is not connected yet, and has not even _started_ connecting.
+    //
+    // But in the mean time, this eager socket will be queue events bound by the user
     // before the first cycle of the event loop (using `.on()`), which will later
     // be rebound on the raw underlying socket.
 
+
+    //  ┌─┐┌─┐┌┬┐  ┌─┐┬ ┬┌┬┐┌─┐   ┌─┐┌─┐┌┐┌┌┐┌┌─┐┌─┐┌┬┐  ┌┬┐┬┌┬┐┌─┐┬─┐
+    //  └─┐├┤  │   ├─┤│ │ │ │ │───│  │ │││││││├┤ │   │    │ ││││├┤ ├┬┘
+    //  └─┘└─┘ ┴   ┴ ┴└─┘ ┴ └─┘   └─┘└─┘┘└┘┘└┘└─┘└─┘ ┴    ┴ ┴┴ ┴└─┘┴└─
     // If configured to do so, start auto-connecting after the first cycle of the event loop
     // has completed (to allow time for this behavior to be configured/disabled
     // by specifying properties on `io.sails`)
@@ -1132,25 +1471,43 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
 
     // Return the `io` object.
     return io;
-  }
+  } //</SailsIOClient>
+
+  //
+  /////////////////////////////////////////////////////////////////////////////////
+  ///// </bunches of private function definitions, constructors, and methods>
+  /////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+  //  ███████╗██╗  ██╗██████╗  ██████╗ ███████╗███████╗    ███████╗██████╗ ██╗  ██╗
+  //  ██╔════╝╚██╗██╔╝██╔══██╗██╔═══██╗██╔════╝██╔════╝    ██╔════╝██╔══██╗██║ ██╔╝
+  //  █████╗   ╚███╔╝ ██████╔╝██║   ██║███████╗█████╗      ███████╗██║  ██║█████╔╝
+  //  ██╔══╝   ██╔██╗ ██╔═══╝ ██║   ██║╚════██║██╔══╝      ╚════██║██║  ██║██╔═██╗
+  //  ███████╗██╔╝ ██╗██║     ╚██████╔╝███████║███████╗    ███████║██████╔╝██║  ██╗
+  //  ╚══════╝╚═╝  ╚═╝╚═╝      ╚═════╝ ╚══════╝╚══════╝    ╚══════╝╚═════╝ ╚═╝  ╚═╝
+  //
 
 
   // Add CommonJS support to allow this client SDK to be used from Node.js.
-  if (typeof module === 'object' && typeof module.exports !== 'undefined') {
+  if (SDK_INFO.platform === 'node') {
     module.exports = SailsIOClient;
-    return SailsIOClient;
   }
+  // Add AMD support, registering this client SDK as an anonymous module.
   else if (typeof define === 'function' && define.amd) {
-      // AMD. Register as an anonymous module.
-      define([], function() {
-        return SailsIOClient;
-      });
+    define([], function() {
+      return SailsIOClient;
+    });
   }
   else {
-    // Otherwise, try to instantiate the client:
-    // In case you're wrapping the socket.io client to prevent pollution of the
-    // global namespace, you can replace the global `io` with your own `io` here:
-    return SailsIOClient();
+    // Otherwise, try to instantiate the client using the global `io`:
+    SailsIOClient();
+
+    // Note:
+    // If you are modifying this file manually to wrap an existing socket.io client
+    // (e.g. to prevent pollution of the global namespace), you can replace the global
+    // `io` with your own `io` instance above.
   }
 
 })();
