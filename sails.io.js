@@ -158,10 +158,12 @@
   //  ██║     ██║  ██║╚██████╔╝██║ ╚═╝ ██║     ╚██╗███████║╚██████╗██║  ██║██║██║        ██║   ██╔╝
   //  ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝      ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚═╝╚═╝        ╚═╝   ╚═╝
   //
-
-  // Save the URL that this script was fetched from, and any other config provided
-  // as HTML attributes on the script tag.  This is used below.
+  //
+  // If available, grab the DOM element for the script tag which imported this file.
   // (skip this if this SDK is being used outside of the DOM, i.e. in a Node process)
+  //
+  // This is used below to parse client-side sails.io.js configuration encoded as
+  // HTML attributes, as well as grabbing hold of the URL from whence the SDK was fetched.
   var thisScriptTag = (function() {
     if (
       typeof window !== 'object' ||
@@ -177,62 +179,63 @@
     return allScriptsCurrentlyInDOM[allScriptsCurrentlyInDOM.length - 1];
   })();
 
-  // If available, parse client-side sails.io.js configuration from the script tag,
-  // as well as grabbing hold of the URL from whence it was fetched.
+
+  // Variables to contain src URL and other script tag config (for use below).
   var urlThisScriptWasFetchedFrom = '';
   var scriptTagConfig = {};
+
+
   if (thisScriptTag) {
+    // Save the URL that this script was fetched from.
     urlThisScriptWasFetchedFrom = thisScriptTag.src;
 
-    // PLANNED:
-    //////////////////////////////////////////////////////////////////
-    // Support all attrs when prefixed with `data-` for folks
-    // who need to support browsers that may have issues with nonstandard
-    // HTML attributes.  Also just in case it creeps you out.
-    // If `data-` prefixed attr is provided, it takes precedence.
+    // Now parse the most common client-side configuration settings
+    // from the script tag where they may be encoded as HTML attributes.
+    //
+    // Any configuration which may be provided as an HTML attribute may
+    // also be provided prefixed with `data-`.  This is for folks who
+    // need to support browsers that have issues with nonstandard
+    // HTML attributes (or if the idea of using nonstandard HTML attributes
+    // just creeps you out)
+    //
+    // If a `data-` prefixed attr is provided, it takes precedence.
     // (this is so that if you are already using one of these HTML
     //  attrs for some reason, you can keep it as-is and override
-    //  it using `data-`. If you are using the `data-` prefixed version...
-    //  well, you'll have to configure programmatically using `io.sails`
-    //  instead.)
-    //////////////////////////////////////////////////////////////////
-
-    // Now parse the most common client-side configuration settings from the script tag. (experimental)
-    // ------------------------------------------------------------
-    // autoConnect | ((boolean))    | `true`
-    // environment | ((string))     | `'development'`
-    // headers     | ((dictionary)) | `{}`
-    // ------------------------------------------------------------
+    //  it using `data-`. If you are using the `data-` prefixed version
+    //  for some other purpose... well, in that case you'll just have to
+    //  configure programmatically using `io.sails` instead.)
     CONFIGURABLE_VIA_HTML_ATTR.forEach(function (htmlAttrName){
-      scriptTagConfig = (function (scriptTagConfig, htmlAttrName) {
-        scriptTagConfig[htmlAttrName] = (function (htmlAttrVal){
-          // The HTML attribute value should always be a string or `null`.
-          // We'll try to parse it as JSON and use that, but worst case fall back
-          // to the default situation of it being a string.
-          if (typeof htmlAttrVal === 'string') {
-            try { return JSON.parse(htmlAttrVal); } catch (e) { return htmlAttrVal; }
-          }
-          // If `null` was returned from getAttribute(), it means that the HTML attribute
-          // was not specified, so we treat it as undefined (which will cause the property
-          // to be removed below)
-          else if (htmlAttrVal === null) {
-            return undefined;
-          }
-          // Any other contingency shouldn't be possible:
-          // - if no quotes are used in the HTML attribute, it still comes in as a string.
-          // - if no RHS is provided for the attribute, it still comes in as "" (empty string)
-          else throw new Error('sails.io.js :: Unexpected/invalid script tag configuration for `'+htmlAttrName+'`: `'+htmlAttrVal+'` (a `'+typeof htmlAttrVal+'`). Should be a string.');
-        })(thisScriptTag.getAttribute(htmlAttrName));
-        if (scriptTagConfig[htmlAttrName] === undefined){ delete scriptTagConfig[htmlAttrName]; }
-        return scriptTagConfig;
-      })(scriptTagConfig, htmlAttrName);
+
+      scriptTagConfig[htmlAttrName] = (function (htmlAttrVal){
+        // The HTML attribute value should always be a string or `null`.
+        // We'll try to parse it as JSON and use that, but worst case fall back
+        // to the default situation of it being a string.
+        if (typeof htmlAttrVal === 'string') {
+          try { return JSON.parse(htmlAttrVal); } catch (e) { return htmlAttrVal; }
+        }
+        // If `null` was returned from getAttribute(), it means that the HTML attribute
+        // was not specified, so we treat it as undefined (which will cause the property
+        // to be removed below)
+        else if (htmlAttrVal === null) {
+          return undefined;
+        }
+        // Any other contingency shouldn't be possible:
+        // - if no quotes are used in the HTML attribute, it still comes in as a string.
+        // - if no RHS is provided for the attribute, it still comes in as "" (empty string)
+        else throw new Error('sails.io.js :: Unexpected/invalid script tag configuration for `'+htmlAttrName+'`: `'+htmlAttrVal+'` (a `'+typeof htmlAttrVal+'`). Should be a string.');
+      })(thisScriptTag.getAttribute(htmlAttrName));
+      // TODO: support data-attrs
+
+      if (scriptTagConfig[htmlAttrName] === undefined){
+        delete scriptTagConfig[htmlAttrName];
+      }
     });
+
+
 
     // Now that they've been parsed, do an extremely lean version of
     // logical type validation/coercion of provided values.
     //////////////////////////////////////////////////////////////////
-
-
 
     // `autoConnect`
     if (typeof scriptTagConfig.autoConnect !== 'undefined') {
@@ -261,15 +264,11 @@
     }
 
 
-    // OTHER `io.sails` OPTIONS NOT CURRENTLY SUPPORTED VIA HTML ATTRIBUTES:
-    // --------------------------------------------------------------------------------
+    // TODO:
     // url         | ((string))     | _In browser, the URL of the page that loaded the sails.io.js script. In Node.js, no default._
-    // transports  | ((array))      | `['polling', 'websocket']`
-    //
-    // useCORSRouteToGetCookie | ((boolean)) | `true`
-    // query       | ((string))     | `''`
-    // initialConnectionHeaders  | ((dictionary)) | `{}`
-    // --------------------------------------------------------------------------------
+
+
+    // OTHER `io.sails` options are NOT CURRENTLY SUPPORTED VIA HTML ATTRIBUTES.
   }
 
 
