@@ -184,6 +184,19 @@
   if (thisScriptTag) {
     urlThisScriptWasFetchedFrom = thisScriptTag.src;
 
+    // PLANNED:
+    //////////////////////////////////////////////////////////////////
+    // Support all attrs when prefixed with `data-` for folks
+    // who need to support browsers that may have issues with nonstandard
+    // HTML attributes.  Also just in case it creeps you out.
+    // If `data-` prefixed attr is provided, it takes precedence.
+    // (this is so that if you are already using one of these HTML
+    //  attrs for some reason, you can keep it as-is and override
+    //  it using `data-`. If you are using the `data-` prefixed version...
+    //  well, you'll have to configure programmatically using `io.sails`
+    //  instead.)
+    //////////////////////////////////////////////////////////////////
+
     // Now parse the most common client-side configuration settings from the script tag. (experimental)
     // ------------------------------------------------------------
     // autoConnect | ((boolean))    | `true`
@@ -218,6 +231,8 @@
     // Now that they've been parsed, do an extremely lean version of
     // logical type validation/coercion of provided values.
     //////////////////////////////////////////////////////////////////
+
+
 
     // `autoConnect`
     if (typeof scriptTagConfig.autoConnect !== 'undefined') {
