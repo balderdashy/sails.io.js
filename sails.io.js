@@ -905,23 +905,15 @@
         // usually due to a missing or invalid cookie)
         self.on('error', function failedToConnect(err) {
           self.isConnecting = false;
-          // TODO:
-          // handle failed connections due to failed authorization
-          // in a smarter way (probably can listen for a different event)
-
-          // A bug in Socket.io 0.9.x causes `connect_failed`
-          // and `reconnect_failed` not to fire.
-          // Check out the discussion in github issues for details:
-          // https://github.com/LearnBoost/socket.io/issues/652
-          // io.socket.on('connect_failed', function () {
-          //  consolog('io.socket emitted `connect_failed`');
-          // });
-          // io.socket.on('reconnect_failed', function () {
-          //  consolog('io.socket emitted `reconnect_failed`');
-          // });
+          ////////////////////////////////////////////////////////////////////////////////////
+          // Note:
+          // In the future, we could provide a separate event for when a socket cannot connect
+          // due to a failed `beforeConnect` (aka "authorization" if you're old school).
+          // this could probably be implemented by emitting a special event from the server.
+          ////////////////////////////////////////////////////////////////////////////////////
 
           consolog(
-            'Failed to connect socket (probably due to failed authorization on server)',
+            'Failed to connect socket (possibly due to failed `beforeConnect` on server)',
             'Error:', err
           );
         });
