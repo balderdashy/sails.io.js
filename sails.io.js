@@ -204,9 +204,17 @@
     //  it using `data-`. If you are using the `data-` prefixed version
     //  for some other purpose... well, in that case you'll just have to
     //  configure programmatically using `io.sails` instead.)
-    CONFIGURABLE_VIA_HTML_ATTR.forEach(function (htmlAttrName){
+    CONFIGURABLE_VIA_HTML_ATTR.forEach(function (configKey){
 
-      scriptTagConfig[htmlAttrName] = (function (htmlAttrVal){
+      scriptTagConfig[configKey] = (function (){
+
+        // Support 'data-' prefixed or normal attributes.
+        // (prefixed versions take precedence if provided)
+        var htmlAttrVal = thisScriptTag.getAttribute( 'data-'+configKey );
+        if (!htmlAttrVal) {
+          htmlAttrVal = thisScriptTag.getAttribute( configKey );
+        }
+
         // The HTML attribute value should always be a string or `null`.
         // We'll try to parse it as JSON and use that, but worst case fall back
         // to the default situation of it being a string.
@@ -222,12 +230,12 @@
         // Any other contingency shouldn't be possible:
         // - if no quotes are used in the HTML attribute, it still comes in as a string.
         // - if no RHS is provided for the attribute, it still comes in as "" (empty string)
-        else throw new Error('sails.io.js :: Unexpected/invalid script tag configuration for `'+htmlAttrName+'`: `'+htmlAttrVal+'` (a `'+typeof htmlAttrVal+'`). Should be a string.');
-      })(thisScriptTag.getAttribute(htmlAttrName));
-      // TODO: support data-attrs
+        // (but we still handle this with an explicit error just in case--for debugging and support purposes)
+        else throw new Error('sails.io.js :: Unexpected/invalid script tag configuration for `'+configKey+'`: `'+htmlAttrVal+'` (a `'+typeof htmlAttrVal+'`). Should be a string.');
+      })();
 
-      if (scriptTagConfig[htmlAttrName] === undefined){
-        delete scriptTagConfig[htmlAttrName];
+      if (scriptTagConfig[configKey] === undefined){
+        delete scriptTagConfig[configKey];
       }
     });
 
@@ -248,6 +256,7 @@
       }
     }
 
+
     // `environment`
     if (typeof scriptTagConfig.environment !== 'undefined') {
       if (typeof scriptTagConfig.environment !== 'string') {
@@ -264,9 +273,12 @@
     }
 
 
-    // TODO:
-    // url         | ((string))     | _In browser, the URL of the page that loaded the sails.io.js script. In Node.js, no default._
-
+    // `url`
+    if (typeof scriptTagConfig.url !== 'undefined') {
+      if (typeof scriptTagConfig.url !== 'string') {
+        throw new Error('sails.io.js :: Unexpected/invalid configuration for `url` provided in script tag: `'+scriptTagConfig.url+'` (a `'+typeof scriptTagConfig.url+'`). Should be a string.');
+      }
+    }
 
     // OTHER `io.sails` options are NOT CURRENTLY SUPPORTED VIA HTML ATTRIBUTES.
   }
@@ -1363,9 +1375,9 @@
     // Now fold in config provided as HTML attributes on the script tag:
     // (note that if `io.sails.*` is changed after this script, those changes
     //  will still take precedence)
-    CONFIGURABLE_VIA_HTML_ATTR.forEach(function (htmlAttrName){
-      if (typeof scriptTagConfig[htmlAttrName] !== 'undefined') {
-        io.sails[htmlAttrName] = scriptTagConfig[htmlAttrName];
+    CONFIGURABLE_VIA_HTML_ATTR.forEach(function (configKey){
+      if (typeof scriptTagConfig[configKey] !== 'undefined') {
+        io.sails[configKey] = scriptTagConfig[configKey];
       }
     });
     //////////////////////////////////////////////////////////////////////////////
