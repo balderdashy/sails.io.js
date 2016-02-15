@@ -89,7 +89,9 @@
     'autoConnect',
     'environment',
     'headers',
-    'url'
+    'url',
+    'transports',
+    'path'
   ];
 
 
