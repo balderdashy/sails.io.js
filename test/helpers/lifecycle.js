@@ -43,6 +43,15 @@ module.exports = {
         authorization: false,
         transports: opts.transports,
         path: opts.path
+      },
+      hooks: {
+        grunt: false
+      },
+      routes: {
+        '/sails.io.js': function(req, res) {
+          res.header("Content-type","application/javascript");
+          require('fs').createReadStream(require('path').resolve(__dirname, '..', '..', 'dist', 'sails.io.js')).pipe(res);
+        }
       }
     },function (err) {
       if (err) return cb(err);
