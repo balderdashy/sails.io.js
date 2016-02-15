@@ -1,3 +1,4 @@
+var binPath = require('phantomjs-prebuilt').path;
 module.exports = function(url, code) {
   var phantomTest = "var page = require('webpage').create();\n" +
                     "var system = require('system');\n" +
@@ -8,6 +9,6 @@ module.exports = function(url, code) {
                     "})";
   var scriptPath = require('path').resolve(__dirname, '..', '.tmp', 'phantom.js');
   require('fs-extra').outputFileSync(scriptPath, phantomTest);
-  var child = require('child_process').spawn('phantomjs', [scriptPath]);
+  var child = require('child_process').spawn(binPath, [scriptPath]);
   return child;
 };

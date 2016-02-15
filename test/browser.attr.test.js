@@ -7,213 +7,201 @@ var assert = require('assert');
 var lifecycle = require('./helpers/lifecycle');
 var phantom = require('./helpers/phantom');
 
-var testForPhantom = require('child_process').spawn('phantomjs', ['-v']);
-testForPhantom.on('error', function() {
-  console.error("Skipping browser tests; could not find `phantomjs` on your system.");
-  console.error("To run these tests, first `npm install -g phantomjs`");
-  console.error();
-});
-testForPhantom.stdout.on('data', function() {
-  setupTests();
-});
+describe('browser', function() {
 
-function setupTests() {
-  describe('browser', function() {
+  describe('using html attributes for configuration :: ', function () {
 
-    describe('using html attributes for configuration :: ', function () {
+    var runner;
+    describe('url :: ', function() {
 
-      var runner;
-      describe('url :: ', function() {
-
-        before(function(done) {
-          lifecycle.setup({transports: ['websocket'], autoConnect: false}, done);
-        });
-
-        after(lifecycle.teardown);
-
-        before(function() {
-          sails.router.bind("/", function (req, res) {
-            var html = '<html><head></head><body><script type="text/javascript" src="/sails.io.js#production" url="http://127.0.0.1:'+sails.config.port+'"></script></body></html>';
-            return res.send(html);
-          });
-        });
-        after(function(done) {
-          if(runner.kill){runner.kill();}
-          sails.lower(function(){setTimeout(done, 100);});
-        });
-        it('should use the URL provided in the html attribute', function(done) {
-          runner = phantom("http://localhost:"+sails.config.port+"/", "console.log(io.socket.url);");
-          runner.stderr.on('data', function(data) {console.log(data.toString());});
-          runner.stdout.on('data', function(data) {
-            var out = data.toString();
-            assert.equal(out, "http://127.0.0.1:"+sails.config.port);
-            return done();
-          });
-        });
-
+      before(function(done) {
+        lifecycle.setup({transports: ['websocket'], autoConnect: false}, done);
       });
 
-      describe('environment :: ', function() {
+      after(lifecycle.teardown);
 
-        before(function(done) {
-          lifecycle.setup({transports: ['websocket'], autoConnect: false}, done);
+      before(function() {
+        sails.router.bind("/", function (req, res) {
+          var html = '<html><head></head><body><script type="text/javascript" src="/sails.io.js#production" url="http://127.0.0.1:'+sails.config.port+'"></script></body></html>';
+          return res.send(html);
         });
-
-        after(function(done) {
-          if(runner.kill){runner.kill();}
-          sails.lower(function(){setTimeout(done, 100);});
+      });
+      after(function(done) {
+        if(runner.kill){runner.kill();}
+        sails.lower(function(){setTimeout(done, 100);});
+      });
+      it('should use the URL provided in the html attribute', function(done) {
+        runner = phantom("http://localhost:"+sails.config.port+"/", "console.log(io.socket.url);");
+        runner.stderr.on('data', function(data) {console.log(data.toString());});
+        runner.stdout.on('data', function(data) {
+          var out = data.toString();
+          assert.equal(out, "http://127.0.0.1:"+sails.config.port);
+          return done();
         });
-
-        before(function() {
-          sails.router.bind("/", function (req, res) {
-            var html = '<html><head></head><body><script type="text/javascript" src="/sails.io.js" environment="production"></script></body></html>';
-            return res.send(html);
-          });
-        });
-        after(function() {
-          if(runner.kill){runner.kill();}
-        });
-        it('should use the environment provided in the html attribute', function(done) {
-          runner = phantom("http://localhost:"+sails.config.port+"/", "console.log(io.sails.environment);");
-          runner.stderr.on('data', function(data) {console.log(data.toString());});
-          runner.stdout.on('data', function(data) {
-            var out = data.toString();
-            assert.equal(out, "production");
-            return done();
-          });
-        });
-
       });
 
-      describe('autoConnect :: ', function() {
+    });
 
-        before(function(done) {
-          lifecycle.setup({transports: ['websocket'], autoConnect: false}, done);
-        });
+    describe('environment :: ', function() {
 
-        after(function(done) {
-          if(runner.kill){runner.kill();}
-          sails.lower(function(){setTimeout(done, 100);});
-        });
-
-        before(function() {
-          sails.router.bind("/", function (req, res) {
-            var html = '<html><head></head><body><script type="text/javascript" src="/sails.io.js#production" autoConnect="false"></script></body></html>';
-            return res.send(html);
-          });
-        });
-        after(function() {
-          if(runner.kill){runner.kill();}
-        });
-        it('should use the autoConnnect setting provided in the html attribute', function(done) {
-          runner = phantom("http://localhost:"+sails.config.port+"/", "console.log(io.sails.autoConnect);");
-          runner.stderr.on('data', function(data) {console.log(data.toString());});
-          runner.stdout.on('data', function(data) {
-            var out = data.toString();
-            assert.equal(out, "false");
-            return done();
-          });
-        });
-
+      before(function(done) {
+        lifecycle.setup({transports: ['websocket'], autoConnect: false}, done);
       });
 
-      describe('headers :: ', function() {
-
-        before(function(done) {
-          lifecycle.setup({transports: ['websocket'], autoConnect: false}, done);
-        });
-
-        after(function(done) {
-          if(runner.kill){runner.kill();}
-          sails.lower(function(){setTimeout(done, 100);});
-        });
-
-        before(function() {
-          sails.router.bind("/", function (req, res) {
-            var html = '<html><head></head><body><script type="text/javascript" src="/sails.io.js#production" headers=\'{"x-csrf-token":"abc123"}\'></script></body></html>';
-            return res.send(html);
-          });
-        });
-        after(function() {
-          if(runner.kill){runner.kill();}
-        });
-        it('should use the autoConnnect setting provided in the html attribute', function(done) {
-          runner = phantom("http://localhost:"+sails.config.port+"/", "console.log(io.socket.headers['x-csrf-token']);");
-          runner.stderr.on('data', function(data) {console.log(data.toString());});
-          runner.stdout.on('data', function(data) {
-            var out = data.toString();
-            assert.equal(out, "abc123");
-            return done();
-          });
-        });
-
+      after(function(done) {
+        if(runner.kill){runner.kill();}
+        sails.lower(function(){setTimeout(done, 100);});
       });
 
-      describe('transports :: ', function() {
-
-        before(function(done) {
-          lifecycle.setup({transports: ['websocket'], autoConnect: false}, done);
+      before(function() {
+        sails.router.bind("/", function (req, res) {
+          var html = '<html><head></head><body><script type="text/javascript" src="/sails.io.js" environment="production"></script></body></html>';
+          return res.send(html);
         });
-
-        after(function(done) {
-          if(runner.kill){runner.kill();}
-          sails.lower(function(){setTimeout(done, 100);});
+      });
+      after(function() {
+        if(runner.kill){runner.kill();}
+      });
+      it('should use the environment provided in the html attribute', function(done) {
+        runner = phantom("http://localhost:"+sails.config.port+"/", "console.log(io.sails.environment);");
+        runner.stderr.on('data', function(data) {console.log(data.toString());});
+        runner.stdout.on('data', function(data) {
+          var out = data.toString();
+          assert.equal(out, "production");
+          return done();
         });
-
-        before(function() {
-          sails.router.bind("/", function (req, res) {
-            var html = '<html><head></head><body><script type="text/javascript" src="/sails.io.js#production" transports=\'["websocket"]\'></script></body></html>';
-            return res.send(html);
-          });
-        });
-        after(function() {
-          if(runner.kill){runner.kill();}
-        });
-        it('should use the autoConnnect setting provided in the html attribute', function(done) {
-          runner = phantom("http://localhost:"+sails.config.port+"/", "console.log(JSON.stringify(io.sails.transports));");
-          runner.stderr.on('data', function(data) {console.log(data.toString());});
-          runner.stdout.on('data', function(data) {
-            var out = data.toString();
-            assert.equal(out, '["websocket"]');
-            return done();
-          });
-        });
-
       });
 
-      describe('path :: ', function() {
+    });
 
-        before(function(done) {
-          lifecycle.setup({transports: ['websocket'], autoConnect: false, path: '/socketz'}, done);
-        });
+    describe('autoConnect :: ', function() {
 
-        after(function(done) {
-          if(runner.kill){runner.kill();}
-          sails.lower(function(){setTimeout(done, 100);});
-        });
+      before(function(done) {
+        lifecycle.setup({transports: ['websocket'], autoConnect: false}, done);
+      });
 
-        before(function() {
-          sails.router.bind("/", function (req, res) {
-            var html = '<html><head></head><body><script type="text/javascript" src="/sails.io.js#production" path="/socketz"></script><script>io.sails.transports=["websocket"]</script></body></html>';
-            return res.send(html);
-          });
-        });
-        after(function() {
-          if(runner.kill){runner.kill();}
-        });
-        it('should use the autoConnnect setting provided in the html attribute', function(done) {
-          runner = phantom("http://localhost:"+sails.config.port+"/", "console.log(io.socket.isConnected(), io.socket.path);");
-          runner.stderr.on('data', function(data) {console.log(data.toString());});
-          runner.stdout.on('data', function(data) {
-            var out = data.toString();
-            assert.equal(out, 'true /socketz');
-            return done();
-          });
-        });
+      after(function(done) {
+        if(runner.kill){runner.kill();}
+        sails.lower(function(){setTimeout(done, 100);});
+      });
 
+      before(function() {
+        sails.router.bind("/", function (req, res) {
+          var html = '<html><head></head><body><script type="text/javascript" src="/sails.io.js#production" autoConnect="false"></script></body></html>';
+          return res.send(html);
+        });
+      });
+      after(function() {
+        if(runner.kill){runner.kill();}
+      });
+      it('should use the autoConnnect setting provided in the html attribute', function(done) {
+        runner = phantom("http://localhost:"+sails.config.port+"/", "console.log(io.sails.autoConnect);");
+        runner.stderr.on('data', function(data) {console.log(data.toString());});
+        runner.stdout.on('data', function(data) {
+          var out = data.toString();
+          assert.equal(out, "false");
+          return done();
+        });
+      });
+
+    });
+
+    describe('headers :: ', function() {
+
+      before(function(done) {
+        lifecycle.setup({transports: ['websocket'], autoConnect: false}, done);
+      });
+
+      after(function(done) {
+        if(runner.kill){runner.kill();}
+        sails.lower(function(){setTimeout(done, 100);});
+      });
+
+      before(function() {
+        sails.router.bind("/", function (req, res) {
+          var html = '<html><head></head><body><script type="text/javascript" src="/sails.io.js#production" headers=\'{"x-csrf-token":"abc123"}\'></script></body></html>';
+          return res.send(html);
+        });
+      });
+      after(function() {
+        if(runner.kill){runner.kill();}
+      });
+      it('should use the autoConnnect setting provided in the html attribute', function(done) {
+        runner = phantom("http://localhost:"+sails.config.port+"/", "console.log(io.socket.headers['x-csrf-token']);");
+        runner.stderr.on('data', function(data) {console.log(data.toString());});
+        runner.stdout.on('data', function(data) {
+          var out = data.toString();
+          assert.equal(out, "abc123");
+          return done();
+        });
+      });
+
+    });
+
+    describe('transports :: ', function() {
+
+      before(function(done) {
+        lifecycle.setup({transports: ['websocket'], autoConnect: false}, done);
+      });
+
+      after(function(done) {
+        if(runner.kill){runner.kill();}
+        sails.lower(function(){setTimeout(done, 100);});
+      });
+
+      before(function() {
+        sails.router.bind("/", function (req, res) {
+          var html = '<html><head></head><body><script type="text/javascript" src="/sails.io.js#production" transports=\'["websocket"]\'></script></body></html>';
+          return res.send(html);
+        });
+      });
+      after(function() {
+        if(runner.kill){runner.kill();}
+      });
+      it('should use the autoConnnect setting provided in the html attribute', function(done) {
+        runner = phantom("http://localhost:"+sails.config.port+"/", "console.log(JSON.stringify(io.sails.transports));");
+        runner.stderr.on('data', function(data) {console.log(data.toString());});
+        runner.stdout.on('data', function(data) {
+          var out = data.toString();
+          assert.equal(out, '["websocket"]');
+          return done();
+        });
+      });
+
+    });
+
+    describe('path :: ', function() {
+
+      before(function(done) {
+        lifecycle.setup({transports: ['websocket'], autoConnect: false, path: '/socketz'}, done);
+      });
+
+      after(function(done) {
+        if(runner.kill){runner.kill();}
+        sails.lower(function(){setTimeout(done, 100);});
+      });
+
+      before(function() {
+        sails.router.bind("/", function (req, res) {
+          var html = '<html><head></head><body><script type="text/javascript" src="/sails.io.js#production" path="/socketz"></script><script>io.sails.transports=["websocket"]</script></body></html>';
+          return res.send(html);
+        });
+      });
+      after(function() {
+        if(runner.kill){runner.kill();}
+      });
+      it('should use the autoConnnect setting provided in the html attribute', function(done) {
+        runner = phantom("http://localhost:"+sails.config.port+"/", "console.log(io.socket.isConnected(), io.socket.path);");
+        runner.stderr.on('data', function(data) {console.log(data.toString());});
+        runner.stdout.on('data', function(data) {
+          var out = data.toString();
+          assert.equal(out, 'true /socketz');
+          return done();
+        });
       });
 
     });
 
   });
-}
+
+});
