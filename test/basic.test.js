@@ -231,12 +231,12 @@ describe('io.socket', function () {
       after(lifecycle.teardown);
 
       it('should be able to create and connect new socket with io.sails.connect(opts)', function(done) {
-        io.socket = io.sails.connect({url: "http://localhost:1577"});
-        io.socket.on('connect', done);
+        socket = io.sails.connect({url: "http://localhost:1577"});
+        socket.on('connect', done);
       });
 
       it('should be able to send a GET request and receive the expected response', function (cb) {
-        io.socket.get('/hello', function (body, jwr) {
+        socket.get('/hello', function (body, jwr) {
           assertResponse('get /hello', arguments);
           return cb();
         });
