@@ -483,7 +483,12 @@
 
       var scriptEl = document.createElement('script');
       window._sailsIoJSConnect = function(response) {
-        scriptEl.parentNode.removeChild(scriptEl);
+        // In rare circumstances our script may have been vaporised.
+        // Remove it, but only if it still exists
+        // https://github.com/balderdashy/sails.io.js/issues/92
+        if (scriptEl && scriptEl.parentNode) {
+            scriptEl.parentNode.removeChild(scriptEl);    
+        }
 
         cb(response);
       };
