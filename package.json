@@ -24,6 +24,7 @@
     "mocha": "~1.18.0",
     "phantomjs-prebuilt": "^2.1.4",
     "sails": "balderdashy/sails",
+    "sails-disk": "^0.10.9",
     "socket.io-client": "~1.4.0"
   },
   "scripts": {
