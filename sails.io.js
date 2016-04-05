@@ -826,7 +826,7 @@
         // If there's no `window` object, we must be running in Node.js
         // so just require the request module and send the HTTP request that
         // way.
-        var mikealsReq = require('request');
+        var mikealsReq = global['require']('request');
         mikealsReq.get(xOriginCookieURL, function(err, httpResponse, body) {
           if (err) {
             self.isConnecting = false;
