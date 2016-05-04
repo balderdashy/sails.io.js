@@ -6,10 +6,8 @@
   "directories": {
     "test": "test"
   },
-  "dependencies": {
-    "request": "~2.34.0"
-  },
   "devDependencies": {
+    "request": "~2.34.0",
     "async": "~0.9.0",
     "fs-extra": "^0.26.5",
     "grunt": "~0.4.3",

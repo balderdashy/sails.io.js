@@ -500,7 +500,12 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
 
       var scriptEl = document.createElement('script');
       window._sailsIoJSConnect = function(response) {
-        scriptEl.parentNode.removeChild(scriptEl);
+        // In rare circumstances our script may have been vaporised.
+        // Remove it, but only if it still exists
+        // https://github.com/balderdashy/sails.io.js/issues/92
+        if (scriptEl && scriptEl.parentNode) {
+            scriptEl.parentNode.removeChild(scriptEl);
+        }
 
         cb(response);
       };
@@ -741,11 +746,18 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
       else self.query += '&' + SDK_INFO.versionString;
 
       // Determine whether this is a cross-origin socket by examining the
-      // hostname and port on the `window.location` object.
+      // hostname and port on the `window.location` object.  If it's cross-origin,
+      // we'll attempt to get a cookie for the domain so that a Sails session can
+      // be established.
       var isXOrigin = (function (){
 
-        // If `window` doesn't exist (i.e. being used from node.js), then it's
-        // always "cross-domain".
+        // If `window` doesn't exist (i.e. being used from Node.js), then
+        // we won't bother attempting to get a cookie.  If you're using sockets
+        // from Node.js and find you need to share a session between multiple
+        // socket connections, you'll need to make an HTTP request to the /__getcookie
+        // endpoint of the Sails server (or any endpoint that returns a set-cookie header)
+        // and then use the cookie value in the `initialConnectionHeaders` option to
+        // io.sails.connect()
         if (typeof window === 'undefined' || typeof window.location === 'undefined') {
           return false;
         }
@@ -806,11 +818,13 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
       (function selfInvoking (cb){
 
         // If this is an attempt at a cross-origin or cross-port
-        // socket connection, send a JSONP request first to ensure
-        // that a valid cookie is available.  This can be disabled
-        // by setting `io.sails.useCORSRouteToGetCookie` to false.
+        // socket connection via a browswe, send a JSONP request
+        // first to ensure that a valid cookie is available.
+        // This can be disabled by setting `io.sails.useCORSRouteToGetCookie`
+        // to false.
         //
         // Otherwise, skip the stuff below.
+        //
         if (!(self.useCORSRouteToGetCookie && isXOrigin)) {
           return cb();
         }
@@ -825,31 +839,11 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
           xOriginCookieURL += '/__getcookie';
         }
 
-
         // Make the AJAX request (CORS)
-        if (typeof window !== 'undefined') {
-          jsonp({
-            url: xOriginCookieURL,
-            method: 'GET'
-          }, cb);
-          return;
-        }
-
-        // If there's no `window` object, we must be running in Node.js
-        // so just require the request module and send the HTTP request that
-        // way.
-        var mikealsReq = require('request');
-        mikealsReq.get(xOriginCookieURL, function(err, httpResponse, body) {
-          if (err) {
-            self.isConnecting = false;
-            consolog(
-              'Failed to connect socket (failed to get cookie)',
-              'Error:', err
-            );
-            return;
-          }
-          cb();
-        });
+        jsonp({
+          url: xOriginCookieURL,
+          method: 'GET'
+        }, cb);
 
       })(function goAheadAndActuallyConnect() {
 
