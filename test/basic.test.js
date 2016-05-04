@@ -6,6 +6,8 @@ var util = require('util');
 var assert = require('assert');
 var lifecycle = require('./helpers/lifecycle');
 var _setupRoutes = require('./helpers/setupRoutes');
+var request = require('request');
+var async = require('async');
 var _assertResponse = function ( expectedResponses ) {
   return function (routeAddress, callbackArgs) {
     var body = callbackArgs[0];
@@ -323,6 +325,45 @@ describe('io.socket', function () {
         });
       });
 
+      it('should not share the session with a new socket if that socket doesn\'t send an initial cookie header', function(done) {
+        var newSailsSocket = io.sails.connect();
+        newSailsSocket.get('/count', function (body, jwr) {
+          assert.equal(body, 1);
+          return done();
+        });
+      });
+    });
+
+    describe('Using cookie header in initial handshake :: ', function() {
+
+      var cookie, socket1, socket2;
+      before(function(done) {
+        // Make a request to Sails' built-in /__getcookie route
+        request.get('http://localhost:1577/__getcookie', function(err, response) {
+          // Get the cookie data from the set-cookie header
+          cookie = response.headers['set-cookie'][0].split(';')[0];
+          // Connect two sockets using that cookie
+          socket1 = io.sails.connect({initialConnectionHeaders: {'cookie': cookie}});
+          socket2 = io.sails.connect({initialConnectionHeaders: {'cookie': cookie}});
+          async.parallel([
+            function connectSocket1(cb) {socket1.on('connect', cb);},
+            function connectSocket2(cb) {socket2.on('connect', cb);}
+          ], done);
+        });
+      });
+
+      it('if two sockets connection using the same cookie, they should share a session', function(done) {
+        // Make a call with socket 1
+        socket1.get('/count', function (body, jwr) {
+          assert.equal(body, 1);
+          // Make another call with socket 2 and check that they're using the same session
+          socket2.get('/count', function (body, jwr) {
+            assert.equal(body, 2);
+            return done();
+          });
+        });
+
+      });
     });
   });
 
