@@ -71,6 +71,7 @@
     'reconnectionAttempts',
     'reconnectionDelay',
     'reconnectionDelayMax',
+    'rejectUnauthorized',
     'randomizationFactor',
     'timeout'
   ];
