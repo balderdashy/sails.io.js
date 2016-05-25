@@ -185,6 +185,21 @@ In some cases you may want to change the transorts that the socket client uses t
 </script>
 ```
 
+###### Change the `rejectUnauthorized` setting used to connect to the server
+
+As of socket.io-client version 1.4.6 and engine.io-client 1.6.9, if you are
+using SSL certificates to connect, `rejectUnauthorized` defaults to true
+if not explicitly set. To keep the old behavior (useful for development and
+testing/continuous integration environments), set it to false on the `io.sails`
+object:
+
+```html
+<script type="text/javascript" src="./path/to/bower_components/sails.io.js"></script>
+<script type="text/javascript">
+  io.sails.rejectUnauthorized = false;
+</script>
+```
+
 #### RequireJS/AMD Usage
 
 To use this in an AMD environment, *use the sails.io.js in the root* of this repo, not in dist. The dist build bundles a version of the socket.io client which will cause errors when trying to load two anonymous AMD modules from the same file. The file in root is not bundled with socket.io
