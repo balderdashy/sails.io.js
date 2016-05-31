@@ -135,7 +135,7 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
    * @type {Dictionary}
    */
   var SDK_INFO = {
-    version: '0.13.7', // <-- pulled automatically from package.json, do not change!
+    version: '0.13.8', // <-- pulled automatically from package.json, do not change!
     language: 'javascript',
     platform: (function (){
       if (typeof module === 'object' && typeof module.exports !== 'undefined') {
