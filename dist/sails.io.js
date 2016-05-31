@@ -88,6 +88,7 @@ message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u=a("blo
     'reconnectionAttempts',
     'reconnectionDelay',
     'reconnectionDelayMax',
+    'rejectUnauthorized',
     'randomizationFactor',
     'timeout'
   ];
