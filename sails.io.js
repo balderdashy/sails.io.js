@@ -1321,11 +1321,6 @@
     // prevented by setting `io.sails.autoConnect` in an inline script
     // directly after the script tag which loaded this file).
 
-    // If there is an existing `io.sails` on the page, grab them before proceeding.
-    var existingIOSailsProps = {};
-    if (typeof io.sails === 'object' && io.sails !== null) {
-      existingIOSailsProps = io.sails;
-    }
 
     //  ┌─┐┌─┐┌┬┐  ┬ ┬┌─┐  ╔╦╗╔═╗╔═╗╔═╗╦ ╦╦ ╔╦╗╔═╗  ┌─┐┌─┐┬─┐  ┬┌─┐ ┌─┐┌─┐┬┬  ┌─┐
     //  └─┐├┤  │   │ │├─┘   ║║║╣ ╠╣ ╠═╣║ ║║  ║ ╚═╗  ├┤ │ │├┬┘  ││ │ └─┐├─┤││  └─┐
@@ -1354,21 +1349,6 @@
       transports: ['polling', 'websocket']
     };
 
-
-    //  ┌─┐┌─┐┬  ┌┬┐  ┬┌┐┌  ┌─┐┬─┐┌─┐┌─┐┌─┐  ┌─┐┬─┐┌─┐┌┬┐
-    //  ├┤ │ ││   ││  ││││  ├─┘├┬┘│ │├─┘└─┐  ├┤ ├┬┘│ ││││
-    //  └  └─┘┴─┘─┴┘  ┴┘└┘  ┴  ┴└─└─┘┴  └─┘  └  ┴└─└─┘┴ ┴
-    //  ┌─┐─┐ ┬┬┌─┐┌┬┐┬┌┐┌┌─┐  ╦╔═╗ ╔═╗╔═╗╦╦  ╔═╗
-    //  ├┤ ┌┴┬┘│└─┐ │ │││││ ┬  ║║ ║ ╚═╗╠═╣║║  ╚═╗
-    //  └─┘┴ └─┴└─┘ ┴ ┴┘└┘└─┘  ╩╚═╝o╚═╝╩ ╩╩╩═╝╚═╝
-    //  ┌─    ┬┌─┐  ┌─┐┬  ┬┌─┐┬┬  ┌─┐┌┐ ┬  ┌─┐  ┌─┐┌┐┌  ┬ ┬┬┌┐┌┌┬┐┌─┐┬ ┬    ─┐
-    //  │───  │├┤   ├─┤└┐┌┘├─┤││  ├─┤├┴┐│  ├┤   │ ││││  │││││││ │││ ││││  ───│
-    //  └─    ┴└    ┴ ┴ └┘ ┴ ┴┴┴─┘┴ ┴└─┘┴─┘└─┘  └─┘┘└┘  └┴┘┴┘└┘─┴┘└─┘└┴┘    ─┘
-    Object.keys(existingIOSailsProps).forEach(function (configKey){
-      if (typeof existingIOSailsProps[configKey] !== 'undefined') {
-        io.sails[configKey] = existingIOSailsProps[configKey];
-      }
-    });
 
 
     //  ┌─┐─┐ ┬┌┬┐┌─┐┌┐┌┌┬┐  ┬┌─┐ ┌─┐┌─┐┬┬  ┌─┐  ┌┬┐┌─┐┌─┐┌─┐┬ ┬┬ ┌┬┐┌─┐
