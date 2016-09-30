@@ -22,7 +22,7 @@
     "phantomjs-prebuilt": "2.1.12",
     "request": "2.74.0",
     "sails": "^0.12.1",
-    "socket.io-client": "1.4.8"
+    "socket.io-client": "1.4.5"
   },
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha -b --reporter spec --timeout 10000",
