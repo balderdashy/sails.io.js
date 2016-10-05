@@ -1452,7 +1452,14 @@
     // If configured to do so, start auto-connecting after the first cycle of the event loop
     // has completed (to allow time for this behavior to be configured/disabled
     // by specifying properties on `io.sails`)
+
+    // Indicate that the autoConnect timer has started.
+    io.socket.mightBeAboutToAutoConnect = true;
+
     setTimeout(function() {
+
+      // Indicate that the autoConect timer fired.
+      io.socket.mightBeAboutToAutoConnect = false;
 
       // If autoConnect is disabled, delete the eager socket (io.socket) and bail out.
       if (io.sails.autoConnect === false || io.sails.autoconnect === false) {
