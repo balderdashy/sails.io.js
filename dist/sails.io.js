@@ -135,7 +135,7 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
    * @type {Dictionary}
    */
   var SDK_INFO = {
-    version: '0.13.8', // <-- pulled automatically from package.json, do not change!
+    version: '0.14.0', // <-- pulled automatically from package.json, do not change!
     language: 'javascript',
     platform: (function (){
       if (typeof module === 'object' && typeof module.exports !== 'undefined') {
@@ -1469,7 +1469,14 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
     // If configured to do so, start auto-connecting after the first cycle of the event loop
     // has completed (to allow time for this behavior to be configured/disabled
     // by specifying properties on `io.sails`)
+
+    // Indicate that the autoConnect timer has started.
+    io.socket.mightBeAboutToAutoConnect = true;
+
     setTimeout(function() {
+
+      // Indicate that the autoConect timer fired.
+      io.socket.mightBeAboutToAutoConnect = false;
 
       // If autoConnect is disabled, delete the eager socket (io.socket) and bail out.
       if (io.sails.autoConnect === false || io.sails.autoconnect === false) {
