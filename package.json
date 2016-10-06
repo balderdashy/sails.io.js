@@ -18,7 +18,7 @@
     "grunt-contrib-watch": "1.0.0",
     "grunt-text-replace": "0.4.0",
     "lodash": "3.10.1",
-    "mocha": "1.18.2",
+    "mocha": "3.0.2",
     "phantomjs-prebuilt": "2.1.12",
     "request": "2.74.0",
     "sails": "^0.12.1",
