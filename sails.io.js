@@ -951,9 +951,8 @@
     /**
      * isConnected
      *
-     * @api private
      * @return {Boolean} whether the socket is connected and able to
-     *                           communicate w/ the server.
+     *                   communicate w/ the server.
      */
 
     SailsSocket.prototype.isConnected = function () {
@@ -965,6 +964,28 @@
     };
 
 
+    /**
+     * isConnecting
+     *
+     * @return {Boolean} whether the socket is in the process of connecting
+     *                   to the server.
+     */
+
+    SailsSocket.prototype.isConnecting = function () {
+      return this.isConnecting;
+    };
+
+    /**
+     * isConnecting
+     *
+     * @return {Boolean} flag that is `true` after a SailsSocket instance is
+     *                   initialized but before one tick of the event loop
+     *                   has passed (so that it hasn't attempted to connect
+     *                   yet, if autoConnect ends up being configured `true`)
+     */
+    SailsSocket.prototype.mightBeAboutToAutoConnect = function() {
+      return this.mightBeAboutToAutoConnect;
+    };
 
     /**
      * [replay description]
