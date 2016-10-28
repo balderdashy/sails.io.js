@@ -1367,7 +1367,7 @@
       sdk: SDK_INFO,
 
       // Transports to use when communicating with the server, in the order they will be tried
-      transports: ['polling', 'websocket']
+      transports: ['websocket']
     };
 
 
