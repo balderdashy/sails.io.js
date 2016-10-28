@@ -135,7 +135,7 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
    * @type {Dictionary}
    */
   var SDK_INFO = {
-    version: '0.14.0', // <-- pulled automatically from package.json, do not change!
+    version: '1.0.0', // <-- pulled automatically from package.json, do not change!
     language: 'javascript',
     platform: (function (){
       if (typeof module === 'object' && typeof module.exports !== 'undefined') {
@@ -968,9 +968,8 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
     /**
      * isConnected
      *
-     * @api private
      * @return {Boolean} whether the socket is connected and able to
-     *                           communicate w/ the server.
+     *                   communicate w/ the server.
      */
 
     SailsSocket.prototype.isConnected = function () {
@@ -982,6 +981,28 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
     };
 
 
+    /**
+     * isConnecting
+     *
+     * @return {Boolean} whether the socket is in the process of connecting
+     *                   to the server.
+     */
+
+    SailsSocket.prototype.isConnecting = function () {
+      return this.isConnecting;
+    };
+
+    /**
+     * isConnecting
+     *
+     * @return {Boolean} flag that is `true` after a SailsSocket instance is
+     *                   initialized but before one tick of the event loop
+     *                   has passed (so that it hasn't attempted to connect
+     *                   yet, if autoConnect ends up being configured `true`)
+     */
+    SailsSocket.prototype.mightBeAboutToAutoConnect = function() {
+      return this.mightBeAboutToAutoConnect;
+    };
 
     /**
      * [replay description]
@@ -1363,7 +1384,7 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
       sdk: SDK_INFO,
 
       // Transports to use when communicating with the server, in the order they will be tried
-      transports: ['polling', 'websocket']
+      transports: ['websocket']
     };
 
 
