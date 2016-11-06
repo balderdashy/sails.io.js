@@ -533,7 +533,24 @@
       this.headers = responseCtx.headers || {};
       this.statusCode = responseCtx.statusCode || 200;
       if (this.statusCode < 200 || this.statusCode >= 400) {
-        this.error = this.body || this.statusCode;
+        
+        // Determine the appropriate error message.
+        var msg;
+        if (this.statusCode === 0) {
+          msg = 'Server responded with a '+this.statusCode+' status code';
+          if (this.body !== undefined && this.body !== null) {
+            msg += ':\n```\n'+this.body+'\n```';
+          }
+          else {
+            msg += '.';
+          }
+        }
+        else {
+          msg = 'The socket request failed.';
+        }
+        
+        // Now build and attach Error instance.
+        this.error = new Error(msg);
       }
     }
     JWR.prototype.toString = function() {
