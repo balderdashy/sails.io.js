@@ -135,7 +135,7 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
    * @type {Dictionary}
    */
   var SDK_INFO = {
-    version: '1.0.0', // <-- pulled automatically from package.json, do not change!
+    version: '1.0.1', // <-- pulled automatically from package.json, do not change!
     language: 'javascript',
     platform: (function (){
       if (typeof module === 'object' && typeof module.exports !== 'undefined') {
