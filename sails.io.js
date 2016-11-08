@@ -652,6 +652,10 @@
       var self = this;
       opts = opts||{};
 
+      // Initialize private properties
+      self._isConnecting = false;
+      self._mightBeAboutToAutoConnect = false;
+
       // Set up connection options so that they can only be changed when socket is disconnected.
       var _opts = {};
       SOCKET_OPTIONS.forEach(function(option) {
@@ -716,7 +720,7 @@
     SailsSocket.prototype._connect = function (){
       var self = this;
 
-      self.isConnecting = true;
+      self._isConnecting = true;
 
       // Apply `io.sails` config as defaults
       // (now that at least one tick has elapsed)
@@ -861,7 +865,7 @@
          *  successfully.
          */
         self.on('connect', function socketConnected() {
-          self.isConnecting = false;
+          self._isConnecting = false;
           consolog.noPrefix(
             '\n' +
             '\n' +
@@ -901,7 +905,7 @@
         });
 
         self.on('reconnect', function(transport, numAttempts) {
-          if (!self.isConnecting) {
+          if (!self._isConnecting) {
             self.on('connect', runRequestQueue.bind(self, self));
           }
           var msSinceConnectionLost = ((new Date()).getTime() - self.connectionLostTimestamp);
@@ -918,7 +922,7 @@
         // (usually because of a failed authorization, which is in turn
         // usually due to a missing or invalid cookie)
         self.on('error', function failedToConnect(err) {
-          self.isConnecting = false;
+          self._isConnecting = false;
           ////////////////////////////////////////////////////////////////////////////////////
           // Note:
           // In the future, we could provide a separate event for when a socket cannot connect
@@ -941,7 +945,7 @@
      * @api public
      */
     SailsSocket.prototype.reconnect = function (){
-      if (this.isConnecting) {
+      if (this._isConnecting) {
         throw new Error('Cannot connect- socket is already connecting');
       }
       if (this.isConnected()) {
@@ -956,7 +960,7 @@
      * @api public
      */
     SailsSocket.prototype.disconnect = function (){
-      this.isConnecting = false;
+      this._isConnecting = false;
       if (!this.isConnected()) {
         throw new Error('Cannot disconnect- socket is already disconnected');
       }
@@ -989,7 +993,7 @@
      */
 
     SailsSocket.prototype.isConnecting = function () {
-      return this.isConnecting;
+      return this._isConnecting;
     };
 
     /**
@@ -1001,7 +1005,7 @@
      *                   yet, if autoConnect ends up being configured `true`)
      */
     SailsSocket.prototype.mightBeAboutToAutoConnect = function() {
-      return this.mightBeAboutToAutoConnect;
+      return this._mightBeAboutToAutoConnect;
     };
 
     /**
@@ -1492,12 +1496,12 @@
     // by specifying properties on `io.sails`)
 
     // Indicate that the autoConnect timer has started.
-    io.socket.mightBeAboutToAutoConnect = true;
+    io.socket._mightBeAboutToAutoConnect = true;
 
     setTimeout(function() {
 
       // Indicate that the autoConect timer fired.
-      io.socket.mightBeAboutToAutoConnect = false;
+      io.socket._mightBeAboutToAutoConnect = false;
 
       // If autoConnect is disabled, delete the eager socket (io.socket) and bail out.
       if (io.sails.autoConnect === false || io.sails.autoconnect === false) {
