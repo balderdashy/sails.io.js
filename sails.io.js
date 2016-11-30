@@ -533,7 +533,7 @@
       this.headers = responseCtx.headers || {};
       this.statusCode = responseCtx.statusCode || 200;
       if (this.statusCode < 200 || this.statusCode >= 400) {
-        
+
         // Determine the appropriate error message.
         var msg;
         if (this.statusCode === 0) {
@@ -548,7 +548,7 @@
         else {
           msg = 'The socket request failed.';
         }
-        
+
         // Now build and attach Error instance.
         this.error = new Error(msg);
       }
@@ -1371,6 +1371,9 @@
 
       // Whether to automatically connect a socket and save it as `io.socket`.
       autoConnect: true,
+
+      // Whether to automatically try to reconnect after connection is lost
+      reconnection: false,
 
       // The route (path) to hit to get a x-origin (CORS) cookie
       // (or true to use the default: '/__getcookie')

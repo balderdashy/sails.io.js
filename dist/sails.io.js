@@ -550,7 +550,7 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
       this.headers = responseCtx.headers || {};
       this.statusCode = responseCtx.statusCode || 200;
       if (this.statusCode < 200 || this.statusCode >= 400) {
-        
+
         // Determine the appropriate error message.
         var msg;
         if (this.statusCode === 0) {
@@ -565,7 +565,7 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
         else {
           msg = 'The socket request failed.';
         }
-        
+
         // Now build and attach Error instance.
         this.error = new Error(msg);
       }
@@ -1388,6 +1388,9 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
 
       // Whether to automatically connect a socket and save it as `io.socket`.
       autoConnect: true,
+
+      // Whether to automatically try to reconnect after connection is lost
+      reconnection: false,
 
       // The route (path) to hit to get a x-origin (CORS) cookie
       // (or true to use the default: '/__getcookie')
