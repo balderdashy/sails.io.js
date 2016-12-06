@@ -3,6 +3,7 @@
   "version": "1.1.0",
   "description": "Javascript SDK for communicating w/ a Sails server via WebSockets/socket.io.",
   "main": "sails.io.js",
+  "types": "types.d.ts",
   "directories": {
     "test": "test"
   },
