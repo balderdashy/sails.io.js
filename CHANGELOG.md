@@ -1,5 +1,12 @@
 # sails.io.js changelog
 
+### Recent releases
+
+See https://github.com/balderdashy/sails.io.js/commits/master
+
+> Want to help fill out the missing pieces in the changeog?  Please submit a pull request!
+
+
 ### 0.13.6
 
 * [ENHANCEMENT] Allow specifying some `io.sails` properties via HTML attributes (`autoConnect`, `url`, `headers and `environment`)
