@@ -1,5 +1,14 @@
 /**
  * Grunt automation.
+ *
+ * This is used by the NPM prepublish script in order to update `dist/`,
+ * which is then published as a separate package (sails.io.js-dist) by the
+ * postpublish script.
+ *
+ * (See `package.json`.)
+ *
+ *
+ * > To test this process without actually publishing anything, use `npm run prepublish`.
  */
 module.exports = function(grunt) {
 
@@ -86,11 +95,11 @@ module.exports = function(grunt) {
 
   // Publish task for copying version numbers and creating dist/sails.io.js
   grunt.registerTask('publish', [
-    'replace:main', 
-    'replace:sioClient', 
-    'uglify', 
+    'replace:main',
+    'replace:sioClient',
+    'uglify',
     'concat:header',
-    'concat:main', 
+    'concat:main',
     'replace:dist',
     'clean'
   ]);
