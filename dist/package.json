@@ -1,6 +1,6 @@
 {
   "name": "sails.io.js-dist",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Distribution version of sails.io.js for browsers, including bundled socket.io-client.",
   "main": "sails.io.js",
   "repository": {

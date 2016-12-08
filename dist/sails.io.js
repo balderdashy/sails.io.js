@@ -35,7 +35,7 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
 
 /**
  * sails.io.js
- * v1.1.1
+ * v1.1.2
  * ------------------------------------------------------------------------
  * JavaScript Client (SDK) for communicating with Sails.
  *
@@ -136,7 +136,7 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
    * @type {Dictionary}
    */
   var SDK_INFO = {
-    version: '1.1.1', // <-- pulled automatically from package.json, do not change!
+    version: '1.1.2', // <-- pulled automatically from package.json, do not change!
     language: 'javascript',
     platform: (function (){
       if (typeof module === 'object' && typeof module.exports !== 'undefined') {
