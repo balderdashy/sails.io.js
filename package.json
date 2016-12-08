@@ -28,7 +28,7 @@
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha -b --reporter spec --timeout 10000",
     "prepublish": "./node_modules/grunt-cli/bin/grunt publish && npm test",
-    "postpublish": "cd dist && npm publish"
+    "postpublish": "cd dist && npm publish && echo && echo '--' && echo 'Now, assuming you have not pushed up your automatic \"npm version\" commit+tag yet, run:' && echo \"git tag -d v`npm show sails.io.js version` && git commit --amend -am '`npm show sails.io.js version`' && git tag v`npm show sails.io.js version`\" && echo 'Then do:' && echo 'git push && git push --tags'"
   },
   "repository": {
     "type": "git",
