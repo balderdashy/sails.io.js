@@ -44,21 +44,23 @@ module.exports = function(grunt) {
           to: 'version ' + sioClientPackageJson.version
         }]
       },
-      dist: {
+      distPackageJson: {
         src: '<%= PATHS.distPackageJson %>',
         dest: '<%= PATHS.distPackageJson %>',
-        replacements: [
-          {
-            from: /"version":\s+"\d+\.\d+\.\d+"/m,
-            to: '"version": "' + packageJson.version + '"'
-          },
-          // Add sails.io.js version string in the fireworks
-          // at the top of the sails.io.js distributable:
-          {
-            from: /(\/\*\*\s*\n\s*\*\s*sails\.io\.js)/m,
-            to: '$1\n \* v' + packageJson.version
-          },
-        ]
+        replacements: [{
+          from: /"version":\s+"\d+\.\d+\.\d+"/m,
+          to: '"version": "' + packageJson.version + '"'
+        }]
+      },
+      dist: {
+        src: '<%= PATHS.dist %>',
+        dest: '<%= PATHS.dist %>',
+        // Add sails.io.js version string in the fireworks
+        // at the top of the sails.io.js distributable:
+        replacements: [{
+          from: /(\/\*\*\s*\n\s*\*\s*sails\.io\.js)/m,
+          to: '$1\n \* v' + packageJson.version
+        }]
       }
     },
 
@@ -108,6 +110,7 @@ module.exports = function(grunt) {
     'uglify',
     'concat:header',
     'concat:main',
+    'replace:distPackageJson',
     'replace:dist',
     'clean'
   ]);

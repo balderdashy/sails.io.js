@@ -35,6 +35,7 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
 
 /**
  * sails.io.js
+ * v1.1.0
  * ------------------------------------------------------------------------
  * JavaScript Client (SDK) for communicating with Sails.
  *
