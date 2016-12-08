@@ -21,7 +21,8 @@
     "mocha": "3.0.2",
     "phantomjs-prebuilt": "2.1.12",
     "request": "2.74.0",
-    "sails": "^0.12.1",
+    "sails": "^1.0.0-16",
+    "sails-hook-sockets": "^1.2.3",
     "socket.io-client": "1.4.5"
   },
   "scripts": {

@@ -3,6 +3,7 @@
  */
 
 var Sails = require('sails/lib/app');
+var SHSockets = require('sails-hook-sockets');
 var _ = require('lodash');
 
 // Use a weird port to avoid tests failing if we
@@ -28,7 +29,7 @@ module.exports = {
     var io = require('socket.io-client');
     var sailsIO = require('../../sails.io.js');
 
-    if (typeof opts == 'function') {
+    if (_.isFunction(opts)) {
       cb = opts;
       opts = {};
     }
@@ -38,6 +39,12 @@ module.exports = {
     var app = Sails();
     app.lift({
       log: { level: 'error' },
+      globals: {
+        sails: true,
+        _: false,
+        async: false,
+        models: false
+      },
       port: TEST_SERVER_PORT,
       sockets: {
         authorization: false,
@@ -45,16 +52,18 @@ module.exports = {
         path: opts.path
       },
       hooks: {
-        grunt: false
+        grunt: false,
+        sockets: SHSockets
       },
       routes: {
         '/sails.io.js': function(req, res) {
-          res.header("Content-type","application/javascript");
+          res.header('Content-type', 'application/javascript');
           require('fs').createReadStream(require('path').resolve(__dirname, '..', '..', 'dist', 'sails.io.js')).pipe(res);
         }
       }
     },function (err) {
-      if (err) return cb(err);
+      if (err) { return cb(err); }
+      // console.log('lifted');
 
       // Instantiate socket client.
       io = sailsIO(io);
@@ -125,7 +134,10 @@ module.exports = {
     setTimeout(function ensureDisconnect () {
 
       // Tear down sails server
+      // console.log('lowering...');
       global.server.lower(function (){
+
+        // console.log('lowered');
 
         // Delete globals (just in case-- shouldn't matter)
         delete global.server;

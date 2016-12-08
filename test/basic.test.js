@@ -64,7 +64,11 @@ describe('io.socket', function () {
     before(setupRoutes);
 
     it('should connect automatically', function (cb) {
-      io.socket.on('connect', cb);
+      // console.log('connecting...');
+      io.socket.on('connect', function (){
+        // console.log('connected');
+        return cb();
+      });
     });
 
     describe('once connected, socket', function () {
