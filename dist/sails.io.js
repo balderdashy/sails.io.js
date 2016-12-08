@@ -496,7 +496,7 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
       opts = opts || {};
 
       if (typeof window === 'undefined') {
-        // TODO: refactor node usage to live in here
+        // FUTURE: refactor node usage to live in here
         return cb();
       }
 
@@ -585,7 +585,7 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
       };
     };
     JWR.prototype.pipe = function() {
-      // TODO: look at substack's stuff
+      // FUTURE: look at substack's stuff
       return new Error('Client-side streaming support not implemented yet.');
     };
 
@@ -719,12 +719,13 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
         consolog('Error details:',err);
       });
 
-      // TODO:
+      // FUTURE:
       // Listen for a special private message on any connected that allows the server
       // to set the environment (giving us 100% certainty that we guessed right)
       // However, note that the `console.log`s called before and after connection
       // are still forced to rely on our existing heuristics (to disable, tack #production
       // onto the URL used to fetch this file.)
+
     }//</SailsSocket>
 
 
