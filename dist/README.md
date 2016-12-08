@@ -27,7 +27,7 @@ If you have questions or are having trouble, click [here](http://sailsjs.com/sup
 To report a bug, [click here](http://sailsjs.com/bugs).
 
 
-## Contributing &nbsp; [![Build Status](https://travis-ci.org/balderdashy/sails.io.js-dist.svg?branch=master)](https://travis-ci.org/balderdashy/sails.io.js-dist)
+## Contributing &nbsp; [![Build Status](https://travis-ci.org/balderdashy/sails.io.js.svg?branch=master)](https://travis-ci.org/balderdashy/sails.io.js)
 
 Please observe the guidelines and conventions laid out in the [Sails project contribution guide](http://sailsjs.com/contribute) when opening issues or submitting pull requests.
 
