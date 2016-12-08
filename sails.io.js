@@ -25,7 +25,7 @@
  * using WebSockets from the browser to talk to your Sails server.
  *
  * For tips and documentation, visit:
- * http://sailsjs.org/#!documentation/reference/BrowserSDK/BrowserSDK.html
+ * http://sailsjs.com/documentation/reference/web-sockets/socket-client
  * ------------------------------------------------------------------------
  *
  * This file allows you to send and receive socket.io messages to & from Sails
@@ -478,7 +478,7 @@
       opts = opts || {};
 
       if (typeof window === 'undefined') {
-        // TODO: refactor node usage to live in here
+        // FUTURE: refactor node usage to live in here
         return cb();
       }
 
@@ -567,7 +567,7 @@
       };
     };
     JWR.prototype.pipe = function() {
-      // TODO: look at substack's stuff
+      // FUTURE: look at substack's stuff
       return new Error('Client-side streaming support not implemented yet.');
     };
 
@@ -684,7 +684,7 @@
       });
 
       // Absorb opts into SailsSocket instance
-      // See https://sailsjs.org/reference/websockets/sails.io.js/SailsSocket/properties.md
+      // See http://sailsjs.com/documentation/reference/web-sockets/socket-client/sails-socket/properties
       // for description of options
       SOCKET_OPTIONS.forEach(function(option) {
         self[option] = opts[option];
@@ -701,12 +701,13 @@
         consolog('Error details:',err);
       });
 
-      // TODO:
+      // FUTURE:
       // Listen for a special private message on any connected that allows the server
       // to set the environment (giving us 100% certainty that we guessed right)
       // However, note that the `console.log`s called before and after connection
       // are still forced to rely on our existing heuristics (to disable, tack #production
       // onto the URL used to fetch this file.)
+
     }//</SailsSocket>
 
 
@@ -724,7 +725,7 @@
 
       // Apply `io.sails` config as defaults
       // (now that at least one tick has elapsed)
-      // See https://sailsjs.org/reference/websockets/sails.io.js/SailsSocket/properties.md
+      // See http://sailsjs.com/documentation/reference/web-sockets/socket-client/sails-socket/properties
       // for description of options and default values
       SOCKET_OPTIONS.forEach(function(option) {
         if ('undefined' == typeof self[option]) {
@@ -1247,7 +1248,7 @@
       'socket.request( options, [fnToCallWhenComplete] )\n\n'+
       'options.url :: e.g. "/foo/bar"'+'\n'+
       'options.method :: e.g. "get", "post", "put", or "delete", etc.'+'\n'+
-      'options.params :: e.g. { emailAddress: "mike@sailsjs.org" }'+'\n'+
+      'options.params :: e.g. { emailAddress: "mike@example.com" }'+'\n'+
       'options.headers :: e.g. { "x-my-custom-header": "some string" }';
       // Old usage:
       // var usage = 'Usage:\n socket.'+(options.method||'request')+'('+

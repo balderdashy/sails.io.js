@@ -43,7 +43,7 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
  * using WebSockets from the browser to talk to your Sails server.
  *
  * For tips and documentation, visit:
- * http://sailsjs.org/#!documentation/reference/BrowserSDK/BrowserSDK.html
+ * http://sailsjs.com/documentation/reference/web-sockets/socket-client
  * ------------------------------------------------------------------------
  *
  * This file allows you to send and receive socket.io messages to & from Sails
@@ -702,7 +702,7 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
       });
 
       // Absorb opts into SailsSocket instance
-      // See https://sailsjs.org/reference/websockets/sails.io.js/SailsSocket/properties.md
+      // See http://sailsjs.com/documentation/reference/web-sockets/socket-client/sails-socket/properties
       // for description of options
       SOCKET_OPTIONS.forEach(function(option) {
         self[option] = opts[option];
@@ -742,7 +742,7 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
 
       // Apply `io.sails` config as defaults
       // (now that at least one tick has elapsed)
-      // See https://sailsjs.org/reference/websockets/sails.io.js/SailsSocket/properties.md
+      // See http://sailsjs.com/documentation/reference/web-sockets/socket-client/sails-socket/properties
       // for description of options and default values
       SOCKET_OPTIONS.forEach(function(option) {
         if ('undefined' == typeof self[option]) {
@@ -1265,7 +1265,7 @@ pong:3,message:4,upgrade:5,noop:6},s=i(r),t={type:"error",data:"parser error"},u
       'socket.request( options, [fnToCallWhenComplete] )\n\n'+
       'options.url :: e.g. "/foo/bar"'+'\n'+
       'options.method :: e.g. "get", "post", "put", or "delete", etc.'+'\n'+
-      'options.params :: e.g. { emailAddress: "mike@sailsjs.org" }'+'\n'+
+      'options.params :: e.g. { emailAddress: "mike@example.com" }'+'\n'+
       'options.headers :: e.g. { "x-my-custom-header": "some string" }';
       // Old usage:
       // var usage = 'Usage:\n socket.'+(options.method||'request')+'('+

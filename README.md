@@ -193,7 +193,7 @@ io.socket.post("/foo", someData, someCallback);
 
 ###### Change the `transports` used to connect to the server
 
-In some cases you may want to change the transorts that the socket client uses to connect to the server, and vice versa.  For instance, some server environments--*notably Heroku*--do not support "sticky load balancing", causing the "polling" transport to fail.  In these cases, you should first [change the transports listed in the `config/sockets.js` file](http://sailsjs.org/#/documentation/reference/sails.config/sails.config.sockets.html?q=advanced-configuration) in your Sails app.  Then change the transports in the client by setting `io.sails.transports`:
+In some cases you may want to change the transorts that the socket client uses to connect to the server, and vice versa.  For instance, some server environments--*notably Heroku*--do not support "sticky load balancing", causing the "polling" transport to fail.  In these cases, you should first [change the transports listed in the `config/sockets.js` file](http://sailsjs.com/documentation/reference/sails-config/sails-config-sockets#?advanced-configuration) in your Sails app.  Then change the transports in the client by setting `io.sails.transports`:
 
 ```html
 <script type="text/javascript" src="/dependencies/sails.io.js"></script>

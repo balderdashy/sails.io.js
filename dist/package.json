@@ -1,16 +1,16 @@
 {
   "name": "sails.io.js-dist",
   "version": "1.1.0",
-  "description": "Distribution version of sails.io.js for browsers, including bundled socket.io-client",
+  "description": "Distribution version of sails.io.js for browsers, including bundled socket.io-client.",
   "main": "sails.io.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/balderdashy/sails.io.js.git"
   },
-  "author": "Mike McNeil <@mikermcneil> (http://balderdash.co/)",
+  "author": "Mike McNeil <@mikermcneil> (http://mikermcneil.com/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/balderdashy/sails.io.js/issues"
+    "url": "https://github.com/balderdashy/sails/issues"
   },
-  "homepage": "https://github.com/balderdashy/sails.io.js"
+  "homepage": "http://sailsjs.com/documentation/reference/web-sockets/socket-client"
 }
