@@ -84,7 +84,7 @@ module.exports = function(grunt) {
 
     uglify: {
       main: {
-        src: ['./node_modules/socket.io-client/socket.io.js'],
+        src: ['./node_modules/socket.io-client/dist/socket.io.js'],
         dest: '<%= PATHS.socketioClient %>'
       }
     },
