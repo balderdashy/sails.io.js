@@ -1306,7 +1306,7 @@
       // (and sanitize/marshal options along the way)
       var requestCtx = {
 
-        method: options.method.toLowerCase() || 'get',
+        method: (options.method || 'get').toLowerCase(),
 
         headers: options.headers,
 
