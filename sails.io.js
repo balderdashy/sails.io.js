@@ -532,21 +532,19 @@
       this.body = responseCtx.body || {};
       this.headers = responseCtx.headers || {};
       this.statusCode = responseCtx.statusCode || 200;
+   
       if (this.statusCode < 200 || this.statusCode >= 400) {
-
         // Determine the appropriate error message.
-        var msg;
-        if (this.statusCode === 0) {
-          msg = 'Server responded with a '+this.statusCode+' status code';
-          if (this.body !== undefined && this.body !== null) {
-            msg += ':\n```\n'+this.body+'\n```';
-          }
-          else {
-            msg += '.';
-          }
+        var msg = 'Server responded with a ' + this.statusCode + ' status code';
+
+        if (typeof this.body === 'string') {
+          msg += ':\n```\n' + this.body + '\n```';
+        }
+        else if (typeof this.body.message === 'string') {
+          msg += ':\n```\n' + this.body.message + '\n```';
         }
         else {
-          msg = 'The socket request failed.';
+          msg += '.';
         }
 
         // Now build and attach Error instance.
