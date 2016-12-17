@@ -531,20 +531,17 @@
     function JWR(responseCtx) {
       this.body = responseCtx.body || {};
       this.headers = responseCtx.headers || {};
-      this.statusCode = responseCtx.statusCode || 200;
-   
+      this.statusCode = (typeof responseCtx.statusCode === 'undefined') ? 200 : responseCtx.statusCode;
+
       if (this.statusCode < 200 || this.statusCode >= 400) {
         // Determine the appropriate error message.
-        var msg = 'Server responded with a ' + this.statusCode + ' status code';
-
-        if (typeof this.body === 'string') {
-          msg += ':\n```\n' + this.body + '\n```';
-        }
-        else if (typeof this.body.message === 'string') {
-          msg += ':\n```\n' + this.body.message + '\n```';
+        var msg;
+        if (this.statusCode === 0) {
+          msg = 'The socket request failed.';
         }
         else {
-          msg += '.';
+          msg = 'Server responded with a ' + this.statusCode + ' status code';
+          msg += ':\n```\n' + JSON.stringify(this.body, null, 2) + '\n```';
         }
 
         // Now build and attach Error instance.
