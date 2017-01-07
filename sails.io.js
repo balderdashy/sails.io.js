@@ -88,6 +88,7 @@
    */
   var CONFIGURABLE_VIA_HTML_ATTR = [
     'autoConnect',
+    'reconnection',
     'environment',
     'headers',
     'url',
