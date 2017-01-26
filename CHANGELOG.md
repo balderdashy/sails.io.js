@@ -8,7 +8,7 @@ See https://github.com/balderdashy/sails.io.js/commits/master
 
 ### In development
 
-* [ENHANCEMENT] Don't do npm test on prepublish [5009778](https://github.com/balderdashy/sails.io.js/commit/50097787b427b35c9d58f61fed3d173bdeca4b12)
+* [INTERNAL] Don't do npm test on prepublish [5009778](https://github.com/balderdashy/sails.io.js/commit/50097787b427b35c9d58f61fed3d173bdeca4b12)
 * [BUGFIX] Fix issue where you get an error if you don't provide a `method` arg to `request` [c8cb943](https://github.com/balderdashy/sails.io.js/commit/c8cb943d1ab420ba267383b150da747e2378b76e)
 * [ENHANCEMENT] Add "reconnection" to list of settings that can be change via HTML attribute [b68872a](https://github.com/balderdashy/sails.io.js/commit/b68872ac118cbb990f100f54b033f485f819c1ee)
 
@@ -22,36 +22,32 @@ See https://github.com/balderdashy/sails.io.js/commits/master
 
 ### 1.1.2
 
-* [ENHANCEMENT] Update postpublish script [842e77f](https://github.com/balderdashy/sails.io.js/commit/842e77feb13bfb5d5ebbc5e09c2dde43c0656747) and [72aa6cc](https://github.com/balderdashy/sails.io.js/commit/72aa6cc25c8812b5022f0987f20c9bc8ea7b74d7)
+* [INTERNAL] Update postpublish script [842e77f](https://github.com/balderdashy/sails.io.js/commit/842e77feb13bfb5d5ebbc5e09c2dde43c0656747) and [72aa6cc](https://github.com/balderdashy/sails.io.js/commit/72aa6cc25c8812b5022f0987f20c9bc8ea7b74d7)
 
 ### 1.1.1
 
-* [ENHANCEMENT] Update links, add README to sails.io.js-dist, and converted some TODOs into FUTUREs [a7fb853](https://github.com/balderdashy/sails.io.js/commit/a7fb853d786cbb728f382c94a6a65667c59f06d0) and [cde8a90](https://github.com/balderdashy/sails.io.js/commit/cde8a9092d7d13109ce9e864f6d046ffa4e2632b)
-* [ENHANCEMENT] Upgraded dev dependency to Sails v1 and sails-hook-sockets standalone. [485f3cd](https://github.com/balderdashy/sails.io.js/commit/485f3cdec4df8300921c221b7e697f6fdfdc5689)
-* [ENHANCEMENT] Reorganized README.md, add version string to compiled SDK in dist [d17c1ef](https://github.com/balderdashy/sails.io.js/commit/d17c1effe381a8c44edbfbcc4b8536b34135e51d) and [9ddd74c](https://github.com/balderdashy/sails.io.js/commit/9ddd74cfcf2a78c21613a966ca35e5f5189b360a)
-* [ENHANCEMENT] Add comments explaining Gruntfile.js purpose  [628a1be](https://github.com/balderdashy/sails.io.js/commit/628a1beab48d764e94f6022f6dcfb2566fd5029f)
-* [ENHANCEMENT] Update boilerplate files [appveyor.yml, travis.yml now checks node 6 and 7, updated .npmignore, .editorconfig and .gitignore, added .jshintrc] and get rid of no-longer-in-use checkGitStatus script [c7cd55e](https://github.com/balderdashy/sails.io.js/commit/c7cd55eee6b92ad310c9e1916a1007f97b663e3e)
+* [INTERNAL] Update links, add README to sails.io.js-dist, and converted some TODOs into FUTUREs [a7fb853](https://github.com/balderdashy/sails.io.js/commit/a7fb853d786cbb728f382c94a6a65667c59f06d0) and [cde8a90](https://github.com/balderdashy/sails.io.js/commit/cde8a9092d7d13109ce9e864f6d046ffa4e2632b)
+* [INTERNAL] Upgraded dev dependency to Sails v1 and sails-hook-sockets standalone. [485f3cd](https://github.com/balderdashy/sails.io.js/commit/485f3cdec4df8300921c221b7e697f6fdfdc5689)
+* [INTERNAL] Reorganized README.md, add version string to compiled SDK in dist [d17c1ef](https://github.com/balderdashy/sails.io.js/commit/d17c1effe381a8c44edbfbcc4b8536b34135e51d) and [9ddd74c](https://github.com/balderdashy/sails.io.js/commit/9ddd74cfcf2a78c21613a966ca35e5f5189b360a)
+* [INTERNAL] Update boilerplate files [appveyor.yml, travis.yml now checks node 6 and 7, updated .npmignore, .editorconfig and .gitignore, added .jshintrc] and get rid of no-longer-in-use checkGitStatus script [c7cd55e](https://github.com/balderdashy/sails.io.js/commit/c7cd55eee6b92ad310c9e1916a1007f97b663e3e)
 
 ### 1.1.0
 
 * [ENHANCEMENT] Caution: **Possible breaking change**. Make `reconnection` option false by default. Can be switched back following the [Advanced usage reference](https://github.com/balderdashy/sails.io.js#advanced-usage) [7f8c7a2](https://github.com/balderdashy/sails.io.js/commit/7f8c7a2d6d7430725bca5383f4b80570e038ab81)
-* [ENHANCEMENT] Update inline version numbers [32fa101](https://github.com/balderdashy/sails.io.js/commit/32fa1017bc0ea374dd4c6e5cd3fb624a75ed0131)
 
 ### 1.0.1
 
 * [BUGFIX] Fix issue where properties were overriding `isConnecting` and `mightBeAboutToAutoConnect` methods [d78d94e](https://github.com/balderdashy/sails.io.js/commit/d78d94e6488778221d73f56823b1b2f3d64eb0ce)
-* [ENHANCEMENT] Make `jwr.error` always truthy (even if response data is empty string or 0 or `false` or `null`) by always ensuring it is an Error instance. [8393d87](https://github.com/balderdashy/sails.io.js/commit/8393d876cdca665886c863dbf664d0199f247846)
+* [INTERNAL] Make `jwr.error` always truthy (even if response data is empty string or 0 or `false` or `null`) by always ensuring it is an Error instance. [8393d87](https://github.com/balderdashy/sails.io.js/commit/8393d876cdca665886c863dbf664d0199f247846)
 
 ### 1.0.0
 
 * [ENHANCEMENT] Caution: **Possible breaking change**. Make transport defaults to be only `websocket`. More information on [how to configure sails.io library transports](https://github.com/balderdashy/sails.io.js#change-the-transports-used-to-connect-to-the-server) [adfa16e](https://github.com/balderdashy/sails.io.js/commit/adfa16e54ce0c41315bb34ee9563c6a1799bac09)
-* [ENHANCEMENT] Updated mocha [e06abd1](https://github.com/balderdashy/sails.io.js/commit/e06abd14f6a1678b25b4dfedd1fa542c9a6bfd0c)
 * [ENHANCEMENT] Exposed `isConnecting` and `mightBeAboutToAutoConnect` as public methods [fd962bb](https://github.com/balderdashy/sails.io.js/commit/fd962bb4071a7f20903e5d07779bb7585df8b169)
 
 ### 0.14.0
 
 * [ENHANCEMENT] Add flag to indicate that the autoConnect timer has started. Helps in better handling possible race conditions on queueing socket requests [6e1f349](https://github.com/balderdashy/sails.io.js/commit/6e1f349f807406ab6900ba537133a615a97439f7)
-* [ENHANCEMENT] Upgraded dev dependencies [76fdd51](https://github.com/balderdashy/sails.io.js/commit/76fdd515eba69f4d7a328c51bcef732fb8c0912f)
 * [ENHANCEMENT] Updated socket.io-client to 1.4.8 [d7e06ad](https://github.com/balderdashy/sails.io.js/commit/d7e06ad5929bf23168dfb28a0019b8a53875239a) and later downgraded to 1.4.5 so Travis stops failing [25ae952](https://github.com/balderdashy/sails.io.js/commit/25ae952a5c0a7fdc6b1ebfd1dffe8c79e954713f)
 
 
