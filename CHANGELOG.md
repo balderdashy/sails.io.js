@@ -34,7 +34,7 @@ See https://github.com/balderdashy/sails.io.js/commits/master
 
 ### 1.1.0
 
-* [ENHANCEMENT] (**Possible breaking change**) Make `reconnection` option false by default. Can be switched back following the [Advanced usage reference](https://github.com/balderdashy/sails.io.js#advanced-usage) [7f8c7a2](https://github.com/balderdashy/sails.io.js/commit/7f8c7a2d6d7430725bca5383f4b80570e038ab81)
+* [ENHANCEMENT] Caution: **Possible breaking change**. Make `reconnection` option false by default. Can be switched back following the [Advanced usage reference](https://github.com/balderdashy/sails.io.js#advanced-usage) [7f8c7a2](https://github.com/balderdashy/sails.io.js/commit/7f8c7a2d6d7430725bca5383f4b80570e038ab81)
 * [ENHANCEMENT] Update inline version numbers [32fa101](https://github.com/balderdashy/sails.io.js/commit/32fa1017bc0ea374dd4c6e5cd3fb624a75ed0131)
 
 ### 1.0.1
@@ -44,7 +44,7 @@ See https://github.com/balderdashy/sails.io.js/commits/master
 
 ### 1.0.0
 
-* [ENHANCEMENT] (**Possible breaking change**) Make transport defaults to be only `websocket`. More information on [how to configure sails.io library transports](https://github.com/balderdashy/sails.io.js#change-the-transports-used-to-connect-to-the-server) [adfa16e](https://github.com/balderdashy/sails.io.js/commit/adfa16e54ce0c41315bb34ee9563c6a1799bac09)
+* [ENHANCEMENT] Caution: **Possible breaking change**. Make transport defaults to be only `websocket`. More information on [how to configure sails.io library transports](https://github.com/balderdashy/sails.io.js#change-the-transports-used-to-connect-to-the-server) [adfa16e](https://github.com/balderdashy/sails.io.js/commit/adfa16e54ce0c41315bb34ee9563c6a1799bac09)
 * [ENHANCEMENT] Updated mocha [e06abd1](https://github.com/balderdashy/sails.io.js/commit/e06abd14f6a1678b25b4dfedd1fa542c9a6bfd0c)
 * [ENHANCEMENT] Exposed `isConnecting` and `mightBeAboutToAutoConnect` as public methods [fd962bb](https://github.com/balderdashy/sails.io.js/commit/fd962bb4071a7f20903e5d07779bb7585df8b169)
 
