@@ -35,7 +35,7 @@ this.area.value=a.replace(i,"\\n");try{this.form.submit()}catch(l){}this.iframe.
 
 /**
  * sails.io.js
- * v1.1.4
+ * v1.1.5
  * ------------------------------------------------------------------------
  * JavaScript Client (SDK) for communicating with Sails.
  *
@@ -106,6 +106,7 @@ this.area.value=a.replace(i,"\\n");try{this.form.submit()}catch(l){}this.iframe.
    */
   var CONFIGURABLE_VIA_HTML_ATTR = [
     'autoConnect',
+    'reconnection',
     'environment',
     'headers',
     'url',
@@ -136,7 +137,7 @@ this.area.value=a.replace(i,"\\n");try{this.form.submit()}catch(l){}this.iframe.
    * @type {Dictionary}
    */
   var SDK_INFO = {
-    version: '1.1.4', // <-- pulled automatically from package.json, do not change!
+    version: '1.1.5', // <-- pulled automatically from package.json, do not change!
     language: 'javascript',
     platform: (function (){
       if (typeof module === 'object' && typeof module.exports !== 'undefined') {
@@ -1208,6 +1209,31 @@ this.area.value=a.replace(i,"\\n");try{this.form.submit()}catch(l){}this.iframe.
     };
 
 
+    /**
+     * Simulate a PATCH request to sails
+     * e.g.
+     *    `socket.patch('/event/3', changedFields, $spinner.hide)`
+     *
+     * @api public
+     * @param {String} url    ::    destination URL
+     * @param {Object} data   ::    parameters to send with the request [optional]
+     * @param {Function} cb   ::    callback function to call when finished [optional]
+     */
+
+    SailsSocket.prototype.patch = function(url, data, cb) {
+
+      // `data` is optional
+      if (typeof data === 'function') {
+        cb = data;
+        data = {};
+      }
+
+      return this.request({
+        method: 'patch',
+        params: data,
+        url: url
+      }, cb);
+    };
 
     /**
      * Simulate a DELETE request to sails
@@ -1324,7 +1350,7 @@ this.area.value=a.replace(i,"\\n");try{this.form.submit()}catch(l){}this.iframe.
       // (and sanitize/marshal options along the way)
       var requestCtx = {
 
-        method: options.method.toLowerCase() || 'get',
+        method: (options.method || 'get').toLowerCase(),
 
         headers: options.headers,
 
