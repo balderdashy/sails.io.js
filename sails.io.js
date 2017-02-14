@@ -1191,6 +1191,31 @@
     };
 
 
+    /**
+     * Simulate a PATCH request to sails
+     * e.g.
+     *    `socket.patch('/event/3', changedFields, $spinner.hide)`
+     *
+     * @api public
+     * @param {String} url    ::    destination URL
+     * @param {Object} data   ::    parameters to send with the request [optional]
+     * @param {Function} cb   ::    callback function to call when finished [optional]
+     */
+
+    SailsSocket.prototype.patch = function(url, data, cb) {
+
+      // `data` is optional
+      if (typeof data === 'function') {
+        cb = data;
+        data = {};
+      }
+
+      return this.request({
+        method: 'patch',
+        params: data,
+        url: url
+      }, cb);
+    };
 
     /**
      * Simulate a DELETE request to sails

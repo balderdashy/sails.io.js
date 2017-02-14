@@ -50,7 +50,8 @@ var EXPECTED_RESPONSES = {
   },
   'delete /hello': { body: 'deleted!'},
   'post /hello': { body: 'posted!'},
-  'put /hello': { body: 'putted!'}
+  'put /hello': { body: 'putted!'},
+  'patch /hello': { body: 'patched!'}
 
 };
 var setupRoutes = _setupRoutes(EXPECTED_RESPONSES);
@@ -97,6 +98,13 @@ describe('io.socket', function () {
       it('should be able to send a PUT request and receive the expected response', function (cb) {
         io.socket.put('/hello', function (body, jwr) {
           assertResponse('put /hello', arguments);
+          return cb();
+        });
+      });
+
+      it('should be able to send a PATCH request and receive the expected response', function (cb) {
+        io.socket.patch('/hello', function (body, jwr) {
+          assertResponse('patch /hello', arguments);
           return cb();
         });
       });
