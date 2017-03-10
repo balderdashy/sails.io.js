@@ -8,6 +8,9 @@ See https://github.com/balderdashy/sails.io.js/commits/master
 
 ### In development
 
+### 1.1.5
+
+* [ENHANCEMENT] Add 'PATCH' support [e458031](https://github.com/balderdashy/sails.io.js/commit/e45803118290cbbb06563f37c85a706649372bb0)
 * [INTERNAL] Don't do npm test on prepublish [5009778](https://github.com/balderdashy/sails.io.js/commit/50097787b427b35c9d58f61fed3d173bdeca4b12)
 * [BUGFIX] Fix issue where you get an error if you don't provide a `method` arg to `request` [c8cb943](https://github.com/balderdashy/sails.io.js/commit/c8cb943d1ab420ba267383b150da747e2378b76e)
 * [ENHANCEMENT] Add "reconnection" to list of settings that can be change via HTML attribute [b68872a](https://github.com/balderdashy/sails.io.js/commit/b68872ac118cbb990f100f54b033f485f819c1ee)
