@@ -8,6 +8,10 @@ See https://github.com/balderdashy/sails.io.js/commits/master
 
 ### In development
 
+### 1.1.6
+
+* [BUGFIX] Handle server status code of zero correctly, and fix error messages for other non-200 responses.
+
 ### 1.1.5
 
 * [ENHANCEMENT] Add 'PATCH' support [e458031](https://github.com/balderdashy/sails.io.js/commit/e45803118290cbbb06563f37c85a706649372bb0)
