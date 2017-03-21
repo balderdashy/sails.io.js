@@ -35,7 +35,7 @@ this.area.value=a.replace(i,"\\n");try{this.form.submit()}catch(l){}this.iframe.
 
 /**
  * sails.io.js
- * v1.1.6
+ * v1.1.7
  * ------------------------------------------------------------------------
  * JavaScript Client (SDK) for communicating with Sails.
  *
@@ -137,7 +137,7 @@ this.area.value=a.replace(i,"\\n");try{this.form.submit()}catch(l){}this.iframe.
    * @type {Dictionary}
    */
   var SDK_INFO = {
-    version: '1.1.6', // <-- pulled automatically from package.json, do not change!
+    version: '1.1.7', // <-- pulled automatically from package.json, do not change!
     language: 'javascript',
     platform: (function (){
       if (typeof module === 'object' && typeof module.exports !== 'undefined') {
@@ -548,9 +548,10 @@ this.area.value=a.replace(i,"\\n");try{this.form.submit()}catch(l){}this.iframe.
      */
 
     function JWR(responseCtx) {
-      this.body = responseCtx.body || {};
+      this.body = responseCtx.body;
       this.headers = responseCtx.headers || {};
       this.statusCode = (typeof responseCtx.statusCode === 'undefined') ? 200 : responseCtx.statusCode;
+      // FUTURE: Replace this typeof short-circuit with an assertion (statusCode should always be set)
 
       if (this.statusCode < 200 || this.statusCode >= 400) {
         // Determine the appropriate error message.
@@ -561,6 +562,9 @@ this.area.value=a.replace(i,"\\n");try{this.form.submit()}catch(l){}this.iframe.
         else {
           msg = 'Server responded with a ' + this.statusCode + ' status code';
           msg += ':\n```\n' + JSON.stringify(this.body, null, 2) + '\n```';
+          // (^^Note that we should always be able to rely on socket.io to give us
+          // non-circular data here, so we don't have to worry about wrapping the
+          // above in a try...catch)
         }
 
         // Now build and attach Error instance.
@@ -1295,6 +1299,9 @@ this.area.value=a.replace(i,"\\n");try{this.form.submit()}catch(l){}this.iframe.
 
 
       // Validate options and callback
+      if (typeof cb !== 'undefined' && typeof cb !== 'function') {
+        throw new Error('Invalid callback function!\n' + usage);
+      }
       if (typeof options !== 'object' || typeof options.url !== 'string') {
         throw new Error('Invalid or missing URL!\n' + usage);
       }
@@ -1309,9 +1316,6 @@ this.area.value=a.replace(i,"\\n");try{this.form.submit()}catch(l){}this.iframe.
       }
       if (options.data && typeof options.data !== 'object') {
         throw new Error('Invalid `data` provided (should be a dictionary with JSON-serializable values)\n' + usage);
-      }
-      if (cb && typeof cb !== 'function') {
-        throw new Error('Invalid callback function!\n' + usage);
       }
 
       // Accept either `params` or `data` for backwards compatibility (but not both!)
@@ -1357,8 +1361,8 @@ this.area.value=a.replace(i,"\\n");try{this.form.submit()}catch(l){}this.iframe.
         cb: cb
       };
 
-      // Merge global headers in
-      if (this.headers && 'object' == typeof this.headers) {
+      // Merge global headers in, if there are any.
+      if (this.headers && 'object' === typeof this.headers) {
         for (var header in this.headers) {
           if (!options.headers.hasOwnProperty(header)) {
             options.headers[header] = this.headers[header];
