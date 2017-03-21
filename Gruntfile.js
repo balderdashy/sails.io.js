@@ -69,7 +69,7 @@ module.exports = function(grunt) {
     concat: {
       header: {
         src: [
-          '<%= PATHS.eslintEnable %>',
+          '<%= PATHS.eslintDisable %>',
           '<%= PATHS.amdInstructions %>',
           '<%= PATHS.socketioClientVersion %>',
           '<%= PATHS.socketioClient %>',
@@ -83,7 +83,7 @@ module.exports = function(grunt) {
         src: [
           '<%= PATHS.header %>',
           '<%= PATHS.sailsio %>',
-          '<%= PATHS.eslintDisable %>',
+          '<%= PATHS.eslintEnable %>',
         ],
         dest: '<%= PATHS.dist %>'
       }

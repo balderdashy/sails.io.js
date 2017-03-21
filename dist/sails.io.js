@@ -1,4 +1,4 @@
-/* eslint-enable */
+/* eslint-disable */
 
 /**
  * To use sails.io.js in an AMD environment (e.g. with require.js),
@@ -1609,4 +1609,4 @@ this.area.value=a.replace(i,"\\n");try{this.form.submit()}catch(l){}this.iframe.
 })();
 ;
 
-/* eslint-disable */
+/* eslint-enable */
