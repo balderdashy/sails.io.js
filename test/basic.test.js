@@ -32,6 +32,12 @@ var EXPECTED_RESPONSES = {
   'get /someJSON': {
     body: { foo: 'bar' }
   },
+  'get /someNull': {
+    body: null
+  },
+  'get /someZero': {
+    body: 0
+  },
   'get /someError': {
     body: { blah: 'blah' },
     statusCode: 501
@@ -105,6 +111,27 @@ describe('io.socket', function () {
       it('should be able to send a PATCH request and receive the expected response', function (cb) {
         io.socket.patch('/hello', function (body, jwr) {
           assertResponse('patch /hello', arguments);
+          return cb();
+        });
+      });
+
+      it('should receive JSON as a POJO, not a string', function (cb) {
+        io.socket.get('/someJSON', function (body, jwr) {
+          assertResponse('get /someJSON', arguments);
+          return cb();
+        });
+      });
+
+      it('should be able to receive a `null` body', function (cb) {
+        io.socket.get('/someNull', function (body, jwr) {
+          assertResponse('get /someNull', arguments);
+          return cb();
+        });
+      });
+
+      it('should be able to receive a body containing the number zero', function (cb) {
+        io.socket.get('/someZero', function (body, jwr) {
+          assertResponse('get /someZero', arguments);
           return cb();
         });
       });
