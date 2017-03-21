@@ -21,7 +21,7 @@ module.exports = function setupRoutes (expectedResponses) {
 
   /**
    * Bind routes which respond with the expected data.
-   * 
+   *
    * @param  {Object} expectedResponses
    * @global {Sails} sails
    */
@@ -29,7 +29,7 @@ module.exports = function setupRoutes (expectedResponses) {
     _.each(expectedResponses, function (expectedResponse, routeAddress) {
       sails.router.bind(routeAddress, function (req, res) {
         // console.log('\n------ calling res.send(%s, "%s")', expectedResponse.statusCode || 200, expectedResponse.req && _dotToObject(req, expectedResponse.req) || expectedResponse.body);
-        return res.send(expectedResponse.statusCode || 200, expectedResponse.req && _dotToObject(req, expectedResponse.req) || expectedResponse.body);
+        return res.status(expectedResponse.statusCode || 200).send(expectedResponse.req && _dotToObject(req, expectedResponse.req) || expectedResponse.body);
       });
     });
   };

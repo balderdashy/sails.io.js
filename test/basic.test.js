@@ -314,7 +314,7 @@ describe('io.socket', function () {
           if (!req.session) {return res.send("NOSESSION");}
           count  = req.session.count || 1;
           req.session.count = count + 1;
-          return res.send(200, count);
+          return res.status(200).send(count);
         });
         return done();
       });
@@ -388,7 +388,7 @@ describe('io.socket', function () {
           if (!req.session) {return res.send("NOSESSION");}
           count  = req.session.count || 1;
           req.session.count = count + 1;
-          return res.send(200, count);
+          return res.status(200).send(count);
         });
         return done();
       });
