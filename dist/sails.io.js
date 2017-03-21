@@ -37,7 +37,7 @@ this.area.value=a.replace(i,"\\n");try{this.form.submit()}catch(l){}this.iframe.
 
 /**
  * sails.io.js
- * v1.1.7
+ * v1.1.8
  * ------------------------------------------------------------------------
  * JavaScript Client (SDK) for communicating with Sails.
  *
@@ -139,7 +139,7 @@ this.area.value=a.replace(i,"\\n");try{this.form.submit()}catch(l){}this.iframe.
    * @type {Dictionary}
    */
   var SDK_INFO = {
-    version: '1.1.7', // <-- pulled automatically from package.json, do not change!
+    version: '1.1.8', // <-- pulled automatically from package.json, do not change!
     language: 'javascript',
     platform: (function (){
       if (typeof module === 'object' && typeof module.exports !== 'undefined') {
