@@ -1,3 +1,5 @@
+/* eslint-enable */
+
 /**
  * To use sails.io.js in an AMD environment (e.g. with require.js),
  * replace this file with the sails.io.js file from the root of:
@@ -1605,3 +1607,6 @@ this.area.value=a.replace(i,"\\n");try{this.form.submit()}catch(l){}this.iframe.
   }
 
 })();
+;
+
+/* eslint-disable */

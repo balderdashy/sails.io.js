@@ -18,6 +18,8 @@ module.exports = function(grunt) {
   grunt.initConfig({
 
     PATHS: {
+      eslintEnable: './dependencies/eslint-enable.txt',
+      eslintDisable: './dependencies/eslint-disable.txt',
       amdInstructions: './dependencies/amd_instructions.js',
       socketioClient: './dependencies/socket.io.min.js',
       header: './.tmp/header.txt',
@@ -66,14 +68,23 @@ module.exports = function(grunt) {
 
     concat: {
       header: {
-        src: ['<%= PATHS.amdInstructions %>', '<%= PATHS.socketioClientVersion %>', '<%= PATHS.socketioClient %>'],
+        src: [
+          '<%= PATHS.eslintEnable %>',
+          '<%= PATHS.amdInstructions %>',
+          '<%= PATHS.socketioClientVersion %>',
+          '<%= PATHS.socketioClient %>',
+        ],
         dest: '<%= PATHS.header %>'
       },
       main: {
         options: {
           separator: ';\n\n',
         },
-        src: ['<%= PATHS.header %>', '<%= PATHS.sailsio %>'],
+        src: [
+          '<%= PATHS.header %>',
+          '<%= PATHS.sailsio %>',
+          '<%= PATHS.eslintDisable %>',
+        ],
         dest: '<%= PATHS.dist %>'
       }
     },
