@@ -530,9 +530,10 @@
      */
 
     function JWR(responseCtx) {
-      this.body = responseCtx.body || {};
+      this.body = responseCtx.body;
       this.headers = responseCtx.headers || {};
       this.statusCode = (typeof responseCtx.statusCode === 'undefined') ? 200 : responseCtx.statusCode;
+      // FUTURE: Replace this typeof short-circuit with an assertion (statusCode should always be set)
 
       if (this.statusCode < 200 || this.statusCode >= 400) {
         // Determine the appropriate error message.
@@ -543,6 +544,9 @@
         else {
           msg = 'Server responded with a ' + this.statusCode + ' status code';
           msg += ':\n```\n' + JSON.stringify(this.body, null, 2) + '\n```';
+          // (^^Note that we should always be able to rely on socket.io to give us
+          // non-circular data here, so we don't have to worry about wrapping the
+          // above in a try...catch)
         }
 
         // Now build and attach Error instance.
@@ -1277,6 +1281,9 @@
 
 
       // Validate options and callback
+      if (typeof cb !== 'undefined' && typeof cb !== 'function') {
+        throw new Error('Invalid callback function!\n' + usage);
+      }
       if (typeof options !== 'object' || typeof options.url !== 'string') {
         throw new Error('Invalid or missing URL!\n' + usage);
       }
@@ -1291,9 +1298,6 @@
       }
       if (options.data && typeof options.data !== 'object') {
         throw new Error('Invalid `data` provided (should be a dictionary with JSON-serializable values)\n' + usage);
-      }
-      if (cb && typeof cb !== 'function') {
-        throw new Error('Invalid callback function!\n' + usage);
       }
 
       // Accept either `params` or `data` for backwards compatibility (but not both!)
@@ -1339,8 +1343,8 @@
         cb: cb
       };
 
-      // Merge global headers in
-      if (this.headers && 'object' == typeof this.headers) {
+      // Merge global headers in, if there are any.
+      if (this.headers && 'object' === typeof this.headers) {
         for (var header in this.headers) {
           if (!options.headers.hasOwnProperty(header)) {
             options.headers[header] = this.headers[header];
