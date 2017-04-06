@@ -857,6 +857,18 @@
         // using Socket.io and save it as `_raw` (this will start it connecting)
         self._raw = io(self.url, self);
 
+        // If the transport throws an error while connecting, log a helpful message (development only).
+        self._raw.io.engine.transport.on('error', function(evt){
+          if (self._isConnecting) {
+            consolog('=============================================================================');
+            consolog('The socket was unable to connect.  The server may be offline, or the socket ');
+            consolog('may have failed authorization based on its origin or other factors.');
+            consolog('You may want to check the values of `sails.config.sockets.beforeConnect` and');
+            consolog('`sails.config.sockets.onlyAllowOrigins` in your app.');
+            consolog('=============================================================================');
+          }
+        });
+
         // Replay event bindings from the eager socket
         self.replay();
 
