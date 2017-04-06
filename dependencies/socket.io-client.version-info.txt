@@ -1,2 +1,2 @@
-// socket.io-client version 1.7.1
+// socket.io-client version 1.7.3
 // https://github.com/socketio/socket.io-client
