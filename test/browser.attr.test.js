@@ -126,7 +126,7 @@ describe('browser', function() {
       after(function() {
         if(runner.kill){runner.kill();}
       });
-      it('should use the autoConnnect setting provided in the html attribute', function(done) {
+      it('should use the headers setting provided in the html attribute', function(done) {
         runner = phantom("http://localhost:"+sails.config.port+"/", "console.log(io.socket.headers['x-csrf-token']);");
         runner.stderr.on('data', function(data) {console.log(data.toString());});
         runner.stdout.on('data', function(data) {
@@ -158,7 +158,7 @@ describe('browser', function() {
       after(function() {
         if(runner.kill){runner.kill();}
       });
-      it('should use the autoConnnect setting provided in the html attribute', function(done) {
+      it('should use the transports setting provided in the html attribute', function(done) {
         runner = phantom("http://localhost:"+sails.config.port+"/", "console.log(JSON.stringify(io.sails.transports));");
         runner.stderr.on('data', function(data) {console.log(data.toString());});
         runner.stdout.on('data', function(data) {
@@ -190,7 +190,7 @@ describe('browser', function() {
       after(function() {
         if(runner.kill){runner.kill();}
       });
-      it('should use the autoConnnect setting provided in the html attribute', function(done) {
+      it('should use the path setting provided in the html attribute', function(done) {
         runner = phantom("http://localhost:"+sails.config.port+"/", "console.log(io.socket.isConnected(), io.socket.path);");
         runner.stderr.on('data', function(data) {console.log(data.toString());});
         runner.stdout.on('data', function(data) {
