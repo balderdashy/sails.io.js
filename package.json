@@ -23,7 +23,7 @@
     "request": "2.74.0",
     "sails": "^1.0.0-16",
     "sails-hook-sockets": "^1.2.3",
-    "socket.io-client": "1.7.1"
+    "socket.io-client": "1.7.2"
   },
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha -b --reporter spec --timeout 10000",
@@ -47,5 +47,8 @@
   "bugs": {
     "url": "https://github.com/balderdashy/sails.io.js/issues"
   },
-  "homepage": "https://github.com/balderdashy/sails.io.js"
+  "homepage": "https://github.com/balderdashy/sails.io.js",
+  "dependencies": {
+    "socket.io-client": "1.7.3"
+  }
 }
