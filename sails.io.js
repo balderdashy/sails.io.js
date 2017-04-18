@@ -748,8 +748,21 @@
 
       // Mix the current SDK version into the query string in
       // the connection request to the server:
-      if (typeof self.query !== 'string') self.query = SDK_INFO.versionString;
-      else self.query += '&' + SDK_INFO.versionString;
+      if (typeof self.query === 'string') {
+        // (If provided as a string, trim leading question mark,
+        // just in case one was provided.)
+        self.query = self.query.replace(/^\?/, '');
+        self.query += '&' + SDK_INFO.versionString;
+      }
+      else if (self.query && typeof self.query === 'object') {
+        throw new Error('`query` setting does not currently support configuration as a dictionary (`{}`).  Instead, it must be specified as a string like `foo=89&bar=hi`');
+      }
+      else if (!self.query) {
+        self.query = SDK_INFO.versionString;
+      }
+      else {
+        throw new Error('Unexpected data type provided for `query` setting: '+self.query);
+      }
 
       // Determine whether this is a cross-origin socket by examining the
       // hostname and port on the `window.location` object.  If it's cross-origin,
