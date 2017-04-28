@@ -895,20 +895,24 @@ this.iframe.attachEvent?this.iframe.onreadystatechange=function(){"complete"===e
         // Also, in this case (and in dev mode only) log a helpful message.
         self._raw.io.engine.transport.on('error', function(err){
           if (!self._isConnecting) { return; }
-          
+
           self._isConnecting = false;
 
           // Development-only message:
-          consolog('=============================================================================');
-          consolog('The socket was unable to connect.  The server may be offline, or the socket ');
-          consolog('may have failed authorization based on its origin or other factors.');
-          consolog('You may want to check the values of `sails.config.sockets.beforeConnect` and');
-          consolog('`sails.config.sockets.onlyAllowOrigins` in your app.');
+          consolog('====================================');
+          consolog('The socket was unable to connect.');
+          consolog('The server may be offline, or the');
+          consolog('socket may have failed authorization');
+          consolog('based on its origin or other factors.');
+          consolog('You may want to check the values of');
+          consolog('`sails.config.sockets.beforeConnect`');
+          consolog('and `sails.config.sockets.onlyAllowOrigins`');
+          consolog('in your app.');
           consolog('More info: https://sailsjs.com/config/sockets');
           consolog('');
           consolog('Technical details:');
           consolog(err);
-          consolog('=============================================================================');
+          consolog('====================================');
         });
 
         // Replay event bindings from the eager socket
