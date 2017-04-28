@@ -37,7 +37,7 @@ this.iframe.attachEvent?this.iframe.onreadystatechange=function(){"complete"===e
 
 /**
  * sails.io.js
- * v1.1.10
+ * v1.1.11
  * ------------------------------------------------------------------------
  * JavaScript Client (SDK) for communicating with Sails.
  *
@@ -139,7 +139,7 @@ this.iframe.attachEvent?this.iframe.onreadystatechange=function(){"complete"===e
    * @type {Dictionary}
    */
   var SDK_INFO = {
-    version: '1.1.10', // <-- pulled automatically from package.json, do not change!
+    version: '1.1.11', // <-- pulled automatically from package.json, do not change!
     language: 'javascript',
     platform: (function (){
       if (typeof module === 'object' && typeof module.exports !== 'undefined') {
@@ -890,16 +890,25 @@ this.iframe.attachEvent?this.iframe.onreadystatechange=function(){"complete"===e
         // using Socket.io and save it as `_raw` (this will start it connecting)
         self._raw = io(self.url, self);
 
-        // If the transport throws an error while connecting, log a helpful message (development only).
-        self._raw.io.engine.transport.on('error', function(evt){
-          if (self._isConnecting) {
-            consolog('=============================================================================');
-            consolog('The socket was unable to connect.  The server may be offline, or the socket ');
-            consolog('may have failed authorization based on its origin or other factors.');
-            consolog('You may want to check the values of `sails.config.sockets.beforeConnect` and');
-            consolog('`sails.config.sockets.onlyAllowOrigins` in your app.');
-            consolog('=============================================================================');
-          }
+        // If the low-level transport throws an error _while connecting_, then set the _isConnecting flag
+        // to false (since we're no longer connecting with any chance of success anyway).
+        // Also, in this case (and in dev mode only) log a helpful message.
+        self._raw.io.engine.transport.on('error', function(err){
+          if (!self._isConnecting) { return; }
+          
+          self._isConnecting = false;
+
+          // Development-only message:
+          consolog('=============================================================================');
+          consolog('The socket was unable to connect.  The server may be offline, or the socket ');
+          consolog('may have failed authorization based on its origin or other factors.');
+          consolog('You may want to check the values of `sails.config.sockets.beforeConnect` and');
+          consolog('`sails.config.sockets.onlyAllowOrigins` in your app.');
+          consolog('More info: https://sailsjs.com/config/sockets');
+          consolog('');
+          consolog('Technical details:');
+          consolog(err);
+          consolog('=============================================================================');
         });
 
         // Replay event bindings from the eager socket
