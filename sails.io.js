@@ -119,7 +119,7 @@
    * @type {Dictionary}
    */
   var SDK_INFO = {
-    version: '1.1.11', // <-- pulled automatically from package.json, do not change!
+    version: '1.1.12', // <-- pulled automatically from package.json, do not change!
     language: 'javascript',
     platform: (function (){
       if (typeof module === 'object' && typeof module.exports !== 'undefined') {
