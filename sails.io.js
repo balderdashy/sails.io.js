@@ -878,6 +878,10 @@
 
           self._isConnecting = false;
 
+          // Track this timestamp for use in reconnection messages
+          // (only relevant if reconnection is enabled.)
+          self.connectionErrorTimestamp = (new Date()).getTime();
+
           // Development-only message:
           consolog('====================================');
           consolog('The socket was unable to connect.');
@@ -947,8 +951,22 @@
           if (!self._isConnecting) {
             self.on('connect', runRequestQueue.bind(self, self));
           }
-          var msSinceConnectionLost = ((new Date()).getTime() - self.connectionLostTimestamp);
-          var numSecsOffline = (msSinceConnectionLost / 1000);
+
+          var msSinceLastOffline;
+          var numSecsOffline;
+          if (self.connectionLostTimestamp){
+            msSinceLastOffline = ((new Date()).getTime() - self.connectionLostTimestamp);
+            numSecsOffline = (msSinceLastOffline / 1000);
+          }
+          else if (self.connectionErrorTimestamp) {
+            msSinceLastOffline = ((new Date()).getTime() - self.connectionErrorTimestamp);
+            numSecsOffline = (msSinceLastOffline / 1000);
+          }
+          else {
+            msSinceLastOffline = '???';
+            numSecsOffline = '???';
+          }
+
           consolog(
             '\n'+
              '  |>    Socket reconnected successfully after'+'\n'+
