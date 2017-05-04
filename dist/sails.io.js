@@ -935,8 +935,8 @@ this.iframe.attachEvent?this.iframe.onreadystatechange=function(){"complete"===e
             // '    |>    ' + '\n' +
             // '  \\___/  '+️
             // '\n'+
-             '  |>    Now connected to Sails.' + '\n' +
-            '\\___/   For help, see: http://bit.ly/1DmTvgK' + '\n' +
+             '  |>    Now connected to '+(self.url ? self.url : 'Sails')+'.' + '\n' +
+            '\\___/   For help, see: http://bit.ly/2q0QDpf' + '\n' +
              '        (using sails.io.js '+io.sails.sdk.platform+' SDK @v'+io.sails.sdk.version+')'+ '\n' +
             '\n'+
             '\n'+
@@ -961,7 +961,7 @@ this.iframe.attachEvent?this.iframe.onreadystatechange=function(){"complete"===e
         self.on('reconnecting', function(numAttempts) {
           consolog(
             '\n'+
-            '        Socket is trying to reconnect to Sails...\n'+
+            '        Socket is trying to reconnect to '+(self.url ? self.url : 'Sails')+'...\n'+
             '_-|>_-  (attempt #' + numAttempts + ')'+'\n'+
             '\n'
           );
@@ -990,7 +990,7 @@ this.iframe.attachEvent?this.iframe.onreadystatechange=function(){"complete"===e
           consolog(
             '\n'+
              '  |>    Socket reconnected successfully after'+'\n'+
-            '\\___/   being offline for ~' + numSecsOffline + ' seconds.'+'\n'+
+            '\\___/   being offline at least ' + numSecsOffline + ' seconds.'+'\n'+
             '\n'
           );
         });
