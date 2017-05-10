@@ -918,6 +918,7 @@
              '  |>    Now connected to '+(self.url ? self.url : 'Sails')+'.' + '\n' +
             '\\___/   For help, see: http://bit.ly/2q0QDpf' + '\n' +
              '        (using sails.io.js '+io.sails.sdk.platform+' SDK @v'+io.sails.sdk.version+')'+ '\n' +
+            '         Connected at: '+(new Date())+'\n'+
             '\n'+
             '\n'+
             // '\n'+
