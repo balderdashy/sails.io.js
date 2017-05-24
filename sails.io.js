@@ -1284,7 +1284,7 @@
      * @param {Function} cb   ::    callback function to call when finished [optional]
      */
 
-    SailsSocket.prototype['delete'] = function(url, data, cb) {
+    SailsSocket.prototype.del = function(url, data, cb) {
 
       // `data` is optional
       if (typeof data === 'function') {
