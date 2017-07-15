@@ -889,10 +889,11 @@
           consolog('socket may have failed authorization');
           consolog('based on its origin or other factors.');
           consolog('You may want to check the values of');
-          consolog('`sails.config.sockets.beforeConnect`');
-          consolog('and `sails.config.sockets.onlyAllowOrigins`');
+          consolog('`sails.config.sockets.onlyAllowOrigins`');
+          consolog('or (more rarely) `sails.config.sockets.beforeConnect`');
           consolog('in your app.');
           consolog('More info: https://sailsjs.com/config/sockets');
+          consolog('For help: https://sailsjs.com/support');
           consolog('');
           consolog('Technical details:');
           consolog(err);
