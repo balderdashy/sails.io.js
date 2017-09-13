@@ -183,7 +183,7 @@ Set a `x-csrf-token` header to be sent with every request made using `io.socket.
 ```html
 <script type="text/javascript" src="/dependencies/sails.io.js"></script>
 <script type="text/javascript">
-io.sails.headers = {
+io.socket.headers = {
   "x-csrf-token": someToken,
 };
 // This POST request will now include the x-csrf-token header
