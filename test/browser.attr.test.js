@@ -204,4 +204,33 @@ describe('browser', function() {
 
   });
 
+  describe('Setting `initialConnectionheaders` (polling only)', function() {
+
+    var testFailed = false;
+
+    before(function(done) {
+      lifecycle.setup({transports: ['polling'], autoConnect: false, beforeConnect: function(handshake, cb) { if (!handshake.headers.canikickit || handshake.headers.canikickit !== 'yes you can!') { testFailed = true; return done('Could not connect due to missing header.'); } return cb(); }}, done);
+    });
+
+    after(function(done) {
+      if(runner.kill){runner.kill();}
+      sails.lower(function(){setTimeout(done, 100);});
+    });
+
+    before(function() {
+      sails.router.bind("/", function (req, res) {
+        var html = '<html><head></head><body><script type="text/javascript" src="/sails.io.js#production" transports=\'["polling"]\'></script><script type="text/javascript">io.sails.initialConnectionHeaders={canikickit: \'yes you can!\'};</script></body></html>';
+        return res.send(html);
+      });
+    });
+    after(function() {
+      if(runner.kill){runner.kill();}
+    });
+    it('should pass the header to the server with the initial connection', function(done) {
+      runner = phantom("http://localhost:"+sails.config.port+"/");
+      setTimeout(function() { if (testFailed) { /* do nothing */} return done(); }, 1000)
+    });
+
+  });
+
 });

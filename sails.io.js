@@ -736,10 +736,17 @@
       // Headers that will be sent with the initial request to /socket.io (Node.js only)
       self.extraHeaders = self.initialConnectionHeaders || {};
 
-      // Log a warning if non-Node.js platform attempts to use `initialConnectionHeaders`
-      if (self.initialConnectionHeaders && SDK_INFO.platform !== 'node') {
+      // For browser usage (currently works with "polling" transport only)
+      self.transportOptions = self.transportOptions || {};
+      self.transports.forEach(function(transport) {
+        self.transportOptions[transport] = self.transportOptions[transport] || {};
+        self.transportOptions[transport].extraHeaders = self.initialConnectionHeaders || {};
+      });
+
+      // Log a warning if non-Node.js platform attempts to use `initialConnectionHeaders` for anything other than `polling`.
+      if (self.initialConnectionHeaders && SDK_INFO.platform !== 'node' && self.transports.indexOf('polling') === -1 || self.transports.length > 1) {
         if (typeof console === 'object' && typeof console.warn === 'function') {
-          console.warn('initialConnectionHeaders option available in Node.js only!');
+          console.warn('When running in browser, `initialConnectionHeaders` option is only available for the `polling` transport.');
         }
       }
 
