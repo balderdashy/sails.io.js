@@ -47,9 +47,9 @@ module.exports = {
       },
       port: TEST_SERVER_PORT,
       sockets: {
-        authorization: false,
         transports: opts.transports,
-        path: opts.path
+        path: opts.path,
+        beforeConnect: opts.beforeConnect || false
       },
       hooks: {
         grunt: false,
