@@ -103,6 +103,14 @@ The `sails.io.js` client comes automatically installed in new Sails projects, bu
 
 ========================================
 
+## Usage with React-Native  
+
+Usage is exactly the same than with Node.js but issues starts when you try to debug remotely: you get the following error `document is not defined`. This is due to JSONP request which tries to append a script tag to the document.  
+Simply add the following line after importing your sails.io client into your React-Native Component:  
+`io.sails.useCORSRouteToGetCookie = false`
+
+========================================
+
 ## Advanced usage
 
 The `io.sails` config functions as the default for all connected sockets, allowing you to change client behavior globally.  It can be overridden on a socket-by-socket basis by passing in an object to `io.sails.connect(opts)`
