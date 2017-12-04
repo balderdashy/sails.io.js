@@ -1473,10 +1473,18 @@
       // The environment we're running in.
       // (logs are not displayed when this is set to 'production')
       //
-      // Defaults to development unless this script was fetched from a URL
-      // that ends in `*.min.js` or '#production' (may also be manually overridden.)
-      //
-      environment: urlThisScriptWasFetchedFrom.match(/(\#production|\.min\.js)/g) ? 'production' : 'development',
+      // Defaults to "development" unless this script was fetched from a URL
+      // that ends in `*.min.js` or '#production', or if the conventional
+      // `SAILS_LOCALS` global is set with an `_environment` of "production"
+      // or "staging".  (This setting may also be manually overridden.)
+      environment: (
+        urlThisScriptWasFetchedFrom.match(/(\#production|\.min\.js)/g) ||
+        (
+          typeof window === 'object' && window &&
+          typeof window.SAILS_LOCALS === 'object' && window.SAILS_LOCALS &&
+          (window.SAILS_LOCALS._environment === 'staging' || window.SAILS_LOCALS._environment === 'production')
+        )
+      )? 'production' : 'development',
 
       // The version of this sails.io.js client SDK
       sdk: SDK_INFO,
