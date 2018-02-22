@@ -606,8 +606,14 @@
       socket._raw.emit(sailsEndpoint, requestCtx, function serverResponded(responseCtx) {
 
         // Send back (emulatedHTTPBody, jsonWebSocketResponse)
-        if (cb) {
+        if (cb && !requestCtx.calledCb) {
           cb(responseCtx.body, new JWR(responseCtx));
+          // Set flag indicating that callback was called, to avoid duplicate calls.
+          requestCtx.calledCb = true;
+          // Remove the callback from the list.
+          socket.responseCbs.splice(socket.responseCbs.indexOf(cb), 1);
+          // Remove the context from the list.
+          socket.requestCtxs.splice(socket.requestCtxs.indexOf(requestCtx), 1);
         }
       });
     }
@@ -939,6 +945,24 @@
 
         self.on('disconnect', function() {
           self.connectionLostTimestamp = (new Date()).getTime();
+          // If there is a list of registered callbacks, call each of them with an error
+          // and then wipe the list.
+          if (typeof self.responseCbs === 'object' && self.responseCbs.length) {
+            self.responseCbs.forEach(function(responseCb) {
+              responseCb(new Error('The socket disconnected before the request completed.'));
+            });
+            self.responseCbs = [];
+          }
+          // If there is a list of request context, indicate that their callbacks have been
+          // called and then wipe the list.  This prevents errors in the edge case of a response
+          // somehow coming back after the socket reconnects.
+          if (typeof self.requestCtxs === 'object' && self.requestCtxs.length) {
+            self.requestCtxs.forEach(function(requestCtx) {
+              requestCtx.calledCb = true;
+            });
+            self.requestCtxs = [];
+          }
+
           consolog('====================================');
           consolog('Socket was disconnected from Sails.');
           consolog('Usually, this is due to one of the following reasons:' + '\n' +
@@ -1407,6 +1431,21 @@
 
         cb: cb
       };
+
+      // Get a reference to the callback list, or create a new one.
+      this.responseCbs = this.responseCbs || [];
+
+      // Get a reference to the request context list, or create a new one.
+      this.requestCtxs = this.requestCtxs || [];
+
+      // Add this callback to the list.  If the socket disconnects, we'll call
+      // each cb in the list with an error and reset the list.  Otherwise the
+      // cb will be removed from the list when the server responds.
+      this.responseCbs.push(cb);
+
+      // Add the request context to the list.  It will be removed once the
+      // response comes back, or if the socket disconnects.
+      this.requestCtxs.push(requestCtx);
 
       // Merge global headers in, if there are any.
       if (this.headers && 'object' === typeof this.headers) {
