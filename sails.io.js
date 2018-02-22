@@ -949,7 +949,11 @@
           // and then wipe the list.
           if (typeof self.responseCbs === 'object' && self.responseCbs.length) {
             self.responseCbs.forEach(function(responseCb) {
-              responseCb(new Error('The socket disconnected before the request completed.'));
+              responseCb(new Error('The socket disconnected before the request completed.'), {
+                body: null,
+                statusCode: 0,
+                headers: {}
+              });
             });
             self.responseCbs = [];
           }

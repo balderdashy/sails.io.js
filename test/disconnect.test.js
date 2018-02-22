@@ -49,7 +49,11 @@ describe('On disconnect', function () {
           setTimeout( function() {
             io.socket.get('/ok?x=3', function (body, res) {
               assert(_.isError(body));
-              assert(_.isUndefined(res));
+              assert(res);
+              assert.equal(res.body, null);
+              assert.equal(res.statusCode, 0);
+              assert(_.isPlainObject(res.headers));
+              assert.equal(_.keys(res.headers).length, 0);
               return cb();
             });
           }, 300 )
