@@ -55,12 +55,12 @@ module.exports = {
         grunt: false,
         sockets: SHSockets
       },
-      routes: {
+      routes: _.extend({
         '/sails.io.js': function(req, res) {
           res.header('Content-type', 'application/javascript');
           require('fs').createReadStream(require('path').resolve(__dirname, '..', '..', 'dist', 'sails.io.js')).pipe(res);
         }
-      }
+      }, opts.routes || {})
     },function (err) {
       if (err) { return cb(err); }
       // console.log('lifted');

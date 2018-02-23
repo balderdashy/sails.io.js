@@ -119,7 +119,7 @@
    * @type {Dictionary}
    */
   var SDK_INFO = {
-    version: '1.1.13', // <-- pulled automatically from package.json, do not change!
+    version: '1.2.0', // <-- pulled automatically from package.json, do not change!
     language: 'javascript',
     platform: (function (){
       if (typeof module === 'object' && typeof module.exports !== 'undefined') {
@@ -606,8 +606,14 @@
       socket._raw.emit(sailsEndpoint, requestCtx, function serverResponded(responseCtx) {
 
         // Send back (emulatedHTTPBody, jsonWebSocketResponse)
-        if (cb) {
+        if (cb && !requestCtx.calledCb) {
           cb(responseCtx.body, new JWR(responseCtx));
+          // Set flag indicating that callback was called, to avoid duplicate calls.
+          requestCtx.calledCb = true;
+          // Remove the callback from the list.
+          socket._responseCbs.splice(socket._responseCbs.indexOf(cb), 1);
+          // Remove the context from the list.
+          socket._requestCtxs.splice(socket._requestCtxs.indexOf(requestCtx), 1);
         }
       });
     }
@@ -938,7 +944,40 @@
         });
 
         self.on('disconnect', function() {
+
+          // Get a timestamp of when the disconnect was detected.
           self.connectionLostTimestamp = (new Date()).getTime();
+
+          // Get a shallow clone of the internal array of response callbacks, in case any of the callbacks mutate it.
+          var responseCbs = [].concat(self._responseCbs || []);
+          // Wipe the internal array of response callbacks before executing them, in case a callback happens to add
+          // a new request to the queue.
+          self._responseCbs = [];
+
+          // Do the same for the internal request context list.
+          var requestCtxs = [].concat(self._requestCtxs || []);
+          self._requestCtxs = [];
+
+          // Loop through the callbacks for all in-progress requests, and call them each with an error indicating the disconnect.
+          if (responseCbs.length) {
+            responseCbs.forEach(function(responseCb) {
+              responseCb(new Error('The socket disconnected before the request completed.'), {
+                body: null,
+                statusCode: 0,
+                headers: {}
+              });
+            });
+          }
+
+          // If there is a list of request contexts, indicate that their callbacks have been
+          // called and then wipe the list.  This prevents errors in the edge case of a response
+          // somehow coming back after the socket reconnects.
+          if (requestCtxs.length) {
+            requestCtxs.forEach(function(requestCtx) {
+              requestCtx.calledCb = true;
+            });
+          }
+
           consolog('====================================');
           consolog('Socket was disconnected from Sails.');
           consolog('Usually, this is due to one of the following reasons:' + '\n' +
@@ -1407,6 +1446,21 @@
 
         cb: cb
       };
+
+      // Get a reference to the callback list, or create a new one.
+      this._responseCbs = this._responseCbs || [];
+
+      // Get a reference to the request context list, or create a new one.
+      this._requestCtxs = this._requestCtxs || [];
+
+      // Add this callback to the list.  If the socket disconnects, we'll call
+      // each cb in the list with an error and reset the list.  Otherwise the
+      // cb will be removed from the list when the server responds.
+      this._responseCbs.push(cb);
+
+      // Add the request context to the list.  It will be removed once the
+      // response comes back, or if the socket disconnects.
+      this._requestCtxs.push(requestCtx);
 
       // Merge global headers in, if there are any.
       if (this.headers && 'object' === typeof this.headers) {
