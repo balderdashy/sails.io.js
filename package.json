@@ -17,6 +17,7 @@
     "grunt-contrib-uglify": "1.0.1",
     "grunt-contrib-watch": "1.0.0",
     "grunt-text-replace": "0.4.0",
+    "is-my-json-valid": "^2.17.2",
     "lodash": "3.10.1",
     "mocha": "3.0.2",
     "phantomjs-prebuilt": "2.1.12",
@@ -27,7 +28,7 @@
   },
   "scripts": {
     "test": "node ./node_modules/mocha/bin/mocha -b --reporter spec --timeout 10000",
-    "prepublish": "./node_modules/grunt-cli/bin/grunt publish",
+    "prepublish": "grunt publish",
     "postpublish": "cd dist && npm publish && cd .. && echo && echo '--' && echo 'Now, assuming you have not pushed up your automatic \"npm version\" commit+tag yet, run:' && echo \"git tag -d v`npm show sails.io.js version` && git commit --amend -am '`npm show sails.io.js version`' && git tag v`npm show sails.io.js version`\" && echo 'Then do:' && echo 'git push && git push --tags'"
   },
   "repository": {
