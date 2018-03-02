@@ -21,6 +21,7 @@ branches:
   only:
     - master
     - stable
+    - for-sails-0.12
 
 notifications:
   email:
