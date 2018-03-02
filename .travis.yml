@@ -11,3 +11,4 @@ branches:
     - master
     - stable
     - beta
+    - for-sails-0.12
