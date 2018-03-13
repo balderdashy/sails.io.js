@@ -20,7 +20,6 @@ node_js:
 branches:
   only:
     - master
-    - stable
     - for-sails-v0.12
 
 notifications:
