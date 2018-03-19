@@ -1456,11 +1456,12 @@
       // Add this callback to the list.  If the socket disconnects, we'll call
       // each cb in the list with an error and reset the list.  Otherwise the
       // cb will be removed from the list when the server responds.
-      this._responseCbs.push(cb);
-
-      // Add the request context to the list.  It will be removed once the
-      // response comes back, or if the socket disconnects.
-      this._requestCtxs.push(requestCtx);
+      // Also add the request context to the list.  It will be removed once
+      // the response comes back, or if the socket disconnects.
+      if (cb) {
+        this._responseCbs.push(cb);
+        this._requestCtxs.push(requestCtx);
+      }
 
       // Merge global headers in, if there are any.
       if (this.headers && 'object' === typeof this.headers) {
