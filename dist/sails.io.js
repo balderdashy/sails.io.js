@@ -36,7 +36,7 @@ return new(b[["Active"].concat("Object").join("X")])("Microsoft.XMLHTTP")}catch(
 
 /**
  * sails.io.js
- * v1.2.0
+ * v1.2.1
  * ------------------------------------------------------------------------
  * JavaScript Client (SDK) for communicating with Sails.
  *
@@ -138,7 +138,7 @@ return new(b[["Active"].concat("Object").join("X")])("Microsoft.XMLHTTP")}catch(
    * @type {Dictionary}
    */
   var SDK_INFO = {
-    version: '1.2.0', // <-- pulled automatically from package.json, do not change!
+    version: '1.2.1', // <-- pulled automatically from package.json, do not change!
     language: 'javascript',
     platform: (function (){
       if (typeof module === 'object' && typeof module.exports !== 'undefined') {
@@ -1475,11 +1475,12 @@ return new(b[["Active"].concat("Object").join("X")])("Microsoft.XMLHTTP")}catch(
       // Add this callback to the list.  If the socket disconnects, we'll call
       // each cb in the list with an error and reset the list.  Otherwise the
       // cb will be removed from the list when the server responds.
-      this._responseCbs.push(cb);
-
-      // Add the request context to the list.  It will be removed once the
-      // response comes back, or if the socket disconnects.
-      this._requestCtxs.push(requestCtx);
+      // Also add the request context to the list.  It will be removed once
+      // the response comes back, or if the socket disconnects.
+      if (cb) {
+        this._responseCbs.push(cb);
+        this._requestCtxs.push(requestCtx);
+      }
 
       // Merge global headers in, if there are any.
       if (this.headers && 'object' === typeof this.headers) {
