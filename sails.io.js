@@ -668,6 +668,7 @@
         // Okay to change global headers while socket is connected
         if (option == 'headers') {return;}
         Object.defineProperty(self, option, {
+          enumerable: true,
           get: function() {
             if (option == 'url') {
               return _opts[option] || (self._raw && self._raw.io && self._raw.io.uri);
